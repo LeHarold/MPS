@@ -1,0 +1,11 @@
+import assert from 'node:assert/strict';
+import {parseCoordinate as p} from './dist/coordinates.mjs';
+assert.equal(p('25.033',true),25.033);
+assert.equal(p('121.5654 E',false),121.5654);
+assert.equal(p('25°10′37″N',true),25+10/60+37/3600);
+assert.equal(p('S 25 10 37',true),-(25+10/60+37/3600));
+assert.equal(p('-121 30 0',false),-121.5);
+assert.equal(p('180 0 0 W',false),-180);
+for(const value of ['', '91','90 0 1','25 60 0','25 0 60','25E','25N S','-25N','25hello','N25N','25.5 2','25 2.5 3'])assert.throws(()=>p(value,true),value);
+assert.throws(()=>p('181',false));
+console.log('PASS: coordinate parsing, hemispheres, boundaries and invalid input');
