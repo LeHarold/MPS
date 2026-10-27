@@ -1,6 +1,6 @@
 {
-  "name": "ASIA ATLAS 亞洲戰術地圖",
-  "short_name": "ASIA ATLAS",
+  "name": "地圖工作台",
+  "short_name": "地圖工作台",
   "lang": "zh-Hant",
   "start_url": "./",
   "scope": "./",
