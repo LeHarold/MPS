@@ -1,5 +1,5 @@
-import {adjacentPairs} from './map-inputs.mjs?v=42';
-import {distance,factor} from './workspace-model.mjs?v=42';
+import {adjacentPairs} from './map-inputs.mjs?v=43';
+import {distance,factor} from './workspace-model.mjs?v=43';
 export function createWaypointPicker({map,group,getSettings,formatPair,onChange,onCopy,onPick,onDistance}){
  const $=id=>document.getElementById(id);let points=[],note='';
  const categories=['VOR/DME','DME','NDB','航路航點'];
