@@ -1,0 +1,1 @@
+import fs from 'node:fs';const p='dist/workspace.css';let s=fs.readFileSync(p,'utf8').replace('.leaflet-bottom.leaflet-right{bottom:28px;right:8px;max-width:calc(100% - 55px)}','.leaflet-bottom.leaflet-right{bottom:96px;right:8px;max-width:calc(100% - 55px)}.cursor-no-footer .leaflet-bottom.leaflet-right{bottom:36px}');fs.writeFileSync(p,s);
