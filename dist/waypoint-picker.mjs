@@ -1,4 +1,4 @@
-import {distance,factor} from './workspace-model.mjs?v=16';
+import {distance,factor} from './workspace-model.mjs?v=22';
 export function createWaypointPicker({map,group,getSettings,formatPair,onChange,onCopy}){
  const $=id=>document.getElementById(id);let points=[],note='';
  const categories=['VOR/DME','DME','NDB','航路航點'];
