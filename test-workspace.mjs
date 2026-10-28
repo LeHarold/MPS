@@ -1,0 +1,17 @@
+import assert from 'node:assert/strict';
+import fs from 'node:fs';
+import {factor,dms,distance,parseVertices,boundingRectangle,pointOnInstrument,gestureAngle,angleDelta,validateRange,duplicateLayer,validateProject,niceInterval} from './dist/workspace-model.mjs';
+assert.equal(factor('nm'),1852);assert.equal(factor('km'),1000);
+assert(Math.abs(distance([0,0],[0,1])/1852-60.04)<.1);
+assert.equal(dms(25.033,true),'25°01′58.8″N');
+const pts=parseVertices('25°01′58.8″N,121°33′55.44″E,100\n24.8,121.7');assert(Math.abs(pts[0][0]-25.033)<1e-8);assert.equal(pts[0][2],100);
+assert.deepEqual(boundingRectangle([[25,121],[24,122],[24.5,121.5]]),[[24,121,0],[24,122,0],[25,122,0],[25,121,0]]);
+assert.throws(()=>boundingRectangle([[25,121],[25,122]]));assert.throws(()=>parseVertices('91,121'));
+assert.deepEqual(pointOnInstrument(100,100,0,100,20,0,10),[50,100]);const rotated=pointOnInstrument(100,100,90,100,20,0,10);assert(Math.abs(rotated[0]-100)<1e-8&&Math.abs(rotated[1]-50)<1e-8);
+assert.equal(gestureAngle({x:0,y:0},{x:1,y:0}),0);assert.equal(gestureAngle({x:0,y:0},{x:0,y:1}),90);assert.equal(angleDelta(-179,179),2);assert.equal(angleDelta(179,-179),-2);
+assert.deepEqual(validateRange(0,30),[0,30]);for(const r of [[-1,4],[2,2],[4,2],[NaN,4]])assert.throws(()=>validateRange(...r));
+assert.equal(niceInterval(300),50);
+const layer={id:'layer1',name:'圖層',visible:true,objects:[{id:'o1',name:'標記',type:'point',points:[[25,121,80]],color:'#ff4466'}]};const copy=duplicateLayer(layer,'layer2',()=>'o2');copy.objects[0].points[0][0]=24;assert.equal(layer.objects[0].points[0][0],25);assert.equal(copy.objects[0].id,'o2');assert.equal(copy.name,'圖層 副本');
+assert(validateProject({version:2,layers:[layer],activeLayerId:'layer1'}));assert.throws(()=>validateProject({version:2,layers:[layer,layer],activeLayerId:'layer1'}));assert.throws(()=>validateProject({version:2,layers:[{...layer,objects:[{...layer.objects[0],points:[[91,121]]}]}]}));
+const references=JSON.parse(fs.readFileSync('dist/references.json'));assert.equal(references.layers[0].points.length,5);assert.deepEqual(references.layers[0].points[0],[21,117.5,0]);assert.deepEqual(references.layers[1].points,[[27,122,0],[23,118,0]]);
+console.log('PASS: geometry, DMS, coordinate bounds, unit scale, rotated ruler, two-pointer angle, highlighted range, independent layer copy, project validation and reference vertices');

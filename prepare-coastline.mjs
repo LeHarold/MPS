@@ -1,0 +1,16 @@
+import fs from 'node:fs';
+import assert from 'node:assert/strict';
+const source=JSON.parse(fs.readFileSync('world-10m-source.geojson','utf8'));
+function squareSegDistance(p,a,b){let x=a[0],y=a[1],dx=b[0]-x,dy=b[1]-y;if(dx||dy){const t=((p[0]-x)*dx+(p[1]-y)*dy)/(dx*dx+dy*dy);if(t>1){x=b[0];y=b[1]}else if(t>0){x+=dx*t;y+=dy*t}}return(p[0]-x)**2+(p[1]-y)**2}
+function simplifyLine(points,tol){if(points.length<=4)return points;const sq=tol*tol,keep=new Uint8Array(points.length);keep[0]=keep[points.length-1]=1;const stack=[[0,points.length-1]];while(stack.length){const [first,last]=stack.pop();let max=sq,index=-1;for(let i=first+1;i<last;i++){const d=squareSegDistance(points[i],points[first],points[last]);if(d>max){max=d;index=i}}if(index!==-1){keep[index]=1;stack.push([first,index],[index,last])}}const result=points.filter((_,i)=>keep[i]);return result.length>=4?result:points}
+function insideRing(p,r){let yes=false;for(let i=0,j=r.length-1;i<r.length;j=i++){const a=r[i],b=r[j];if(((a[1]>p[1])!==(b[1]>p[1]))&&p[0]<(b[0]-a[0])*(p[1]-a[1])/(b[1]-a[1])+a[0])yes=!yes}return yes}
+function onLand(feature,point){const polys=feature.geometry.type==='Polygon'?[feature.geometry.coordinates]:feature.geometry.coordinates;return polys.some(poly=>insideRing(point,poly[0])&&!poly.slice(1).some(r=>insideRing(point,r)))}
+const hcn=[120+50/60+37/3600,21+55/60+40/3600],old=JSON.parse(fs.readFileSync('dist/world.json','utf8')),oldTw=old.features.find(f=>f.properties.NAME==='Taiwan'||f.properties.ADMIN==='Taiwan');
+const features=source.features.map(f=>{const taiwan=f.properties.NAME==='Taiwan',tolerance=taiwan?.0002:.002;const polygons=f.geometry.type==='Polygon'?[f.geometry.coordinates]:f.geometry.coordinates;return{type:'Feature',properties:{NAME:f.properties.NAME,ADMIN:f.properties.ADMIN},geometry:{type:'MultiPolygon',coordinates:polygons.map(poly=>poly.map(r=>simplifyLine(r,tolerance).map(p=>p.map(n=>Number(n.toFixed(6))))))}}});
+const detailed=JSON.parse(fs.readFileSync('taiwan-detailed.geojson','utf8'));
+const detailedFeatures=detailed.type==='FeatureCollection'?detailed.features:[detailed];
+const detailedPolygons=detailedFeatures.flatMap(f=>f.geometry.type==='Polygon'?[f.geometry.coordinates]:f.geometry.coordinates);
+const taiwan=features.find(f=>f.properties.NAME==='Taiwan');taiwan.geometry={type:'MultiPolygon',coordinates:detailedPolygons};
+assert(onLand(taiwan,hcn),'HCN must fall within the corrected Taiwan polygon');
+fs.writeFileSync('dist/world.json',JSON.stringify({type:'FeatureCollection',metadata:{source:'Natural Earth 1:10m admin 0 countries + Taiwan Atlas 1:10,000 (MOI boundaries)',url:'https://www.naturalearthdata.com/downloads/10m-cultural-vectors/10m-admin-0-countries/',taiwanSource:'https://github.com/dkaoster/taiwan-atlas',taiwanDataset:'https://data.gov.tw/dataset/7442',taiwanSourceVersion:'2021.9.20',license:'Natural Earth: public domain; Taiwan Atlas: MIT; MOI: Open Government Data License 1.0',otherSimplificationDegrees:.002,hcnOfficialCoordinates:[hcn[1],hcn[0]],hcnCheck:'inside Taiwan land polygon'},features}));
+console.log(JSON.stringify({oldHCNOnLand:oldTw?onLand(oldTw,hcn):null,newHCNOnLand:onLand(taiwan,hcn),countries:features.length,bytes:fs.statSync('dist/world.json').size}));

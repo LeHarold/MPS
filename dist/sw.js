@@ -1,7 +1,5 @@
-const CACHE='map-workspace-v6',FILES=['./','index.html','style.css?v=6','app.js?v=6','coordinates.mjs','manifest.webmanifest','icon.svg','icon-192.png','icon-512.png','vendor/leaflet.js','vendor/leaflet.css','world.json','routes.json'];self.addEventListener('install',e=>e.waitUntil(caches.open(CACHE).then(c=>c.addAll(FILES)).then(()=>self.skipWaiting())));self.addEventListener('activate',e=>e.waitUntil(caches.keys().then(keys=>Promise.all(keys.filter(k=>k!==CACHE).map(k=>caches.delete(k)))).then(()=>self.clients.claim())));self.addEventListener('fetch',e=>{if(e.request.method!=='GET'||new URL(e.request.url).origin!==location.origin)return;e.respondWith(caches.match(e.request).then(c=>c||fetch(e.request))) });
-
-
-
-
-
+const CACHE='map-workspace-v8',FILES=['./','index.html','workspace.css?v=8','workspace.js?v=8','workspace-model.mjs','waypoint-picker.mjs','coordinates.mjs','manifest.webmanifest','icon.svg','icon-192.png','icon-512.png','vendor/leaflet.js','vendor/leaflet.css','world.json?v=8','routes.json?v=8','references.json?v=8','navaids.json?v=8','data-sources.html'];
+self.addEventListener('install',event=>event.waitUntil(caches.open(CACHE).then(cache=>cache.addAll(FILES)).then(()=>self.skipWaiting())));
+self.addEventListener('activate',event=>event.waitUntil(caches.keys().then(keys=>Promise.all(keys.filter(key=>/^(map-workspace-|asia-atlas-)/.test(key)&&key!==CACHE).map(key=>caches.delete(key)))).then(()=>self.clients.claim())));
+self.addEventListener('fetch',event=>{const request=event.request,url=new URL(request.url);if(request.method!=='GET'||url.origin!==location.origin)return;if(request.mode==='navigate'){event.respondWith(fetch(request).then(response=>{if(!response.ok)throw Error('navigation unavailable');return response}).catch(async()=>await caches.match(request)||await caches.match('index.html')));return}event.respondWith(caches.match(request).then(cached=>cached||fetch(request)))});
 

@@ -1,0 +1,20 @@
+import fs from 'node:fs';
+let text=fs.readFileSync('dist/workspace.js','utf8');
+function replace(a,b){if(!text.includes(a))throw Error('Missing replacement: '+a);text=text.replace(a,b)}
+replace('$('+'\'route-selection\').textContent=`已選 ${selectedNames.size} / ${routes.length} 條航路`}',"$('route-selection').textContent=`已選 ${selectedNames.size} / ${routes.length} 條航路`;waypointPicker.renderMap()}");
+replace('renderReferences();const found=getObject();','renderReferences();waypointPicker.renderList();const found=getObject();');
+replace('renderReferences();renderGrid();updateCursor();','renderReferences();waypointPicker.renderList();waypointPicker.renderMap();renderGrid();updateCursor();');
+replace("referenceVisibility:{}};state.settings=", "referenceVisibility:{},selectedWaypointIds:null};state.settings=");
+replace('points:clone(ref.points),color:ref.color','points:clone(ref.pathPoints||ref.points),color:ref.color');
+replace('makePointsTable(ref.points,ref.name)','makePointsTable(ref.points,ref.pointNames?i=>ref.pointNames[i]:ref.name)');
+replace("L.polygon(ref.points,options):L.polyline(ref.points,options)","L.polygon(ref.pathPoints||ref.points,options):L.polyline(ref.pathPoints||ref.points,options)");
+replace("ref.name+' · 頂點 '+(i+1),p,ref.source", "ref.pointNames?.[i]||ref.name+' · 頂點 '+(i+1),p,ref.source");
+replace("fetch('world.json')","fetch('world.json?v=7')");
+replace("fetch('routes.json')","fetch('routes.json?v=7')");
+replace("fetch('references.json')","fetch('references.json?v=7')");
+replace("return r.json()})]).then(([world,data,refs])", "return r.json()}),fetch('navaids.json?v=7').then(r=>{if(!r.ok)throw Error('航點資料');return r.json()})]).then(([world,data,refs,navaids])");
+replace('routes=data.routes;references=refs.layers;', 'routes=data.routes;references=refs.layers;waypointPicker.setSources(routes,navaids);');
+replace("已載入 ${routes.length} 條航路、ADIZ 與海峽中線參考圖層。", "已載入 ${routes.length} 條航路、8 座 VOR/DME、ADIZ、海峽中線及官方領海基線。");
+replace("map.attributionControl.addAttribution('Natural Earth · CAA eAIP');", "map.attributionControl.addAttribution('Natural Earth · <a href=\"https://github.com/dkaoster/taiwan-atlas\" target=\"_blank\" rel=\"noopener\">Taiwan Atlas / 內政部</a> · CAA eAIP');");
+replace("details.append(locate);row.append(input,details);", "const copy=document.createElement('button');copy.textContent='建立此航路可修改副本';copy.onclick=()=>{snapshot();const layer={id:uid(),name:r.name+' 副本',visible:true,objects:[{id:uid(),name:r.name,type:'line',points:r.points.map(p=>[p.lat,p.lng,0]),color:state.settings.color,description:'來源：'+r.source}]};state.layers.push(layer);state.activeLayerId=layer.id;save();renderLayers();renderObjects();openPanel('layers-panel')};details.append(locate,copy);row.append(input,details);");
+fs.writeFileSync('dist/workspace.js',text);
