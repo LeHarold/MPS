@@ -1,0 +1,1 @@
+import fs from 'node:fs';let p='dist/workspace.js',s=fs.readFileSync(p,'utf8').replace('size.x-w-12)),y=Math.max','size.x-w-12)),y=Math.max').replace('saved?saved.y*size.y:bottomLimit','saved?saved.y*size.y:bottomLimit-32');fs.writeFileSync(p,s);
