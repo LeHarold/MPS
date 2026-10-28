@@ -23,3 +23,5 @@ body{overflow:hidden}@media(max-width:720px){#color-menu{position:fixed;left:aut
 #box-point-rows fieldset>label{display:block}#box-point-rows fieldset>label>input{display:block;margin-top:6px;width:100%}
 
 .cursor-no-footer .longitude-axis{bottom:0}.cursor-no-footer .latitude-axis{bottom:28px}.cursor-no-footer .leaflet-bottom{bottom:36px}.ruler-contact-info{position:absolute;z-index:540;pointer-events:none;width:240px;max-width:calc(100% - 16px);padding:9px 11px;border:1px solid #527d70;border-radius:5px;background:#102b30e8;color:#c7ffea;font:11px monospace}.ruler-contact-info p{margin:5px 0;color:inherit;font:inherit}.ruler-contact-info>b{font-size:11px}.ruler-contact-info small{color:#b0cec5}#ruler-contact-list>div{padding:8px 0;border-bottom:1px solid #34534e}#ruler-contact-list b,#ruler-contact-list span,#ruler-contact-list small{display:block;margin:3px 0}#ruler-contact-list span{font:12px monospace;color:var(--mint)}#ruler-contact-list small{font:10px monospace;color:var(--muted)}
+
+@media(max-width:480px){.icon-button{width:24px}}
