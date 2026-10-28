@@ -1,6 +1,6 @@
 {
-  "name": "地圖工作台",
-  "short_name": "地圖工作台",
+  "name": "MPS",
+  "short_name": "MPS",
   "lang": "zh-Hant",
   "start_url": "./",
   "scope": "./",
