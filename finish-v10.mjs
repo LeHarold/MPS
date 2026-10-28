@@ -1,0 +1,28 @@
+import fs from 'node:fs';
+let w=fs.readFileSync('dist/waypoint-picker.mjs','utf8');
+w="import {distance,factor} from './workspace-model.mjs';\n"+w;
+w=w.replace("new Set(Array.isArray(selected)?selected:points.map(p=>p.id))","new Set(Array.isArray(selected)?selected:[])");
+w=w.replace("id==='waypoints-all'?null:[]","id==='waypoints-all'?points.map(p=>p.id):[]");
+w=w.replace("color:colors[p.category],weight:1.3,fillColor:'#173241',fillOpacity:1", "color:getSettings().fixColor||colors[p.category],weight:1.3,opacity:getSettings().fixOpacity??1,fillColor:'#173241',fillOpacity:getSettings().fixOpacity??1");
+w=w.replace("permanent:true,direction", "permanent:getSettings().fixNames!==false,direction");
+w=w.replace(".addTo(group)} }",`.addTo(group)}if(getSettings().waypointDistances){const shown=points.filter(p=>selected.has(p.id));for(let i=1;i<shown.length;i++){const a=shown[i-1],b=shown[i],value=distance(a.position,b.position)/factor(getSettings().unit);L.polyline([a.position,b.position],{color:'#f3ca81',weight:1,dashArray:'3 5',opacity:getSettings().fixOpacity??1}).bindTooltip(a.name+' → '+b.name+' · '+Number(value.toFixed(2))+' '+getSettings().unit.toUpperCase(),{permanent:true}).addTo(group)}} }`);
+w=w.replace('return{setSources,renderMap,renderList}', 'return{setSources,renderMap,renderList,getPoints:()=>points}');
+fs.writeFileSync('dist/waypoint-picker.mjs',w);
+let j=fs.readFileSync('dist/workspace.js','utf8');
+j=j.replace("if((e.ctrlKey||e.metaKey)&&e.key==='z')", "if((e.ctrlKey||e.metaKey)&&e.key==='z'&&!e.shiftKey)");
+j=j.replace("map.getContainer().style.cursor=next==='pan'?'grab':'crosshair'", "map.getContainer().style.cursor=next==='pan'?'grab':'crosshair'");
+// Reset all numeric fields on object selection, including stored flight metadata.
+j=j.replace("$('objname').value=found.object.name;", "$('point-kind').value=found.object.pointKind||'normal';$('point-from').value='';$('point-before').value='';$('objname').value=found.object.name;");
+// Transparent reference regions must remain clickable even at low opacity.
+j=j.replace(".addTo(referenceGroup).bindTooltip(ref.name)", ".addTo(referenceGroup).bindTooltip(ref.name)");
+// Add degree ticks and minute subdivisions independently of text-label density.
+j=j.replace("function renderAxes(){", "function renderAxes(){");
+j=j.replace("longitudeAxis.replaceChildren();latitudeAxis.replaceChildren();",`longitudeAxis.replaceChildren();latitudeAxis.replaceChildren();const bounds=map.getBounds();for(const lat of [false,true]){const axis=lat?latitudeAxis:longitudeAxis,lo=lat?bounds.getSouth():bounds.getWest(),hi=lat?bounds.getNorth():bounds.getEast(),span=hi-lo,pixels=lat?usableHeight:size.x;let step=span/pixels*7;if(step<1/60)step=1/60;else step=step<.2?5/60:step<.5?15/60:1;for(let value=Math.ceil(lo/step)*step;value<=hi;value+=step){const p=map.latLngToContainerPoint(lat?[value,map.getCenter().lng]:[map.getCenter().lat,value]),tick=document.createElement('i');tick.className='axis-tick '+(lat?'lat-tick':'lng-tick');tick.style[lat?'top':'left']=(lat?p.y:p.x)+'px';const minute=Math.round(value*60),degree=minute%60===0;tick.classList.toggle('degree-tick',degree);axis.append(tick);if(degree){const text=document.createElement('span');text.className='degree-label '+(lat?'degree-lat':'degree-lng');text.style[lat?'top':'left']=(lat?p.y:p.x)+'px';text.textContent=Math.round(Math.abs(value))+'°'+(lat?(value<0?'S':'N'):(value<0?'W':'E'));axis.append(text)}else if(span/pixels<1/120){tick.title=(minute%60+60)%60+'′';const text=document.createElement('small');text.className='minute-label '+(lat?'degree-lat':'degree-lng');text.style[lat?'top':'left']=(lat?p.y:p.x)+'px';text.textContent=(minute%60+60)%60+'′';axis.append(text)}}}
+`);
+// Existing sparse labels overlap degree labels, so show them only below a degree range.
+j=j.replace("label.textContent=axisFormat(lng,false,lngStep);longitudeAxis.append(label)", "label.textContent=axisFormat(lng,false,lngStep);if(lngStep<1)longitudeAxis.append(label)");
+j=j.replace("label.textContent=axisFormat(lat,true,latStep);latitudeAxis.append(label)", "label.textContent=axisFormat(lat,true,latStep);if(latStep<1)latitudeAxis.append(label)");
+fs.writeFileSync('dist/workspace.js',j);
+let css=fs.readFileSync('dist/workspace.css','utf8');css+=`\n.opacity-button{font-size:11px;padding:5px;margin:5px 0}.instrument-actions{display:grid;grid-template-columns:1fr 1fr}.popover .instrument-actions button{font-size:11px;padding:6px}.instrument svg{touch-action:none}.airport-icon{color:#ffdb8f;text-align:center;font-size:24px}.airport-icon span{display:block}.axis-tick{position:absolute;display:block;border-color:#b6dcd8}.lng-tick{top:0;height:5px;border-left:1px solid}.lat-tick{left:0;width:5px;border-top:1px solid}.lng-tick.degree-tick{height:10px}.lat-tick.degree-tick{width:10px}.degree-label,.minute-label{position:absolute;white-space:nowrap}.degree-lng{top:10px;transform:translateX(-50%)}.degree-lat{left:12px;transform:translateY(-50%)}.minute-label{font-size:8px;color:#adc6c9}.degree-label{font-size:10px;color:#dbf6ef}#cursor-altitude{display:block;font:10px monospace;color:#d6e7dd;margin-top:4px}#instrument-menu{width:310px;max-height:80vh;overflow:auto}@media(max-width:480px){.icon-button{width:25px}.toolbar i{margin:0}.toolbar{gap:0}#instrument-menu{position:fixed;right:10px;left:auto;top:55px;max-width:calc(100vw - 20px)}}\n`;
+fs.writeFileSync('dist/workspace.css',css);
+let sw=fs.readFileSync('dist/sw.js','utf8').replaceAll('v8','v10').replaceAll('v=8','v=10').replace("'waypoint-picker.mjs'","'waypoint-picker.mjs?v=10'").replace("'data-sources.html'","'data-sources.html','airports.json?v=10'");fs.writeFileSync('dist/sw.js',sw);fs.writeFileSync('dist/sw-v7.source',sw);
