@@ -1,0 +1,22 @@
+import fs from 'node:fs';let j=fs.readFileSync('dist/workspace.js','utf8'),h=fs.readFileSync('dist/workspace.html','utf8'),w=fs.readFileSync('dist/waypoint-picker.mjs','utf8');
+j="import {createBoxPointEditor} from './map-inputs.mjs?v=23';\n"+j;
+const a=j.indexOf('function openBox('),b=j.indexOf('function coordinateAction(',a);
+j=j.slice(0,a)+`function openBox(points,name,names=[]){boxEditor.load(points,names);$('box-name').value=name||'座標外框';$('box-feedback').textContent='';openPanel('box-panel');$('box-point-rows input').focus()}
+$('create-box').onclick=()=>{try{const vertices=boxEditor.read(),points=vertices.map(v=>v.position),p=boundingRectangle(points);const o=addObject('polygon',p,$('box-name').value.trim()||'座標外框');o.boxVertices=vertices;o.description=vertices.map(v=>v.name+'：'+pair(v.position)).join('\\n');setTool('pan');selectObject(o.id);save('已儲存外框與各點名稱、座標');map.fitBounds(L.latLngBounds(p),{padding:[40,40]});$('box-feedback').textContent='已將輸入座標框起來'}catch(e){$('box-feedback').textContent=e.message}};
+`+j.slice(b);
+j=j.replace("$('box-point-rows input').focus()", "$('box-point-rows').querySelector('input').focus()");
+j=j.replace("openBox(o.points,o.name)", "openBox(o.boxVertices?.map(v=>v.position)||o.points,o.name,o.boxVertices?.map(v=>v.name))");
+j=j.replace("openBox(found.object.points,found.object.name)", "openBox(found.object.boxVertices?.map(v=>v.position)||found.object.points,found.object.name,found.object.boxVertices?.map(v=>v.name))");
+j=j.replace("entry.append(label,desc,makePointsTable(o.points,o.name,()=>selectObject(o.id)));", "entry.append(label,desc,makePointsTable(o.points,o.name,()=>selectObject(o.id)));if(o.boxVertices)entry.append(makePointsTable(o.boxVertices.map(v=>v.position),i=>o.boxVertices[i].name));");
+const iconStart=j.indexOf('const icon=L.divIcon({className:\'airport-icon\''),iconEnd=j.indexOf("$('airport-count').textContent",iconStart);
+if(iconStart<0||iconEnd<0)throw Error('Airport pattern missing');
+j=j.slice(0,iconStart)+`L.circleMarker(a.position,{radius:0,weight:0,fillOpacity:0,interactive:false}).bindTooltip(a.id,{permanent:airportStyle.names===true,opacity:airportStyle.opacity??1}).addTo(airportGroup);for(const r of a.runways||[])L.polyline(r.points,{color:airportStyle.color||'#ffdb8f',weight:4,opacity:airportStyle.opacity??1}).bindTooltip(a.id).bindPopup(showPointPopup(a.id+' · '+a.name,a.position,a.source)).addTo(airportGroup)}`+j.slice(iconEnd);
+const setup="const boxEditor=createBoxPointEditor($('box-point-rows'));boxEditor.load([]);$('box-add-point').onclick=()=>boxEditor.add();\n";
+j=j.replace("refreshUI();try{if(localStorage",setup+"refreshUI();try{if(localStorage");
+h=h.replace(/<label for="box-coords">[\s\S]*?<button id="create-box"/, '<label>外框座標點</label><div id="box-point-rows"></div><button id="box-add-point" type="button">＋ 新增座標點</button><p>逐點填入名稱、緯度及經度的度／分／秒，可填小數秒。至少兩點，依最南、最北、最東、最西建立外框。</p><button id="create-box"');
+h=h.replace('顯示目前航點間距離（依清單相鄰順序）','顯示相鄰航點距離（依地理位置）');
+w="import {adjacentPairs} from './map-inputs.mjs?v=23';\n"+w;
+w=w.replace("for(let i=1;i<shown.length;i++){const a=shown[i-1],b=shown[i],value=", "for(const [a,b] of adjacentPairs(shown)){const value=");
+fs.writeFileSync('dist/workspace.js',j);fs.writeFileSync('dist/waypoint-picker.mjs',w);fs.writeFileSync('dist/workspace.html',h);fs.writeFileSync('dist/index.html',h);
+fs.appendFileSync('dist/workspace.css','\n#box-point-rows fieldset{margin:10px 0 14px;padding:10px;border:1px solid #38525d;border-radius:5px;min-width:0}#box-point-rows legend{font-size:12px;color:var(--mint)}.dms-input-row{display:grid;grid-template-columns:1.1fr .9fr 1.2fr 48px;gap:5px;align-items:end}.dms-input-row label{display:block;font-size:10px;margin:8px 0 0}.dms-input-row input{margin-top:5px;padding:7px 4px!important}.dms-input-row select{padding:7px 2px;font-size:11px}#box-point-rows fieldset>button{font-size:11px;margin-top:10px}\n');
+let sw=fs.readFileSync('dist/sw.js','utf8').replace("'coordinates.mjs'","'map-inputs.mjs?v=23','coordinates.mjs'");fs.writeFileSync('dist/sw.js',sw);fs.writeFileSync('dist/sw-v7.source',sw);
