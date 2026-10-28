@@ -1,0 +1,26 @@
+import fs from 'node:fs';
+let s=fs.readFileSync('dist/workspace.js','utf8');
+const replace=(a,b)=>{if(!s.includes(a))throw Error('Missing '+a.slice(0,80));s=s.replace(a,b)};
+replace("$('object-coords').value=vertexText(found.object.points);$('object-to-box')", "$('object-coords').value=vertexText(found.object.points);loadDetailPoints(found.object);$('object-to-box')");
+replace("const o=found.object,p=parseVertices($('object-coords').value,o.type==='polygon'?3:o.type==='point'?1:2);", "const o=found.object,vertices=readDetailPoints(),p=vertices.map(v=>v.position);if(p.length<(o.type==='polygon'?3:o.type==='point'?1:2))throw Error('座標點數不足');if(o.distanceLocked&&o.lockedDistanceM>0&&p.length===2)p[1]=destination(p[0],bearing(p[0],p[1]),o.lockedDistanceM,p[1][2]);");
+replace("o.points=p;if(o.boxInputMode", "o.points=p;o.pointProperties=vertices.map(v=>v.properties);if(o.boxInputMode");
+replace("function objectVertexName(o,index){", "function objectVertexName(o,index){if(o.pointProperties?.[index]?.name)return o.pointProperties[index].name;");
+replace("const ll=marker.getLatLng();object.points[index]=[ll.lat,ll.lng,object.points[index][2]||0];", "const ll=marker.getLatLng();object.points[index]=[ll.lat,ll.lng,object.points[index][2]||0];if(object.distanceLocked&&object.points.length===2){const other=1-index;object.points[index]=destination(object.points[other],bearing(object.points[other],object.points[index]),object.lockedDistanceM,object.points[index][2]);marker.setLatLng(object.points[index])}");
+replace("$('object-coords').value=vertexText(object.points)});marker.on('dragend'", "$('object-coords').value=vertexText(object.points)});marker.on('dragend'");
+replace("save();renderObjects();renderLayers();showHandles(object)", "save();renderObjects();renderLayers();showHandles(object);loadDetailPoints(object)");
+replace("function visibleSnapPoints(){return ", "function oldVisibleSnapPoints(){return ");
+const snapStart=s.indexOf("const locations=[...waypointPicker",s.indexOf('function snapRuler(){'));
+const snapEnd=s.indexOf(',unique=new Map()',snapStart);
+s=s.slice(0,snapStart)+"const locations=visibleSnapPoints().map(p=>p.position)"+s.slice(snapEnd);
+replace("const el=label.getElement();if(!el)return;el.style.pointerEvents", "const el=label.getElement();if(!el)return;if(o.id)el.addEventListener('click',e=>{e.stopPropagation();if(!el.dataset.justDragged)selectObject(o.id)});el.style.pointerEvents");
+replace("dragging=false;if(wasEnabled)","dragging=false;el.dataset.justDragged='1';setTimeout(()=>delete el.dataset.justDragged,250);if(wasEnabled)");
+replace("radius:7,className:'user-point'", "radius:7*pointSize('圖層 '+layer.name),className:'user-point'");
+replace("radius:5,weight:1.5,color:layer.color||o.color,fillColor:layer.color||o.color", "radius:5*pointSize('圖層 '+layer.name),weight:1.5,color:o.pointProperties?.[index]?.color||layer.color||o.color,fillColor:o.pointProperties?.[index]?.color||layer.color||o.color");
+replace("radius:5,color:ref.color,fillOpacity", "radius:5*pointSize(ref.name),color:ref.color,fillOpacity");
+replace("radius:3,color:'#8de4ce'", "radius:3*pointSize('航路'),color:'#8de4ce'");
+replace("radius:6,weight:0,fillOpacity:0", "radius:6*pointSize(a.category==='military'?'軍用':'民用／軍民合用'),weight:0,fillOpacity:0");
+replace("function opacityControl(name,value,apply){", "function originalOpacityControl(name,value,apply){");
+s+=fs.readFileSync('extension-v47.txt','utf8');
+fs.writeFileSync('dist/workspace.js',s);
+let m=fs.readFileSync('dist/waypoint-picker.mjs','utf8');m=m.replace("radius:p.category==='VOR/DME'?5:p.category==='航路航點'?2.8:4", "radius:(p.category==='VOR/DME'?5:p.category==='航路航點'?2.8:4)*(getSettings().pointSizes?.['航點']??1)");fs.writeFileSync('dist/waypoint-picker.mjs',m);
+for(const p of ['dist/index.html','dist/workspace.html']){let h=fs.readFileSync(p,'utf8').replace('href="data-sources.html" target="_blank" rel="noopener"','href="data-sources.html"');fs.writeFileSync(p,h)}

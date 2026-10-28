@@ -1,0 +1,1 @@
+import fs from 'node:fs';let p='dist/workspace.js',s=fs.readFileSync(p,'utf8').replace("group.onchange=()=>{state.settings.layout", "group.oninput=()=>{state.settings.layout").replace("input.onchange=()=>{const l=state.layers.find", "input.oninput=()=>{const l=state.layers.find");fs.writeFileSync(p,s);

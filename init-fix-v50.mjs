@@ -1,0 +1,1 @@
+import fs from 'node:fs';let p='dist/workspace.js',s=fs.readFileSync(p,'utf8').replace('let layoutEditing=false;','');s=s.replace('let tapeStart=null;', 'let layoutEditing=false;let tapeStart=null;');fs.writeFileSync(p,s);
