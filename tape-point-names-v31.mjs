@@ -1,0 +1,4 @@
+import fs from 'node:fs';let j=fs.readFileSync('dist/workspace.js','utf8');
+j=j.replace("function objectVertexName(o,index){return o.boxInputMode==='ordered'&&o.boxVertices?.[index]?.name||o.name+' · 頂點 '+(index+1)}", "function objectVertexName(o,index){if(o.boxInputMode==='ordered'&&o.boxVertices?.[index]?.name)return o.boxVertices[index].name;if(o.tapeMeasure){if(o.pointNames?.[index])return o.pointNames[index];const label=(o.description||'').split('\\n')[index]?.replace(/^(起點|終點)：/,'');return label&&!/[°′″]/.test(label)?label:index===0?'起點':'終點'}return o.name+' · 頂點 '+(index+1)}");
+j=j.replace("o.measureDistance=true;o.tapeMeasure=true;tapeStart=null;", "o.measureDistance=true;o.tapeMeasure=true;o.pointNames=[start.name||'起點',name||'終點'];tapeStart=null;");
+fs.writeFileSync('dist/workspace.js',j);

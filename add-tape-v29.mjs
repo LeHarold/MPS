@@ -1,0 +1,18 @@
+import fs from 'node:fs';let j=fs.readFileSync('dist/workspace.js','utf8'),h=fs.readFileSync('dist/workspace.html','utf8'),w=fs.readFileSync('dist/waypoint-picker.mjs','utf8');
+j=j.replace("let repairedRegionCount=0;", "let tapeStart=null;let repairedRegionCount=0;");
+j=j.replace("onChange:()=>{save();renderInstruments()},onCopy:", "onChange:()=>{save();renderInstruments()},onPick:(p,name)=>{if(tool!=='tape')return false;pickTape(p,name);return true},onCopy:");
+j=j.replace("if(tool==='erase')eraseObject(o.id);else if(tool==='pan'){", "if(tool==='tape')pickTape(o.points[index],o.type==='point'?o.name:objectVertexName(o,index));else if(tool==='erase')eraseObject(o.id);else if(tool==='pan'){");
+j=j.replace("const hints={pan:", "const hints={tape:'依序點選兩個位置或既有標記，建立直線並標示距離。',pan:");
+j=j.replace("function setTool(next){tool=next;", "function setTool(next){tapeStart=null;tool=next;");
+j=j.replace("({pan:'平移／選取',point:", "({tape:'鐵捲尺',pan:'平移／選取',point:");
+j=j.replace("$('undo').onclick=()=>{if(draftPoints.length)", "$('undo').onclick=()=>{if(tool==='tape'&&tapeStart){tapeStart=null;draft.clearLayers();toast('已取消鐵捲尺起點');return}if(draftPoints.length)");
+j=j.replace("map.on('click',e=>{if(tool==='pan'", "map.on('click',e=>{if(tool==='tape'){pickTape([e.latlng.lat,e.latlng.lng,0]);return}if(tool==='pan'");
+j=j.replace("lastCursor=[e.latlng.lat,e.latlng.lng];updateCursor()", "lastCursor=[e.latlng.lat,e.latlng.lng];updateCursor();if(tool==='tape'&&tapeStart)renderTapeDraft(e.latlng)");
+j=j.replace("function coordinateAction(mark)",fs.readFileSync('tape-v29.txt','utf8')+'\nfunction coordinateAction(mark)');
+const ref=".bindPopup(showPointPopup(ref.pointNames?.[i]||ref.name+' · 頂點 '+(i+1),p,ref.source))";
+j=j.replace(ref,ref+".on('click',e=>{if(tool==='tape'){L.DomEvent.stopPropagation(e);map.closePopup();pickTape(p,ref.pointNames?.[i]||ref.name+' · 頂點 '+(i+1))}})");
+j=j.replace(".addTo(airportGroup);for(const r of a.runways", ".addTo(airportGroup).on('click',e=>{if(tool==='tape'){L.DomEvent.stopPropagation(e);map.closePopup();pickTape(a.position,a.id)}});for(const r of a.runways");
+w=w.replace("formatPair,onChange,onCopy}", "formatPair,onChange,onCopy,onPick}");
+w=w.replace(".bindPopup(popup(p)).addTo(group)", ".bindPopup(popup(p)).addTo(group).on('click',e=>{if(onPick?.(p.position,p.name)){L.DomEvent.stopPropagation(e);map.closePopup()}})");
+h=h.replace('<button data-tool="line"', '<button data-tool="tape" class="icon-button" title="鐵捲尺：依序點選兩點測距" aria-label="鐵捲尺"><svg width="23" height="23" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" aria-hidden="true"><path d="M3 16V9a6 6 0 0 1 12 0v7H3Zm0 0v4h18v-4h-6M7 17v3m4-3v3m4-3v3m4-3v3"/><circle cx="9" cy="9" r="2"/></svg></button><button data-tool="line"');
+fs.writeFileSync('dist/workspace.js',j);fs.writeFileSync('dist/waypoint-picker.mjs',w);fs.writeFileSync('dist/workspace.html',h);fs.writeFileSync('dist/index.html',h);fs.appendFileSync('dist/workspace.css','\n@media(max-width:480px){.icon-button{width:24px}}\n');
