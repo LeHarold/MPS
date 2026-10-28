@@ -20,3 +20,4 @@ body{overflow:hidden}@media(max-width:720px){#color-menu{position:fixed;left:aut
 .ruler .instrument-end{right:8px;top:10px}.cursor-inline{color:var(--mint)}.cursor-readout{color:var(--mint)!important}
 
 #box-point-rows fieldset{margin:10px 0 14px;padding:10px;border:1px solid #38525d;border-radius:5px;min-width:0}#box-point-rows legend{font-size:12px;color:var(--mint)}.dms-input-row{display:grid;grid-template-columns:1.1fr .9fr 1.2fr 48px;gap:5px;align-items:end}.dms-input-row label{display:block;font-size:10px;margin:8px 0 0}.dms-input-row input{margin-top:5px;padding:7px 4px!important}.dms-input-row select{padding:7px 2px;font-size:11px}#box-point-rows fieldset>button{font-size:11px;margin-top:10px}
+#box-point-rows fieldset>label{display:block}#box-point-rows fieldset>label>input{display:block;margin-top:6px;width:100%}
