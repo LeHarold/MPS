@@ -1,0 +1,1 @@
+import fs from 'node:fs';const p='test-v26.mjs';fs.writeFileSync(p,fs.readFileSync(p,'utf8').replace("source.slice(source.indexOf('function precision('),source.indexOf('function precision('))","source.slice(source.indexOf('function precision('))"));
