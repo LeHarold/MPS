@@ -1,3 +1,4 @@
+import {validatePointMOMs} from './point-relations.mjs?v=106';
 import {parseCoordinate} from './coordinates.mjs';
 export const factor=u=>({nm:1852,km:1000,m:1}[u]||1852);
 export const rad=n=>n*Math.PI/180;
@@ -22,6 +23,12 @@ export function validateProject(p){
  if(p?.version!==2||!Array.isArray(p.layers)||!p.layers.length||p.layers.length>200)throw Error('不是支援的地圖專案檔');
  const ids=new Set(),objectIds=new Set();
  for(const l of p.layers){if(typeof l.id!=='string'||ids.has(l.id)||typeof l.name!=='string'||!Array.isArray(l.objects)||l.objects.length>20000)throw Error('圖層資料無效');ids.add(l.id);if(typeof l.visible!=='boolean')throw Error('圖層顯示設定無效');for(const o of l.objects){if(typeof o.id!=='string'||objectIds.has(o.id)||!['point','line','polygon'].includes(o.type)||typeof o.name!=='string'||!/^#[\da-f]{6}$/i.test(o.color)||!Array.isArray(o.points)||o.points.length<(o.type==='point'?1:o.type==='polygon'?3:2)||o.type==='point'&&o.points.length!==1||o.points.some(a=>!Array.isArray(a)||a.length<2||a.length>3||a.some(v=>!Number.isFinite(v))||Math.abs(a[0])>90||Math.abs(a[1])>180))throw Error('標繪資料無效');objectIds.add(o.id)}}
+ validatePointMOMs(p);
  if(!ids.has(p.activeLayerId))p.activeLayerId=p.layers[0].id;
  return p;
 }
+export function resolveObjectColor(object,layer){return object.colorOverride?object.color:(layer?.color||object.color)}
+export function resolvePointColor(object,layer,index){return object.pointProperties?.[index]?.color||resolveObjectColor(object,layer)}
+export function setPointColor(object,index,color){if(!/^#[\da-f]{6}$/i.test(color)||!Number.isInteger(index)||index<0||index>=object.points.length)throw Error('點顏色設定無效');object.pointProperties=structuredClone(object.pointProperties||[]);object.pointProperties[index]={...(object.pointProperties[index]||{}),color}}
+export function coordinateColorKey(point){const lng=((point[1]+180)%360+360)%360-180;return Math.round(point[0]*1e7)+','+Math.round(lng*1e7)}
+export function synchronizeCoordinateColors(project,edits){const colors=new Map();for(const edit of edits)if(/^#[\da-f]{6}$/i.test(edit.color))colors.set(coordinateColorKey(edit.position),edit.color);let count=0;for(const layer of project.layers)for(const object of layer.objects){let properties=null;object.points.forEach((point,index)=>{const color=colors.get(coordinateColorKey(point));if(!color)return;properties||=structuredClone(object.pointProperties||[]);properties[index]={...(properties[index]||{}),color};count++});if(properties)object.pointProperties=properties}return count}
