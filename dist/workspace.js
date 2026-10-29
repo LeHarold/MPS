@@ -1,16 +1,16 @@
-import {requireAuthorization,currentAuthorization,deleteAuthorization} from './authorization.mjs?v=95';
-import {startLicensedTool,sanitizeToolIcon} from './licensed-tools.mjs?v=95';
+import {requireAuthorization,currentAuthorization,deleteAuthorization} from './authorization.mjs?v=96';
+import {startLicensedTool,sanitizeToolIcon} from './licensed-tools.mjs?v=96';
 await requireAuthorization();
 if(window.MPS_IMPORT_BUNDLE)await window.MPS_IMPORT_BUNDLE();
-import {intervalPlan,placeCursorBox} from './workspace-interactions.mjs?v=95';
-import {parseSearchPosition,searchCatalog,placeLabelBoxes,labelRank,calibrationDistance,readPrintTemplate,openBackupHistory} from './workspace-ux.mjs?v=95';
+import {intervalPlan,placeCursorBox} from './workspace-interactions.mjs?v=96';
+import {parseSearchPosition,searchCatalog,placeLabelBoxes,labelRank,calibrationDistance,readPrintTemplate,openBackupHistory} from './workspace-ux.mjs?v=96';
 if(window.MPS_BUNDLE_READY)await window.MPS_BUNDLE_READY;
-import {createBoxPointEditor,orderedPolygon} from './map-inputs.mjs?v=95';
-import {positionFromAnchor,resizeFromAnchor,rulerContact,labelLayout,cursorVisibility,snapRulerToPoint} from './instrument-lock.mjs?v=95';
-import {sampleGrid,openElevationStore,terrainCoordinate,sampleTerrainTile} from './elevation-store.mjs?v=95';
+import {createBoxPointEditor,orderedPolygon} from './map-inputs.mjs?v=96';
+import {positionFromAnchor,resizeFromAnchor,rulerContact,labelLayout,cursorVisibility,snapRulerToPoint} from './instrument-lock.mjs?v=96';
+import {sampleGrid,openElevationStore,terrainCoordinate,sampleTerrainTile} from './elevation-store.mjs?v=96';
 import {parseCoordinate} from './coordinates.mjs';
-import {createWaypointPicker} from './waypoint-picker.mjs?v=95';
-import {distance,dms as originalDms,factor,rad,snapRulerEndpoints,parseVertices,boundingRectangle,pointOnInstrument,gestureAngle,angleDelta,niceInterval,validateRange,duplicateLayer,validateProject} from './workspace-model.mjs?v=95';
+import {createWaypointPicker} from './waypoint-picker.mjs?v=96';
+import {distance,dms as originalDms,factor,rad,snapRulerEndpoints,parseVertices,boundingRectangle,pointOnInstrument,gestureAngle,angleDelta,niceInterval,validateRange,duplicateLayer,validateProject} from './workspace-model.mjs?v=96';
 const $=id=>document.getElementById(id),uid=()=>crypto.randomUUID(),clone=x=>structuredClone(x),STORE='map-workspace-project-v2';
 const defaultLayer={id:uid(),name:'標繪圖層 1',visible:true,objects:[]};
 let state={version:2,layers:[defaultLayer],activeLayerId:defaultLayer.id,settings:{unit:'nm',format:'dms',color:'#f3ba68',basemap:'vector',routes:true,fixes:true,grid:true,selectedRoutes:null,referenceVisibility:{}},instruments:{ruler:{visible:false,x:.53,y:.43,rotation:0,range:null},protractor:{visible:false,x:.55,y:.5,rotation:0}}};
@@ -189,7 +189,7 @@ function snapDrawing(p){let best=p,dist=17;for(const n of ['ruler','protractor']
 const airportGroup=L.layerGroup().addTo(map);let airportData=[];
 function renderAirports(){if(!airportData.length)return;airportGroup.clearLayers();$('airport-list').replaceChildren();let count=0;for(const a of airportData){const key=a.category==='military'?'airportsMilitary':'airportsCivil';const airportStyle=state.settings.airportStyles?.[key]||{};const label=document.createElement('label'),check=document.createElement('input');check.type='checkbox';check.checked=state.settings.airportVisibility?.[a.id]??!!state.settings[key];check.onchange=()=>{state.settings.airportVisibility||={};state.settings.airportVisibility[a.id]=check.checked;save();renderAirports()};label.append(check,document.createTextNode(a.name+' '+a.id));$('airport-list').append(label);if(!check.checked)continue;count++;L.circleMarker(a.position,{radius:6*pointSize(a.category==='military'?'軍用':'民用／軍民合用'),weight:0,fillOpacity:0,bubblingMouseEvents:false,className:'airport-hit-point'}).bindPopup(showPointPopup(a.id+' · '+a.name,a.position,a.source)).bindTooltip(a.id,{permanent:airportStyle.names===true,opacity:airportStyle.opacity??1}).addTo(airportGroup).on('click',e=>{if(tool==='tape'){L.DomEvent.stopPropagation(e);map.closePopup();pickTape(a.position,a.id)}});for(const r of a.runways||[])L.polyline(r.points,{interactive:false,color:airportStyle.color||'#ffdb8f',weight:4,opacity:airportStyle.opacity??1}).bindTooltip(a.id).bindPopup(showPointPopup(a.id+' · '+a.name,a.position,a.source)).addTo(airportGroup)}$('airport-count').textContent=count+'/'+airportData.length;renderAirportControls();for(const [id,key] of [['airports-civil','airportsCivil'],['airports-military','airportsMilitary']])$(id).checked=!!state.settings[key]}
 for(const [id,key] of [['airports-civil','airportsCivil'],['airports-military','airportsMilitary']])$(id).onchange=()=>{state.settings[key]=$(id).checked;state.settings.airportVisibility||={};for(const a of airportData)if((a.category==='military')===(key==='airportsMilitary'))delete state.settings.airportVisibility[a.id];save();renderAirports()};
-fetch('airports.json?v=95').then(r=>r.json()).then(d=>{airportData=d.airports;renderAirports()}).catch(()=>toast('機場資料尚未載入'));
+fetch('airports.json?v=96').then(r=>r.json()).then(d=>{airportData=d.airports;renderAirports()}).catch(()=>toast('機場資料尚未載入'));
 function altitudeText(m){return state.settings.altitudeUnit==='m'?m.toFixed(precision('m',0))+' m':(m/0.3048).toFixed(precision('ft',0))+' feet'}
 let terrainRegions=[],terrainDB=null,currentHeight=null,heightMode='',lastHeightPosition=null,elevationAbort=null;
 const altitudeLabel=document.createElement('strong');altitudeLabel.id='cursor-altitude';altitudeLabel.textContent='高度 —';const inline=document.createElement('div');inline.className='cursor-inline';$('position').before(inline);inline.append($('position'),altitudeLabel);
@@ -238,7 +238,7 @@ const cursorModeLabel=document.createElement('label');cursorModeLabel.htmlFor='c
 const rulerInfo=document.createElement('div');rulerInfo.id='ruler-contact-info';rulerInfo.className='ruler-contact-info';rulerInfo.hidden=true;$('ruler').parentElement.append(rulerInfo);const rulerList=document.createElement('div');rulerList.id='ruler-contact-list';const rulerDetails=document.createElement('details'),rulerSummary=document.createElement('summary');rulerSummary.textContent='吸附點詳細距離（由直尺 0 點量起）';rulerDetails.append(rulerSummary,rulerList);$('ruler-panel').querySelector('.section-body').prepend(rulerDetails);
 const boxEditor=createBoxPointEditor($('box-point-rows'));boxEditor.load([]);$('box-add-point').onclick=()=>boxEditor.add();
 refreshUI();try{if(localStorage.getItem('map-sidebar-collapsed')==='true')collapseWorkspace(true)}catch{}
-Promise.all([fetch('world.json?v=95').then(r=>{if(!r.ok)throw Error('底圖資料');return r.json()}),fetch('routes.json?v=95').then(r=>{if(!r.ok)throw Error('航路資料');return r.json()}),fetch('references.json?v=95').then(r=>{if(!r.ok)throw Error('參考圖層');return r.json()}),fetch('navaids.json?v=95').then(r=>{if(!r.ok)throw Error('航點資料');return r.json()})]).then(([world,data,refs,navaids])=>{L.geoJSON(world,{pane:'basePane',style:{color:'#567687',weight:1,fillColor:'#1b3745',fillOpacity:.9},onEachFeature:(feature,layer)=>layer.bindTooltip(feature.properties.NAME||feature.properties.ADMIN||'')}).addTo(land);routes=data.routes;references=refs.layers;waypointPicker.setSources(routes,navaids);$('source').href=data.source;refreshUI();save();$('notice').textContent=initialWarning||`已載入 ${routes.length} 條航路、8 座 VOR/DME、ADIZ、海峽中線及官方領海基線。${repairedRegionCount?' 已依原始輸入點校正 '+repairedRegionCount+' 個舊外框。':''}`}).catch(e=>toast('部分圖層載入失敗：'+e.message+'；可繼續本機標繪'));
+Promise.all([fetch('world.json?v=96').then(r=>{if(!r.ok)throw Error('底圖資料');return r.json()}),fetch('routes.json?v=96').then(r=>{if(!r.ok)throw Error('航路資料');return r.json()}),fetch('references.json?v=96').then(r=>{if(!r.ok)throw Error('參考圖層');return r.json()}),fetch('navaids.json?v=96').then(r=>{if(!r.ok)throw Error('航點資料');return r.json()})]).then(([world,data,refs,navaids])=>{L.geoJSON(world,{pane:'basePane',style:{color:'#567687',weight:1,fillColor:'#1b3745',fillOpacity:.9},onEachFeature:(feature,layer)=>layer.bindTooltip(feature.properties.NAME||feature.properties.ADMIN||'')}).addTo(land);routes=data.routes;references=refs.layers;waypointPicker.setSources(routes,navaids);$('source').href=data.source;refreshUI();save();$('notice').textContent=initialWarning||`已載入 ${routes.length} 條航路、8 座 VOR/DME、ADIZ、海峽中線及官方領海基線。${repairedRegionCount?' 已依原始輸入點校正 '+repairedRegionCount+' 個舊外框。':''}`}).catch(e=>toast('部分圖層載入失敗：'+e.message+'；可繼續本機標繪'));
 
 
 
@@ -428,7 +428,7 @@ function keepOperationHint(){clearTimeout(operationHintTimer);operationHintTimer
 operationGuide.addEventListener('pointerdown',keepOperationHint);
 operationGuide.addEventListener('keydown',keepOperationHint);
 const guideBeforeAutoClose=updateOperationGuide;
-updateOperationGuide=function(){guideBeforeAutoClose();const key=extensionSession?'extension:'+extensionSession.tool.name:tool;if(key===operationHintTool)return;operationHintTool=key;keepOperationHint();operationGuide.open=true;operationHintTimer=setTimeout(()=>{operationHintTimer=0;operationGuide.open=false},5000)};
+updateOperationGuide=function(){guideBeforeAutoClose();const key=extensionSession?'extension:'+extensionSession.tool.name:tool;if(key===operationHintTool)return;operationHintTool=key;keepOperationHint();operationGuide.hidden=false;operationGuide.open=true;operationHintTimer=setTimeout(()=>{operationHintTimer=0;operationGuide.hidden=true;scheduleLabelLayout()},5000)};
 updateOperationGuide();
 map.getContainer().addEventListener('click',event=>{if(!extensionPick||event.target.closest('button,a,input,select'))return;event.stopImmediatePropagation();event.preventDefault();const at=map.mouseEventToContainerPoint(event),near=visibleSnapPoints().map(p=>({...p,pixel:map.latLngToContainerPoint(p.position)})).filter(p=>p.pixel.distanceTo(at)<22).sort((a,b)=>a.pixel.distanceTo(at)-b.pixel.distanceTo(at))[0],ll=map.containerPointToLatLng(at),pick=extensionPick;extensionPick=null;pick.resolve(near?.position||[ll.lat,ll.lng,0]);updateOperationGuide()},true);document.addEventListener('keydown',e=>{if(e.key==='Escape'&&extensionSession){endExtension();toast('已停止擴充工具')}});window.addEventListener('mps-authorization-removed',()=>{endExtension();document.querySelectorAll('.licensed-tool').forEach(e=>e.remove())});if(grant.expiresAt)setInterval(()=>{if(Date.now()>=Date.parse(grant.expiresAt)){endExtension();document.body.classList.add('mps-locked');location.reload()}},30000);restoreLayout();
 
