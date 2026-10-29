@@ -3,3 +3,8 @@
 /pdf-fixed-qa54.png
 /pdf-fixed-page54.png
 /pdf-final-page55.png
+/offline-qa*/
+/qa-*.png
+/inspect-zip-qa.py
+/pdf-check71.py
+/update-offline-qa.mjs

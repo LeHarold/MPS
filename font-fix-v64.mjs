@@ -1,0 +1,1 @@
+import fs from 'node:fs';let p='dist/workspace.js',s=fs.readFileSync(p,'utf8').replace("document.body.append(sheet);const pm=", "document.body.append(sheet);sheet.style.setProperty('--print-label-font',printFontPixels(w,mw)+'px');const pm=");fs.writeFileSync(p,s);
