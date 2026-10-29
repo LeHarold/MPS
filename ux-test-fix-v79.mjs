@@ -1,0 +1,1 @@
+import fs from 'node:fs';const p='dist/workspace-ux.mjs';let s=fs.readFileSync(p,'utf8').replace("return(ranks[category]||300)+(category===preference?150:0)","return category===preference?900:(ranks[category]||300)");fs.writeFileSync(p,s);const t='test-v30.mjs';s=fs.readFileSync(t,'utf8').replace('scope={','scope={updateOperationGuide(){},');fs.writeFileSync(t,s);

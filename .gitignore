@@ -8,3 +8,13 @@
 /inspect-zip-qa.py
 /pdf-check71.py
 /update-offline-qa.mjs
+/pdf-calibration-qa.py
+/inspect-new-zip-qa.py
+/inspect-final-zip-qa.py
+/setup-authorization-v87.mjs
+*.mpslic
+*.private.json
+*密碼*.txt
+/qa-tool-fix-v88.mjs
+/check-private-material.mjs
+/docs-private-check-v92.mjs

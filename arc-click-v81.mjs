@@ -1,0 +1,1 @@
+import fs from 'node:fs';const p='dist/workspace.js';let s=fs.readFileSync(p,'utf8').replace("geometry.on('click',e=>{L.DomEvent.stopPropagation(e);if(tool==='pan')inspectObject(o.id)});", "geometry.on('click',e=>{L.DomEvent.stopPropagation(e);clearTimeout(clickTimer);if(tool==='pan')clickTimer=setTimeout(()=>inspectObject(o.id),220)});");fs.writeFileSync(p,s);

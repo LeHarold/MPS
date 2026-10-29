@@ -1,0 +1,1 @@
+import fs from 'node:fs';const p='dist/licensed-tools.mjs',lines=fs.readFileSync(p,'utf8').split(/\r?\n/),replacement=fs.readFileSync('bridge-fixed-v87.txt','utf8').trimEnd().split(/\r?\n/);lines[2]=replacement[0];lines[3]=replacement[1];fs.writeFileSync(p,lines.join('\n'));

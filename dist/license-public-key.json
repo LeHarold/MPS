@@ -1,0 +1,14 @@
+{
+  "version": 1,
+  "keyId": "b923f3ae-de9c-4861-9509-2be5f61ecfb1",
+  "publicKey": {
+    "key_ops": [
+      "verify"
+    ],
+    "ext": true,
+    "kty": "EC",
+    "x": "2vy23_Uk4yxH_TlA1Xn4vfhTRMn18AXCooxZuy0lkSA",
+    "y": "vu_tOZTXhZYW1x6Hub1U28UUldulmf9F9aQruWBLHB0",
+    "crv": "P-256"
+  }
+}

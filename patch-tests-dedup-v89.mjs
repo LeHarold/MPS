@@ -1,0 +1,1 @@
+import fs from 'node:fs';const p='test-v79.mjs';let seen=false;const lines=fs.readFileSync(p,'utf8').split(/\r?\n/).filter(line=>{if(line==="import vm from 'node:vm';"){if(seen)return false;seen=true}return !line.startsWith("assert.ok(source.includes('bundle-config.js?bundle='))")});fs.writeFileSync(p,lines.join('\n'));

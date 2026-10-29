@@ -1,0 +1,1 @@
+import fs from 'node:fs';const p='dist/workspace-interactions.mjs';fs.writeFileSync(p,fs.readFileSync(p,'utf8').replace("score:obstacles.reduce((n,b)=>n+(overlap(r,b)?1:0),0)*100+i", "score:obstacles.reduce((n,b)=>n+(overlap(r,b)?1:0),0)*100+(anchor.x>=r.x&&anchor.x<=r.x+r.w&&anchor.y>=r.y&&anchor.y<=r.y+r.h?1000:0)+i"));
