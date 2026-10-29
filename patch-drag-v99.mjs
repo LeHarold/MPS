@@ -1,0 +1,8 @@
+import fs from'node:fs';let s=fs.readFileSync('dist/workspace.js','utf8');
+s=s.replace("element.addEventListener('pointermove',e=>{if(!down||element.dataset.distanceDrag)return;e.stopPropagation();if(!drag)return;", "element.addEventListener('pointermove',e=>{if(!down||element.dataset.distanceDrag)return;e.stopPropagation();if(!drag&&Math.hypot(e.clientX-down.x,e.clientY-down.y)>4){clearTimeout(timer);wasLabelDrag=true;snapshot();const old=label.options.offset||L.point(0,0);drag={x:down.x,y:down.y,ox:old.x,oy:old.y};label.options.mpsAutoOffset=null;element.classList.add('label-moving')}if(!drag)return;");
+s=s.replace("let timer,dragging=false,held=false,pan=false,justDragged=false;", "let timer,dragging=false,held=false,pan=false,justDragged=false,down=null;");
+s=s.replace("held=true;el.setPointerCapture", "held=true;down={x:e.clientX,y:e.clientY};el.setPointerCapture");
+s=s.replace("if(!held)return;e.stopPropagation();if(!dragging)return;const p=map.mouseEventToLayerPoint", "if(!held)return;e.stopPropagation();if(!dragging&&down&&Math.hypot(e.clientX-down.x,e.clientY-down.y)>4){clearTimeout(timer);snapshot();dragging=true;el.classList.add('label-moving')}if(!dragging)return;const p=map.mouseEventToLayerPoint");
+s=s.replace("object.intervalMarks.enabled?count:0", "object.intervalMarks.enabled?Math.abs(count):0");
+fs.writeFileSync('dist/workspace.js',s);
+let check=fs.readFileSync('check-private-material.mjs','utf8').replace('secrets=[password,issuer.privateKey.d]','secrets=[password,issuer.privateKey.d,fs.readFileSync(privateFolder+\'/lince02密碼.txt\',\'utf8\').trim(),fs.readFileSync(privateFolder+\'/P-tool.js\',\'utf8\').slice(0,180)]');fs.writeFileSync('check-private-material.mjs',check);

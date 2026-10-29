@@ -1,0 +1,20 @@
+import fs from 'node:fs';
+let s=fs.readFileSync('dist/workspace.js','utf8');
+const replace=(a,b)=>{if(!s.includes(a))throw Error('Missing '+a.slice(0,80));s=s.replace(a,b)};
+replace("tick=document.createElement('i')","tick=document.createElement('span')");
+replace("$('editor-feedback').textContent='已儲存詳細資料'","$('editor-feedback').textContent='已儲存詳細資料';$('editor-panel').open=false");
+replace("type=\"number\" min=\"0\" step=\"1\"></label><p id=\"segment-mark-capacity\"","type=\"number\" step=\"1\"></label><p>正值：東北端 → 西南端；負值：西南端 → 東北端。</p><p id=\"segment-mark-capacity\"");
+replace("$('segment-mark-count').max=String(Math.min(1000,plan.maximum));","$('segment-mark-count').max=String(Math.min(1000,plan.maximum));$('segment-mark-count').min=String(-Math.min(1000,plan.maximum));");
+replace("if(count>plan.maximum)","if(Math.abs(count)>plan.maximum)");
+replace("if(count>1000)","if(Math.abs(count)>1000)");
+replace("plan.total-count*spacingM","plan.total-Math.abs(count)*spacingM");
+replace("const now=new Date().toISOString(),data=clone(state);","const now=new Date().toISOString(),data=captureCompleteProject();");
+replace("sanitizePreferences();refreshUI();restoreLayout();save();await renderBackupVersions();","sanitizePreferences();refreshUI();restoreLayout();restoreCompleteProject();save();await renderBackupVersions();");
+replace("sanitizePreferences();refreshUI();restoreLayout();save();await renderBackupVersions();","sanitizePreferences();refreshUI();restoreLayout();restoreCompleteProject();save();await renderBackupVersions();");
+replace("bundleState=clone(state)","bundleState=captureCompleteProject()");
+replace("doc.querySelector('#print-dialog')?.remove();declutterPrint(doc.querySelector('.print-sheet'));","doc.querySelector('#print-dialog')?.remove();");
+// The new preview/export flow controls layout explicitly; never collision-pack print labels.
+fs.writeFileSync('dist/workspace.js',s);
+let css=fs.readFileSync('dist/workspace.css','utf8');
+css+='\n/* Explicit dimensions keep axis strokes visible on narrow touch screens. */\n.coordinate-axis .axis-tick{display:block!important;position:absolute;min-width:0;min-height:0;padding:0;margin:0;font-style:normal;color:#b6dcd8;box-sizing:content-box}.coordinate-axis .lng-tick{width:0;height:4px;border:0;border-left:1px solid currentColor;top:0}.coordinate-axis .lat-tick{height:0;width:4px;border:0;border-top:1px solid currentColor;left:0}.coordinate-axis .lng-tick.five-minute-tick{height:9px}.coordinate-axis .lat-tick.five-minute-tick{width:9px}.coordinate-axis .lng-tick.degree-tick{height:15px;border-left-width:2px}.coordinate-axis .lat-tick.degree-tick{width:15px;border-top-width:2px}.coordinate-axis{z-index:600}.locate-toggle[aria-pressed="true"]{background:#276f59;color:#fff;border-color:#88e8bc}.locate-toggle[aria-pressed="false"]{background:transparent}.workspace-location{outline:2px solid var(--gold);outline-offset:-2px}.leaflet-tooltip{user-select:none;-webkit-user-select:none}.leaflet-tooltip.label-moving{outline:2px solid var(--gold);cursor:grabbing!important}.distance-drag-target{padding:7px 10px!important;min-height:28px}.print-range-locked{outline:2px solid var(--mint)}.print-axes{pointer-events:none}.print-reference-scale{position:absolute;right:12px;bottom:12px;z-index:860;border:1px solid currentColor;border-top:0;color:#102f40;background:#ffffffcf;text-align:center;font:11px monospace;pointer-events:none}.process-progress{position:fixed;z-index:100000;bottom:16px;left:50%;transform:translateX(-50%);width:min(360px,90vw);padding:12px;background:var(--panel);color:var(--text);border:1px solid var(--mint);border-radius:7px}.process-progress progress{width:100%;display:block;margin-top:7px}.process-progress strong{float:right}.bright-mode .process-progress{background:#f4f8fa;color:#163341}@media(max-width:720px){.coordinate-axis .axis-tick{opacity:1}.coordinate-axis .degree-label{font-size:10px}.distance-drag-target{min-height:32px;padding:8px!important}}\n';
+fs.writeFileSync('dist/workspace.css',css);

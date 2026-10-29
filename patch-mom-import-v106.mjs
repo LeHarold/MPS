@@ -1,0 +1,7 @@
+import fs from'node:fs';let s=fs.readFileSync('dist/project-merge.mjs','utf8');
+s=s.replace('destinations=new Map(),stats=', 'destinations=new Map(),objectIdMap=new Map(),addedObjects=[],stats=');
+s=s.replace('target.objects.push(object);stats.objects++','objectIdMap.set(item.objectId,object.id);addedObjects.push(object);target.objects.push(object);stats.objects++');
+s=s.replace("for(const item of plan)if(item.kind==='setting'", "for(const object of addedObjects)for(const props of object.pointProperties||[]){if(props?.mom&&objectIdMap.has(props.mom.objectId))props.mom.objectId=objectIdMap.get(props.mom.objectId)}\n for(const item of plan)if(item.kind==='setting'");fs.writeFileSync('dist/project-merge.mjs',s);
+let ui=fs.readFileSync('dist/workspace.js','utf8');
+ui=ui.replace('draw.eachLayer(marker=>{const element=marker.getElement?.(),id=',"draw.eachLayer(marker=>{if(marker instanceof L.Tooltip&&marker.options.mpsCoordinateObjectId){const object=getObject(marker.options.mpsCoordinateObjectId)?.object,p=object?.points[marker.options.mpsPointIndex];if(p)marker.setLatLng(p).setContent(document.createTextNode(state.settings.format==='decimal'?p[0].toFixed(precision('decimal',6))+'\\n'+p[1].toFixed(precision('decimal',6)):dms(p[0],true)+'\\n'+dms(p[1],false)))}const element=marker.getElement?.(),id=");
+ui=ui.replace('已存在的物件若勾選，會建立副本；只更新勾選的設定，其餘內容保留。','已存在的物件若勾選，會建立副本；只更新勾選的設定，其餘內容保留。母點與吸附點一起匯入時，MOM 關係會跟著對應新副本。');fs.writeFileSync('dist/workspace.js',ui);
