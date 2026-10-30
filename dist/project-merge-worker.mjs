@@ -1,3 +1,3 @@
-import {planProjectImport,mergeProjectItems} from './project-merge.mjs?v=108';
-import {validateProject} from './workspace-model.mjs?v=108';
+import {planProjectImport,mergeProjectItems} from './project-merge.mjs?v=111';
+import {validateProject} from './workspace-model.mjs?v=111';
 self.onmessage=event=>{try{const input=event.data;self.postMessage({progress:15,label:'讀取 JSON'});if(input.mode==='analyze'){const project=validateProject(JSON.parse(input.text));self.postMessage({progress:45,label:'比較物件與完整設定'});const items=planProjectImport(input.current,project);self.postMessage({progress:90,label:'完成差異清單'});self.postMessage({result:{project,items}})}else if(input.mode==='merge'){self.postMessage({progress:30,label:'合併勾選項目'});const result=mergeProjectItems(input.current,input.project,input.selected,()=>crypto.randomUUID());validateProject(result.project);self.postMessage({result})}else throw Error('不支援的匯入工作')}catch(error){self.postMessage({error:String(error.message||error)})}};

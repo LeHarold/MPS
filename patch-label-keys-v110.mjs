@@ -1,0 +1,11 @@
+import fs from 'node:fs';let s=fs.readFileSync('dist/workspace.js','utf8');
+s=s.replace("addAreaName(draw,o.points,o.name,alpha)","addAreaName(draw,o.points,o.name,alpha,'area:'+o.id)");
+s=s.replace("function addAreaName(group,points,name,opacity)","function addAreaName(group,points,name,opacity,key)");
+s=s.replace("className:'area-name-label',opacity}","className:'area-name-label',opacity,mpsStableKey:key}");
+s=s.replace("permanent:o.measureDistance===true||nameVisible(layer,'pointNames'),opacity:alpha}","permanent:o.measureDistance===true||nameVisible(layer,'pointNames'),opacity:alpha,mpsStableKey:'object:'+o.id+':name'}");
+s=s.replace("permanent:nameVisible(layer,'pointNames'),opacity:alpha}","permanent:nameVisible(layer,'pointNames'),opacity:alpha,mpsStableKey:'object:'+o.id+':vertex:'+index}");
+s=s.replace("label.options.mpsLabelKey||=element.textContent.trim()+'@'+at.lat.toFixed(7)+','+at.lng.toFixed(7);",`const legacyKey=element.textContent.trim()+'@'+at.lat.toFixed(7)+','+at.lng.toFixed(7),stableKey=label.options.mpsStableKey||(label.options.mpsCoordinateObjectId?'coordinates:'+label.options.mpsCoordinateObjectId+':'+label.options.mpsPointIndex:null);label.options.mpsLabelKey=stableKey||label.options.mpsLabelKey||legacyKey;if(stableKey)for(const store of ['labelPositions','printLabelPositions'])if(state.settings[store]?.[legacyKey]&&!state.settings[store][stableKey])state.settings[store][stableKey]=clone(state.settings[store][legacyKey]);`);
+s=s.replace("const controller=createPressControls({host:root", "const controller=createPressControls({host:root");
+s=s.replace("controller.element.setAttribute('data-html2canvas-ignore','true');", "root.mpsPressController=controller;controller.element.setAttribute('data-html2canvas-ignore','true');");
+s+=`\nconst clearBeforeTransform=clearLivePrint;clearLivePrint=function(){livePrintRoot?.mpsPressController?.destroy();clearBeforeTransform()};\n`;
+fs.writeFileSync('dist/workspace.js',s);

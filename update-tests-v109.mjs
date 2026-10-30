@@ -1,0 +1,6 @@
+import fs from 'node:fs';
+let s=fs.readFileSync('test-v66.mjs','utf8'),a=s.indexOf('let timer,'),b=s.indexOf('const manifest=',a);
+s=s.slice(0,a)+`class Tooltip{constructor(options={}){this.options={permanent:true,offset:{x:4,y:0},...options};this.el={textContent:'APU',dataset:{},style:{},addEventListener(){}}}getElement(){return this.el}getLatLng(){return{lat:25,lng:121}}update(){}}
+const map={},state={settings:{labelPositions:{'APU@25.0000000,121.0000000':{x:35,y:20}}}},moveLabels=new WeakMap();const scope=vm.createContext({moveLabels,constrainNameOffset:(label,map,p)=>p,L:{Tooltip,point:(x,y)=>typeof x==='object'?x:({x,y})},map,state});vm.runInContext(source.slice(source.indexOf('function attachMoveLabel('),source.indexOf("map.on('layeradd',e=>attachMoveLabel")),scope);const label=new Tooltip();scope.attachMoveLabel(label,map);assert.equal(moveLabels.get(label.el).label,label);assert.equal(label.options.offset.x,39);assert.equal(label.options.offset.y,20);const copy=new Tooltip({...label.options});scope.attachMoveLabel(copy,map);assert.equal(copy.options.offset.x,39);assert.equal(copy.options.offset.y,20);
+`+s.slice(b);fs.writeFileSync('test-v66.mjs',s);
+s=fs.readFileSync('test-v93.mjs','utf8').replaceAll('3*1852','2*1852').replaceAll('3 NM','2 NM');fs.writeFileSync('test-v93.mjs',s);
