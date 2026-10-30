@@ -10,6 +10,7 @@
   "icon.svg",
   "index.html",
   "instrument-lock.mjs",
+  "label-visibility.mjs",
   "license-public-key.json",
   "licensed-tools.mjs",
   "manifest.webmanifest",
