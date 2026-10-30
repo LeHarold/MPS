@@ -43,5 +43,6 @@
   "workspace.css",
   "workspace.html",
   "workspace.js",
-  "world.json"
+  "world.json",
+  "print-raster.mjs"
 ]

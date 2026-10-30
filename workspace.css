@@ -110,3 +110,8 @@ aside#workspace{width:var(--workspace-width,230px);overscroll-behavior:contain;t
 .leaflet-control-attribution{font-size:6px!important;line-height:1!important;padding:0 2px!important;opacity:.72}
 .workspace-resize-handle{display:none}
 @media(max-width:720px){.workspace-resize-handle{display:block;position:absolute;top:0;right:-4px;width:8px;height:100%;z-index:1100;cursor:col-resize;touch-action:none;background:transparent}.workspace-resize-handle::after{content:'⋮';position:absolute;top:50%;left:1px;color:var(--muted);font-size:16px;opacity:.65}.workspace-resizing{user-select:none}.workspace-resizing aside{overflow:hidden}}
+/* Match the coordinate label's tight box without reducing its type size. */
+#map .leaflet-tooltip.distance-drag-target,#print-interactive .leaflet-tooltip.distance-drag-target{padding:0 1px!important;min-height:0!important;min-width:0!important;line-height:1.1!important;border-width:1px!important;box-shadow:none!important}
+main{position:relative}.collapsed .workspace-resize-handle{display:none!important}
+@media(max-width:720px){.workspace-resize-handle{left:min(var(--workspace-width,230px),80vw);right:auto;transform:translateX(-50%)}}
+@media(max-width:720px){.workspace-resize-handle{height:100%;top:0}.workspace-resizing .map-wrap{pointer-events:none}}
