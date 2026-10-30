@@ -1,0 +1,5 @@
+import fs from 'node:fs';let s=fs.readFileSync('dist/workspace.js','utf8');
+s=s.replace('fill="${band.color}" fill-opacity=".4"','fill="${band.color}" fill-opacity="${clampOpacity(band.opacity)}"');
+s=s.replaceAll('fill="${angleRange.color}" fill-opacity=".3"','fill="${angleRange.color}" fill-opacity="${clampOpacity(angleRange.opacity)}"');
+s=s.replace("d.append(show,label,from,to,color,apply,del);root.append(d)","const opacity=document.createElement('button');opacity.type='button';opacity.className='range-opacity';opacity.setAttribute('aria-label',(name==='ruler'?'直尺':'量角器')+' '+range.name+' 標色透明度');const paint=()=>opacity.textContent='透明度 '+Math.round(clampOpacity(range.opacity)*100)+'%';paint();opacity.onclick=()=>{snapshot();const levels=[1,.75,.5,.25],current=clampOpacity(range.opacity);range.opacity=levels[(levels.indexOf(current)+1)%levels.length];paint();renderInstruments();drawProtractor();save()};d.append(show,label,from,to,color,opacity,apply,del);root.append(d)");
+fs.writeFileSync('dist/workspace.js',s);
