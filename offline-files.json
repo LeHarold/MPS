@@ -44,5 +44,6 @@
   "workspace.html",
   "workspace.js",
   "world.json",
-  "print-raster.mjs"
+  "print-raster.mjs",
+  "device-transfer.mjs"
 ]

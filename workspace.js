@@ -1,3 +1,4 @@
+import {setupDeviceTransfer} from './device-transfer.mjs?v=125';
 import {printRaster} from './print-raster.mjs?v=123';
 import {uniqueLabelIds} from './label-visibility.mjs?v=120';
 import {outerVertices,transformPoints,nearestPathFraction} from './map-editing.mjs?v=120';
@@ -683,3 +684,7 @@ const previousWorkspacePreferences=applyWorkspacePreferences;applyWorkspacePrefe
 }
 
 if(typeof document!=='undefined'&&typeof canPackageWebsite==='function'){const button=$('package-offline'),handler=button.onclick;if(!canPackageWebsite()){button.disabled=true;button.title='萬用密碼登入無法打包離線 ZIP';button.setAttribute('aria-label','打包離線網站（萬用密碼登入不可用）')}button.onclick=function(event){if(!canPackageWebsite()){toast('萬用密碼登入無法打包離線 ZIP');return}return handler.call(this,event)}}
+if(typeof window!=='undefined'&&typeof document!=='undefined'){
+let viewportFrame=0;const updateViewport=()=>{if(viewportFrame)return;viewportFrame=requestAnimationFrame(()=>{viewportFrame=0;if(window.visualViewport&&Math.abs(visualViewport.scale-1)<.01)document.documentElement.style.setProperty('--mps-viewport-height',Math.round(visualViewport.height)+'px');else if(!window.visualViewport)document.documentElement.style.setProperty('--mps-viewport-height',innerHeight+'px');map.invalidateSize({pan:false})})};window.visualViewport?.addEventListener('resize',updateViewport);window.addEventListener('orientationchange',updateViewport);window.addEventListener('resize',updateViewport);updateViewport();
+}
+if(typeof document!=='undefined'&&typeof setupDeviceTransfer==='function')setupDeviceTransfer({mount:$('files-panel').querySelector('.section-body'),getBackup:captureCompleteProject,onImport:async file=>{const input=$(/\.kml$/i.test(file.name)?'kml-file':'project-file');await input.onchange({target:{files:[file],value:''}})}});
