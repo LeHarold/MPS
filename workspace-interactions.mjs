@@ -1,4 +1,4 @@
-import {distance} from './workspace-model.mjs?v=116';
+import {distance} from './workspace-model.mjs?v=120';
 export function intervalPlan(points,spacingM,count=Infinity){
  if(!Number.isFinite(spacingM)||spacingM<=0)throw Error('記號間隔必須大於 0');
  if(count!==Infinity&&!Number.isInteger(count))throw Error('記號數量須為整數，正負決定方向');
