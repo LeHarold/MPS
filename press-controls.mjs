@@ -10,6 +10,7 @@ export function createPressControls({host,resolve,onBegin=()=>{},onCommit=()=>{}
  function stop(e){e.preventDefault();e.stopImmediatePropagation()}
  host.addEventListener('pointerdown',e=>{
   if(e.target.closest('.object-transform')||e.button!==0)return;
+  suppressUntil=0;
   const target=resolve(e.target,e);if(!target){if(current&&!e.target.closest('input,button,select'))close();return}
   stop(e);clearHold();const pending={id:e.pointerId,x:e.clientX,y:e.clientY,target};pending.timer=setTimeout(()=>{if(hold!==pending)return;show(target);suppressUntil=performance.now()+800;pending.activated=true;host.dispatchEvent(new CustomEvent('mps-transform-ready',{detail:{name:target.name}}))},450);hold=pending;
  },true);
