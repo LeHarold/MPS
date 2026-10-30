@@ -3,7 +3,7 @@ import {uniqueLabelIds} from './label-visibility.mjs?v=120';
 import {outerVertices,transformPoints,nearestPathFraction} from './map-editing.mjs?v=120';
 import {createPressControls} from './press-controls.mjs?v=120';
 import {applyPointMOMs,validatePointMOMs} from './point-relations.mjs?v=120';
-import {requireAuthorization,currentAuthorization,deleteAuthorization} from './authorization.mjs?v=120';
+import {requireAuthorization,currentAuthorization,deleteAuthorization,canPackageWebsite} from './authorization.mjs?v=124';
 import {startLicensedTool,sanitizeToolIcon} from './licensed-tools.mjs?v=120';
 await requireAuthorization();
 if(window.MPS_IMPORT_BUNDLE)await window.MPS_IMPORT_BUNDLE();
@@ -681,3 +681,5 @@ const previousClone=clonePrintLayer;clonePrintLayer=function(layer,group){if(lay
 if(typeof document!=='undefined'&&typeof applyWorkspacePreferences==='function'){
 const previousWorkspacePreferences=applyWorkspacePreferences;applyWorkspacePreferences=function(){previousWorkspacePreferences();const w=Number(state.settings.workspaceWidth);if(w>=220&&w<=420){document.documentElement.style.setProperty('--workspace-width',w+'px');const select=$('workspace-width');if(![...select.options].some(o=>Number(o.value)===w)){const option=document.createElement('option');option.value=w;option.textContent='自訂 · '+w+' px';select.append(option)}select.value=String(w);map.invalidateSize({pan:false})}};applyWorkspacePreferences();
 }
+
+if(typeof document!=='undefined'&&typeof canPackageWebsite==='function'){const button=$('package-offline'),handler=button.onclick;if(!canPackageWebsite()){button.disabled=true;button.title='萬用密碼登入無法打包離線 ZIP';button.setAttribute('aria-label','打包離線網站（萬用密碼登入不可用）')}button.onclick=function(event){if(!canPackageWebsite()){toast('萬用密碼登入無法打包離線 ZIP');return}return handler.call(this,event)}}
