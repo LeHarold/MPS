@@ -49,5 +49,6 @@
   "license-transfer.mjs",
   "action-history.mjs",
   "ios-pwa.mjs",
-  "point-snap.mjs"
+  "point-snap.mjs",
+  "label-rotation.mjs"
 ]

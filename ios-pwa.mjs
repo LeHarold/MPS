@@ -13,7 +13,7 @@ export function bindTouchCursor({element,position,onPosition}){
 }
 export const CLEANUP_NOTICE_MS=3*24*60*60*1000;
 export function cleanupReady(notice,now=Date.now()){return Number.isFinite(notice?.announcedAt)&&notice.announcedAt>0&&now-notice.announcedAt>=CLEANUP_NOTICE_MS}
-export function oldAppCaches(keys,current){if(!/^map-workspace-v\d+$/.test(current))throw Error('無法確認目前版本，未清理任何快取');return keys.filter(k=>/^(map-workspace-v\d+|asia-atlas-v\d+)$/.test(k)&&k!==current&&k!=='map-workspace-v135')}
+export function oldAppCaches(keys,current){if(!/^map-workspace-v\d+$/.test(current))throw Error('無法確認目前版本，未清理任何快取');return keys.filter(k=>/^(map-workspace-v\d+|asia-atlas-v\d+)$/.test(k)&&k!==current&&k!=='map-workspace-v136')}
 export function setupIOSStorage({mount,getSettings,save,installButton,onInstallHelp=()=>{}}){
  const standalone=()=>navigator.standalone===true||matchMedia('(display-mode: standalone)').matches,ios=/iPad|iPhone|iPod/.test(navigator.userAgent)||(navigator.platform==='MacIntel'&&navigator.maxTouchPoints>1);
  const panel=document.createElement('details');panel.id='pwa-storage-panel';panel.innerHTML='<summary>安裝與資料保留</summary><div class="section-body"><p>MPS 更新不會自動刪除舊快取、圖層、設定、授權或離線高度。</p><p data-storage-status role="status"></p><button data-persist type="button">申請持續儲存</button><p>iOS 系統回收空間或使用者清除網站資料時，MPS 無法阻止或提前得知。請保留備份。</p><p>iPhone／iPad：在 Safari 點「分享」→「加入主畫面」，以主畫面圖示開啟 MPS。</p><p data-cleanup-notice role="status"></p><button data-plan type="button">預告清理舊版程式快取</button><button data-clean type="button" hidden>確認清理舊版程式快取</button><button data-cancel type="button" hidden>取消清理計畫</button><p>清理只涵蓋舊版程式快取，至少提前 72 小時提醒，屆時仍需手動確認；不刪除使用者資料。</p></div>';mount.append(panel);panel.querySelectorAll('p').forEach((p,i)=>p.id='pwa-storage-note-'+i);
