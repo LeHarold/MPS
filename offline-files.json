@@ -45,5 +45,6 @@
   "workspace.js",
   "world.json",
   "print-raster.mjs",
-  "device-transfer.mjs"
+  "device-transfer.mjs",
+  "license-transfer.mjs"
 ]
