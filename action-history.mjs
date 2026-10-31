@@ -16,9 +16,9 @@ export function actionDescription(before,after,hint=''){
   if(!same(prev,l))return '修改圖層：'+l.name;
  }
  const a=before.settings||{},b=after.settings||{};
- const names={labelPositions:'名稱／座標位置',printLabelPositions:'列印標籤位置',labelRotations:'標籤旋轉',printLabelRotations:'列印標籤旋轉',distanceLabels:'航點距離標籤',scalePosition:'比例尺位置'};
+ const names={labelPositions:'名稱／座標位置',printLabelPositions:'列印標籤位置',printDistancePositions:'列印距離標籤位置',labelRotations:'標籤旋轉',printLabelRotations:'列印標籤旋轉',distanceLabels:'航點距離標籤',scalePosition:'比例尺位置'};
  for(const [key,name] of Object.entries(names))if(!same(a[key],b[key]))return '調整'+name;
  if(!same(before.instruments,after.instruments))return '調整尺規工具';
  const fields=Object.keys({...a,...b}).filter(k=>!same(a[k],b[k]));
- return fields.length?'修改設定（'+fields.map(k=>({unit:'地圖單位',format:'座標格式',basemap:'底圖',grid:'網格',color:'標繪顏色',selectedRoutes:'航路',referenceVisibility:'參考圖層'}[k]||k)).join('、')+'）':'修訂專案';
+ return fields.length?'修改設定（'+fields.map(k=>({unit:'地圖單位',format:'座標格式',basemap:'底圖',grid:'網格',color:'標繪顏色',compass:'圓規',selectedRoutes:'航路',referenceVisibility:'參考圖層'}[k]||k)).join('、')+'）':'修訂專案';
 }
