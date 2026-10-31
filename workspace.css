@@ -127,3 +127,5 @@ dialog fieldset,#workspace fieldset{min-width:0;max-width:100%}dialog .row>*{min
 
 /* Movement directions stay north-up independently of the target heading. */
 .object-transform{width:148px}.transform-dial{width:128px;height:128px;margin-top:9px}.object-transform .transform-ring{inset:16px}.object-transform .transform-move{left:43px;top:43px}.object-transform .transform-scale{right:8px;bottom:8px}.transform-cardinals{position:absolute;inset:0;pointer-events:none}.object-transform [data-cardinal]{position:absolute;width:28px;height:28px;border-radius:5px;font-size:13px;font-weight:600;pointer-events:auto;z-index:2}.transform-cardinals [data-cardinal=north]{left:50px;top:-6px}.transform-cardinals [data-cardinal=south]{left:50px;bottom:-6px}.transform-cardinals [data-cardinal=west]{left:-6px;top:50px}.transform-cardinals [data-cardinal=east]{right:-6px;top:50px}
+
+.point-snap-locked{stroke:#e19a26!important;stroke-width:3px!important;stroke-dasharray:2 2}.bright-mode .point-snap-locked{stroke:#9b5700!important}

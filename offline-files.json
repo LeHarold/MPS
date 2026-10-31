@@ -48,5 +48,6 @@
   "device-transfer.mjs",
   "license-transfer.mjs",
   "action-history.mjs",
-  "ios-pwa.mjs"
+  "ios-pwa.mjs",
+  "point-snap.mjs"
 ]
