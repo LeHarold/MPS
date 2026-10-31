@@ -46,5 +46,6 @@
   "world.json",
   "print-raster.mjs",
   "device-transfer.mjs",
-  "license-transfer.mjs"
+  "license-transfer.mjs",
+  "action-history.mjs"
 ]
