@@ -14,3 +14,11 @@ export function intervalPlan(points,spacingM,count=Infinity){
 
 export function placeCursorBox(anchor,size,box,obstacles=[]){const pad=6,gap=16,candidates=[[anchor.x+gap,anchor.y-box.h/2],[anchor.x-gap-box.w,anchor.y-box.h/2],[anchor.x-box.w/2,anchor.y-gap-box.h],[anchor.x-box.w/2,anchor.y+gap]];const overlap=(a,b)=>a.x<b.x+b.w&&a.x+a.w>b.x&&a.y<b.y+b.h&&a.y+a.h>b.y;return candidates.map(([x,y],i)=>{const r={x:Math.max(pad,Math.min(x,size.w-box.w-pad)),y:Math.max(pad,Math.min(y,size.h-box.h-pad)),w:box.w,h:box.h};return{...r,score:obstacles.reduce((n,b)=>n+(overlap(r,b)?1:0),0)*100+(anchor.x>=r.x&&anchor.x<=r.x+r.w&&anchor.y>=r.y&&anchor.y<=r.y+r.h?1000:0)+i}}).sort((a,b)=>a.score-b.score)[0]}
 
+// Extend beyond the finishing end of the signed geographic marking direction.
+export function extensionEndpoint(points,count){
+ if(!Number.isInteger(count)||count===0)throw Error('請輸入非零整數記號數；正負決定新增點方向');
+ if(!Array.isArray(points)||points.length<2)throw Error('線段至少需要兩點');
+ const {reverse}=intervalPlan(points,1,Math.sign(count)),index=reverse?0:points.length-1,step=reverse?1:-1,endpoint=points[index];
+ for(let i=index+step;i>=0&&i<points.length;i+=step)if(distance(endpoint,points[i])>.01)return{endpoint,neighbor:points[i],index};
+ throw Error('線段長度不足，無法決定延伸方向');
+}
