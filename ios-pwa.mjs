@@ -1,0 +1,28 @@
+export async function decodeTerrainBlob(blob,env=globalThis){
+ let image,url;
+ try{
+  if(typeof env.createImageBitmap==='function')try{image=await env.createImageBitmap(blob,{colorSpaceConversion:'none',premultiplyAlpha:'none'})}catch{}
+  if(!image){url=env.URL.createObjectURL(blob);image=await new Promise((resolve,reject)=>{const img=new env.Image();img.onload=()=>resolve(img);img.onerror=()=>reject(Error('地形影像無法解碼'));img.src=url})}
+  const canvas=env.document.createElement('canvas');canvas.width=image.width;canvas.height=image.height;let ctx;try{ctx=canvas.getContext('2d',{willReadFrequently:true})}catch{}ctx||=canvas.getContext('2d');if(!ctx)throw Error('無法讀取地形影像');ctx.drawImage(image,0,0);const pixels=ctx.getImageData(0,0,canvas.width,canvas.height);return{width:canvas.width,height:canvas.height,data:pixels.data};
+ }finally{image?.close?.();if(url)env.URL.revokeObjectURL(url)}
+}
+export function bindTouchCursor({element,position,onPosition}){
+ const update=e=>{if(e.touches?.length>1)return;const p=e.touches?.[0]||e.changedTouches?.[0]||e;if(!Number.isFinite(p.clientX)||!Number.isFinite(p.clientY))return;const r=element.getBoundingClientRect();onPosition(position(p.clientX-r.left,p.clientY-r.top))};
+ const pointer=e=>{if(e.pointerType==='touch'||e.pointerType==='pen')update(e)};
+ element.addEventListener('pointermove',pointer,{passive:true,capture:true});element.addEventListener('pointerup',pointer,{passive:true,capture:true});element.addEventListener('touchmove',update,{passive:true,capture:true});element.addEventListener('touchend',update,{passive:true,capture:true});
+}
+export const CLEANUP_NOTICE_MS=3*24*60*60*1000;
+export function cleanupReady(notice,now=Date.now()){return Number.isFinite(notice?.announcedAt)&&notice.announcedAt>0&&now-notice.announcedAt>=CLEANUP_NOTICE_MS}
+export function oldAppCaches(keys,current){if(!/^map-workspace-v\d+$/.test(current))throw Error('無法確認目前版本，未清理任何快取');return keys.filter(k=>/^(map-workspace-v\d+|asia-atlas-v\d+)$/.test(k)&&k!==current&&k!=='map-workspace-v133')}
+export function setupIOSStorage({mount,getSettings,save,installButton}){
+ const standalone=()=>navigator.standalone===true||matchMedia('(display-mode: standalone)').matches,ios=/iPad|iPhone|iPod/.test(navigator.userAgent)||(navigator.platform==='MacIntel'&&navigator.maxTouchPoints>1);
+ const panel=document.createElement('details');panel.id='pwa-storage-panel';panel.innerHTML='<summary>安裝與資料保留</summary><div class="section-body"><p>MPS 更新不會自動刪除舊快取、圖層、設定、授權或離線高度。</p><p data-storage-status role="status"></p><button data-persist type="button">申請持續儲存</button><p>iOS 系統回收空間或使用者清除網站資料時，MPS 無法阻止或提前得知。請保留備份。</p><p>iPhone／iPad：在 Safari 點「分享」→「加入主畫面」，以主畫面圖示開啟 MPS。</p><p data-cleanup-notice role="status"></p><button data-plan type="button">預告清理舊版程式快取</button><button data-clean type="button" hidden>確認清理舊版程式快取</button><button data-cancel type="button" hidden>取消清理計畫</button><p>清理只涵蓋舊版程式快取，至少提前 72 小時提醒，屆時仍需手動確認；不刪除使用者資料。</p></div>';mount.append(panel);
+ const status=panel.querySelector('[data-storage-status]'),notice=panel.querySelector('[data-cleanup-notice]'),plan=panel.querySelector('[data-plan]'),clean=panel.querySelector('[data-clean]'),cancel=panel.querySelector('[data-cancel]');
+ async function persistence(request=false){try{let kept=await navigator.storage?.persisted?.();if(request&&!kept)kept=await navigator.storage?.persist?.();const quota=await navigator.storage?.estimate?.();status.textContent=(kept?'已獲准持續儲存':'持續儲存尚未獲准；請加入主畫面並備份')+(quota?.usage?' · 已使用約 '+(quota.usage/1048576).toFixed(1)+' MB':'')}catch{status.textContent='此瀏覽器未提供儲存保留狀態；請保留備份'}}
+ function paint(){const n=getSettings().cacheCleanupNotice;plan.hidden=!!n;cancel.hidden=!n;clean.hidden=!n;clean.disabled=!cleanupReady(n);notice.textContent=n?'已於 '+new Date(n.announcedAt).toLocaleString('zh-TW')+' 提醒。最早 '+new Date(n.announcedAt+CLEANUP_NOTICE_MS).toLocaleString('zh-TW')+' 可手動確認清理；不會自動執行。':'目前沒有清理計畫。'}
+ panel.querySelector('[data-persist]').onclick=()=>persistence(true);
+ plan.onclick=()=>{getSettings().cacheCleanupNotice={announcedAt:Date.now()};save('已提醒：72 小時後才可手動清理舊版程式快取');paint()};cancel.onclick=()=>{delete getSettings().cacheCleanupNotice;save('已取消清理計畫');paint()};
+ clean.onclick=async()=>{if(!cleanupReady(getSettings().cacheCleanupNotice))return;clean.disabled=true;try{const registration=await navigator.serviceWorker?.ready;if(!registration?.active)throw Error('離線服務尚未準備完成');const current=await new Promise((resolve,reject)=>{const channel=new MessageChannel(),timer=setTimeout(()=>reject(Error('無法確認目前快取版本')),4000);channel.port1.onmessage=e=>{clearTimeout(timer);channel.port1.close();resolve(e.data?.cache)};registration.active.postMessage({type:'MPS_CACHE_STATUS'},[channel.port2])});const keys=oldAppCaches(await caches.keys(),current);if(!confirm('已完成至少 72 小時預告。只清理 '+keys.length+' 個舊版程式快取；保留圖層、設定、授權與高度。確定繼續？'))return;for(const key of keys)await caches.delete(key);delete getSettings().cacheCleanupNotice;save('已清理舊版程式快取，使用者資料已保留');paint();await persistence()}catch(e){notice.textContent=e.message}finally{clean.disabled=!cleanupReady(getSettings().cacheCleanupNotice)}};
+ if(ios&&!standalone()&&installButton){installButton.hidden=false;installButton.onclick=()=>{panel.open=true;panel.scrollIntoView({block:'nearest'});alert('請在 Safari 點「分享」→「加入主畫面」，再由主畫面的 MPS 圖示開啟。')}}
+ window.addEventListener('pageshow',()=>{paint();persistence(standalone())});document.addEventListener('visibilitychange',()=>{if(!document.hidden){paint();persistence(standalone())}});paint();persistence(standalone());
+}

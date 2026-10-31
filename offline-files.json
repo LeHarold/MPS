@@ -47,5 +47,6 @@
   "print-raster.mjs",
   "device-transfer.mjs",
   "license-transfer.mjs",
-  "action-history.mjs"
+  "action-history.mjs",
+  "ios-pwa.mjs"
 ]
