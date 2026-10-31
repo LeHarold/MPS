@@ -1,4 +1,4 @@
-import {setupDeviceTransfer} from './device-transfer.mjs?v=125';
+import {setupDeviceTransfer} from './device-transfer.mjs?v=126';
 import {printRaster} from './print-raster.mjs?v=123';
 import {uniqueLabelIds} from './label-visibility.mjs?v=120';
 import {outerVertices,transformPoints,nearestPathFraction} from './map-editing.mjs?v=120';
