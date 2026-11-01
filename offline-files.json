@@ -53,5 +53,6 @@
   "label-rotation.mjs",
   "movement.mjs",
   "history-timeline.mjs",
-  "label-stability.mjs"
+  "label-stability.mjs",
+  "area-labels.mjs"
 ]

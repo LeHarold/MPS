@@ -1,0 +1,3 @@
+export const AREA_NAME_MAX_METERS=3*1852;
+export function areaSouthwest(points){const origin=points[0][1],longitudes=points.map(p=>((p[1]-origin+540)%360)-180+origin);return[Math.min(...points.map(p=>p[0])),((Math.min(...longitudes)+540)%360)-180]}
+export function limitAreaOffset({offset,center,anchor,corner,unproject,distance}){const dx=center.x-anchor.x,dy=center.y-anchor.y,metres=t=>{const p=unproject({x:anchor.x+dx*t,y:anchor.y+dy*t});return distance(corner,[p.lat,p.lng])};if(metres(1)<=AREA_NAME_MAX_METERS)return offset;let low=0,high=1;for(let i=0;i<36;i++){const t=(low+high)/2;if(metres(t)<=AREA_NAME_MAX_METERS)low=t;else high=t}return{x:offset.x+dx*(low-1),y:offset.y+dy*(low-1)}}
