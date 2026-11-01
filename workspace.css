@@ -148,3 +148,14 @@ body.history-modal-open{overflow:hidden;overscroll-behavior:none}
 #action-history-list .history-step strong{min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size:12px}
 
 #action-history-dialog>label{margin:0;font-size:12px;flex:none}#action-history-select{width:100%;min-width:0;flex:none;font-size:12px}#action-history-dialog{width:360px}
+
+/* Modeless history dropdown anchored beneath its toolbar button. */
+#action-history-dialog.history-menu{position:fixed;inset:auto;margin:0;z-index:1500;width:320px;max-width:calc(100vw - 16px);max-height:var(--history-menu-max-height,260px);padding:10px;border:1px solid var(--line);border-radius:6px;background:var(--panel);color:var(--text);overflow:hidden;box-shadow:none;overscroll-behavior:contain}
+#action-history-dialog.history-menu:not([hidden]){display:flex;flex-direction:column;gap:6px}
+.history-menu-heading{display:flex;align-items:center;justify-content:space-between;gap:8px;flex:none;font-size:13px}
+.history-menu-heading button{width:26px;height:26px;padding:0;border:0;background:transparent;font-size:19px}
+#action-history-dialog.history-menu>p{margin:0;font-size:11px;line-height:1.4;flex:none}
+#action-history-dialog.history-menu #action-history-list{height:150px;max-height:150px;flex:0 1 150px}
+#action-history-dialog.history-menu #action-history-list li{height:72px;margin:0}
+#action-history-dialog.history-menu #action-history-list li+li{margin-top:6px}
+#action-history-dialog.history-menu #action-history-list .history-step{height:72px;min-height:72px;padding:6px;gap:2px}
