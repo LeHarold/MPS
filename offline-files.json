@@ -52,5 +52,6 @@
   "point-snap.mjs",
   "label-rotation.mjs",
   "movement.mjs",
-  "history-timeline.mjs"
+  "history-timeline.mjs",
+  "label-stability.mjs"
 ]

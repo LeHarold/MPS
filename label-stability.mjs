@@ -1,0 +1,3 @@
+export function stableLabelOffset(base,manual,automatic,enabled=true){const shift=manual||(enabled?automatic:null)||{x:0,y:0};return{x:base[0]+shift.x,y:base[1]+shift.y}}
+export function rememberLabelOffset(settings,key,offset,base){settings.labelAutoPositions||={};if(Object.hasOwn(settings.labelAutoPositions,key))return false;Object.defineProperty(settings.labelAutoPositions,key,{value:{x:offset.x-base[0],y:offset.y-base[1]},enumerable:true,writable:true,configurable:true});return true}
+export function validAreaPlacement(placement,count){return placement?.count===count&&Number.isInteger(placement.index)&&placement.index>=0&&placement.index<count&&Number.isFinite(placement.x)&&Number.isFinite(placement.y)}

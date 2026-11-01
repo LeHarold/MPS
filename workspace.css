@@ -146,3 +146,5 @@ body.history-modal-open{overflow:hidden;overscroll-behavior:none}
 #action-history-list li+li{margin-top:6px}
 #action-history-list .history-step{height:84px;min-height:84px;gap:3px;padding:8px;grid-template-rows:1fr auto auto;box-sizing:border-box}
 #action-history-list .history-step strong{min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size:12px}
+
+#action-history-dialog>label{margin:0;font-size:12px;flex:none}#action-history-select{width:100%;min-width:0;flex:none;font-size:12px}#action-history-dialog{width:360px}
