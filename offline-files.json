@@ -50,5 +50,6 @@
   "action-history.mjs",
   "ios-pwa.mjs",
   "point-snap.mjs",
-  "label-rotation.mjs"
+  "label-rotation.mjs",
+  "movement.mjs"
 ]
