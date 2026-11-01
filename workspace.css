@@ -133,3 +133,16 @@ dialog fieldset,#workspace fieldset{min-width:0;max-width:100%}dialog .row>*{min
 .object-transform .transform-level{position:absolute;left:0;top:0;width:28px;height:28px;z-index:3;border-radius:50%;font-size:22px}.object-transform .transform-level[aria-pressed=true]{background:var(--mint);color:var(--bg);border-color:var(--mint)}
 
 #action-history-list{padding-left:22px}#action-history-list li{margin:7px 0}.history-step{width:100%;text-align:left;display:grid;gap:4px;padding:9px;overflow-wrap:anywhere}.history-step strong{font-weight:500}.history-step time,.history-step small{font-size:11px;color:var(--muted)}.history-step[aria-current=step]{border:2px solid var(--mint)}.bright-mode .history-step time,.bright-mode .history-step small{color:#365260}#action-history-dialog{width:520px;max-width:94vw}
+
+/* Compact history: two fixed-height records scroll independently of the modal. */
+body.history-modal-open{overflow:hidden;overscroll-behavior:none}
+#action-history-dialog{width:360px;max-width:94vw;max-height:calc(100dvh - 24px);padding:14px;overflow:hidden;overscroll-behavior:contain}
+#action-history-dialog[open]{display:flex;flex-direction:column;gap:8px}
+#action-history-dialog>h2{flex:none;margin:0;font-size:17px;line-height:1.25}
+#action-history-dialog>p{flex:none;margin:0;font-size:11px;line-height:1.5}
+#action-history-dialog>button{flex:none;align-self:flex-end;padding:6px 12px}
+#action-history-list{position:relative;flex:0 1 174px;height:174px;max-height:174px;min-height:0;overflow-x:hidden;overflow-y:auto;overscroll-behavior:contain;touch-action:pan-y;-webkit-overflow-scrolling:touch;scrollbar-gutter:stable;margin:0;padding:0 5px 0 24px}
+#action-history-list li{height:84px;margin:0;padding:0}
+#action-history-list li+li{margin-top:6px}
+#action-history-list .history-step{height:84px;min-height:84px;gap:3px;padding:8px;grid-template-rows:1fr auto auto;box-sizing:border-box}
+#action-history-list .history-step strong{min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size:12px}
