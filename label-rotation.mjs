@@ -1,5 +1,11 @@
 // Leaflet owns the translation. Append rotation after it, so the geographic
 // anchor does not rotate around the map container's origin.
+export function rotatedLabelEdge(anchor,{cx,cy,width,height,angle=0}){
+ const r=angle*Math.PI/180,c=Math.cos(r),s=Math.sin(r),dx=anchor.x-cx,dy=anchor.y-cy;
+ const x=Math.max(-width/2,Math.min(width/2,dx*c+dy*s)),y=Math.max(-height/2,Math.min(height/2,-dx*s+dy*c));
+ return{x:cx+x*c-y*s,y:cy+x*s+y*c};
+}
+export function labelBorderSize(element){const style=getComputedStyle(element),extra=axis=>style.boxSizing==='border-box'?0:axis.reduce((n,key)=>n+(parseFloat(style[key])||0),0);return{width:(parseFloat(style.width)||element.offsetWidth)+extra(['paddingLeft','paddingRight','borderLeftWidth','borderRightWidth']),height:(parseFloat(style.height)||element.offsetHeight)+extra(['paddingTop','paddingBottom','borderTopWidth','borderBottomWidth'])}}
 export function applyLabelRotation(label,angle){
  label.options.mpsHeading=Number.isFinite(angle)?angle:0;
  if(!label.mpsPositionWithoutHeading&&typeof label._setPosition==='function'){
