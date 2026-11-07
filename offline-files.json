@@ -54,5 +54,6 @@
   "movement.mjs",
   "history-timeline.mjs",
   "label-stability.mjs",
-  "area-labels.mjs"
+  "area-labels.mjs",
+  "display-performance.mjs"
 ]
