@@ -159,3 +159,8 @@ body.history-modal-open{overflow:hidden;overscroll-behavior:none}
 #action-history-dialog.history-menu #action-history-list li{height:72px;margin:0}
 #action-history-dialog.history-menu #action-history-list li+li{margin-top:6px}
 #action-history-dialog.history-menu #action-history-list .history-step{height:72px;min-height:72px;padding:6px;gap:2px}
+.bright-mode .toolbar .icon-button:hover,.bright-mode .popover button:hover,.bright-mode .layout-group-menu button:hover{background:#d0e7df;color:#123d30;border-color:#5c8d7b}
+.bright-mode .toolbar .icon-button:is(.active,[aria-pressed=true],[aria-expanded=true]),.bright-mode .toolbar details.layout-group[open]>summary.icon-button,.bright-mode .popover button:is(.active,[aria-pressed=true]){background:#b9ded0;color:#0a3328;border:1px solid #397a61}
+.bright-mode .toolbar .icon-button:is(.active,[aria-pressed=true],[aria-expanded=true]):hover,.bright-mode .toolbar details.layout-group[open]>summary.icon-button:hover{background:#a9d3c2;color:#0a3328;border-color:#245c47}
+.bright-mode .toolbar .icon-button:focus-visible,.bright-mode .popover button:focus-visible{outline:2px solid #135e9c;outline-offset:2px}
+.bright-mode .toolbar .icon-button:disabled{background:transparent;color:#657c88;opacity:.6}
