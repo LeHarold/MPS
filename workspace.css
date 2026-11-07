@@ -164,6 +164,6 @@ body.history-modal-open{overflow:hidden;overscroll-behavior:none}
 .bright-mode .toolbar .icon-button:is(.active,[aria-pressed=true],[aria-expanded=true]):hover,.bright-mode .toolbar details.layout-group[open]>summary.icon-button:hover{background:#a9d3c2;color:#0a3328;border-color:#245c47}
 .bright-mode .toolbar .icon-button:focus-visible,.bright-mode .popover button:focus-visible{outline:2px solid #135e9c;outline-offset:2px}
 .bright-mode .toolbar .icon-button:disabled{background:transparent;color:#657c88;opacity:.6}
-.toolbar>details.layout-group>summary.icon-button:has(.toolbar-group-name){width:auto;min-width:38px;max-width:112px;height:38px;padding:0 17px 0 7px;font-size:12px;line-height:1.2}
+.toolbar>details.layout-group>summary.icon-button:has(.toolbar-group-name){width:auto;min-width:38px;max-width:112px;height:38px;padding:0 7px;font-size:12px;line-height:1.2;justify-content:center;align-items:center;text-align:center}
 .toolbar-group-name{display:block;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:86px;font-weight:600}
-.toolbar .toolbar-group-name{font:inherit;font-weight:600;color:inherit;letter-spacing:normal;margin:0;float:none;flex:none}
+.toolbar .toolbar-group-name{font:inherit;font-weight:600;color:inherit;letter-spacing:normal;margin:0;float:none;flex:none;text-align:center}

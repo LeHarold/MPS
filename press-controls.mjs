@@ -1,4 +1,4 @@
-import {frameTask} from './display-performance.mjs?v=157';
+import {frameTask} from './display-performance.mjs?v=158';
 // One long-press contract for map objects, labels and instruments.
 export function cardinalDelta(direction,step=1){const d={north:[0,-1],south:[0,1],west:[-1,0],east:[1,0]}[direction];return d?{dx:d[0]*step,dy:d[1]*step,angle:0,scale:1}:null}
 export function controlScreenPosition(box,viewport,width=148,height=182){const left=Math.max(viewport.left,box.left),right=Math.min(viewport.left+viewport.width,box.left+box.width),top=Math.max(viewport.top,box.top),bottom=Math.min(viewport.top+viewport.height,box.top+box.height);return {x:Math.max(left+width/2,Math.min(right-width/2,viewport.left+viewport.width/2)),y:Math.max(top+8,Math.min(bottom-height-12,viewport.top+viewport.height*.74-height/2))}}
