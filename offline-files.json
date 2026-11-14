@@ -55,5 +55,6 @@
   "history-timeline.mjs",
   "label-stability.mjs",
   "area-labels.mjs",
-  "display-performance.mjs"
+  "display-performance.mjs",
+  "workspace-storage.mjs"
 ]
