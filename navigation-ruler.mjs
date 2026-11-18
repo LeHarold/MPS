@@ -112,11 +112,16 @@ export function createNavigationRuler({ map, getReference, formatDistance, onVis
       blockedClick = true; suppress(event); return;
     }
     if (candidate?.id === event.pointerId) {
+      if (candidate.moved) blockedClick = true;
       if (!candidate.moved && event.type !== 'pointercancel' && points) { show(null); blockedClick = true; onGestureStart?.(); suppress(event); }
       candidate = null;
     }
   }
-  const click = event => { if (inside(event) && (blockedClick || points)) { if (points) show(null); blockedClick = false; suppress(event); } };
+  const click = event => {
+    if (!inside(event)) return;
+    if (blockedClick) { blockedClick = false; suppress(event); return; }
+    if (points) { show(null); suppress(event); }
+  };
   const touchMove = event => { if (drag) suppress(event); };
   window.addEventListener('pointerdown', down, true);
   window.addEventListener('pointermove', move, { capture: true, passive: false });
