@@ -4,5 +4,5 @@
 .navigation-ruler .navigation-lines { fill:none; stroke:#fff; stroke-opacity:.8; stroke-width:1; }
 .navigation-ruler text { fill:#fff; font:600 13px system-ui,sans-serif; text-anchor:middle; stroke:none; }
 .navigation-ruler circle { fill:#fff; fill-opacity:.12; stroke:#fff; stroke-width:2; pointer-events:all; cursor:grab; touch-action:none; }
-#ruler { display:none!important; }
 .navigation-ruler-active #cursor-floating-hud { visibility:hidden; }
+.navigation-ruler circle[data-snapped="true"]{fill:#54d3a2;fill-opacity:.7;stroke:#fff}

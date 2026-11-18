@@ -61,5 +61,6 @@
   "navigation-ruler.css",
   "vendor/wmm2025.mjs",
   "vendor/wmm2025.LICENSE",
-  "line-appearance.mjs"
+  "line-appearance.mjs",
+  "coordinate-excel.mjs"
 ]

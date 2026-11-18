@@ -27,7 +27,16 @@ export function navigationReadout(a, b, reference = 'magnetic', date = new Date(
 }
 
 /** Transient geographic ruler. It never creates a saved drawing or changes map objects. */
-export function createNavigationRuler({ map, getReference, formatDistance, onVisibility, onGestureStart, onClaim }) {
+export function nearestRulerSnap(point,candidates,project,blocked=null,threshold=24){
+  const at=project(point);let best=null,error=threshold;
+  for(const candidate of candidates){const position=candidate.position;if(!position)continue;
+    if(blocked&&Math.abs(blocked[0]-position[0])<1e-8&&Math.abs(blocked[1]-position[1])<1e-8)continue;
+    const pixel=project({lat:position[0],lng:position[1]}),d=Math.hypot(pixel.x-at.x,pixel.y-at.y);
+    if(d<error){error=d;best=candidate;}
+  }return best;
+}
+
+export function createNavigationRuler({ map, getReference, formatDistance, onVisibility, onGestureStart, onClaim, getSnapPoints=()=>[], snapEnabled=()=>true }) {
   const host = map.getContainer(), wrap = host.parentElement;
   const svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
   svg.classList.add('navigation-ruler');
@@ -36,6 +45,20 @@ export function createNavigationRuler({ map, getReference, formatDistance, onVis
   wrap.append(svg);
   let points = null, timer = null, drag = null, candidate = null, blockedClick = false;
   let owned = false, oneBase = null, pinchBase = null, multiTouch = false;
+  const locks=[null,null],released=[null,null];
+  const geo=position=>({lat:position[0],lng:position[1]});
+  function constrainLocks(){if(!points)return;for(let i=0;i<2;i++)if(locks[i])points[i]=geo(locks[i].position);}
+  function snapEnds(){
+    if(!points||!snapEnabled())return;
+    const candidates=getSnapPoints();
+    for(let i=0;i<2;i++){
+      if(released[i]){const a=map.latLngToContainerPoint(points[i]),b=map.latLngToContainerPoint(geo(released[i]));if(Math.hypot(a.x-b.x,a.y-b.y)>38)released[i]=null;}
+      if(locks[i])continue;
+      const target=nearestRulerSnap(points[i],candidates,p=>map.latLngToContainerPoint(p),released[i]);
+      if(target){locks[i]={...target,position:[...target.position]};points[i]=geo(target.position);}
+    }render();
+  }
+  function releaseEnd(end){if(end===null||!locks[end])return false;released[end]=[...locks[end].position];locks[end]=null;render();return true;}
   const touches = new Map();
   const local = event => { const r = host.getBoundingClientRect(); return [event.clientX - r.left, event.clientY - r.top]; };
   const inside = event => host.contains(event.target) || svg.contains(event.target);
@@ -58,6 +81,7 @@ export function createNavigationRuler({ map, getReference, formatDistance, onVis
     resumeDragging = resumeZoom = false;
   }
   function render() {
+    if(!snapEnabled())locks.fill(null);
     // SVG has no reflected HTMLElement.hidden property in Safari or Chromium.
     svg.setAttribute('style', points ? '' : 'display:none');
     if (!points) return;
@@ -75,7 +99,7 @@ export function createNavigationRuler({ map, getReference, formatDistance, onVis
     svg.querySelector('.navigation-forward').textContent = course(data.forward) + ' →';
     svg.querySelector('.navigation-distance').textContent = formatDistance(data.metres);
     svg.querySelector('.navigation-reverse').textContent = '← ' + course(data.reverse);
-    svg.querySelectorAll('circle').forEach((node, i) => { const p = map.latLngToContainerPoint(points[i]); node.setAttribute('cx', p.x); node.setAttribute('cy', p.y); });
+    svg.querySelectorAll('circle').forEach((node, i) => { const p = map.latLngToContainerPoint(points[i]); node.setAttribute('cx', p.x); node.setAttribute('cy', p.y);node.setAttribute('data-snapped',String(!!locks[i]));node.setAttribute('aria-label',locks[i]?'已吸附 '+locks[i].name+'，點擊解除吸附':'量尺端點 '+(i+1)); });
   }
   function show(value) { points = value; document.body.classList.toggle('navigation-ruler-active', !!points); onVisibility?.(!!points); render(); }
   function clearTimer() { clearTimeout(timer); timer = null; }
@@ -107,7 +131,7 @@ export function createNavigationRuler({ map, getReference, formatDistance, onVis
       const dx=touch.p[0]-oneBase.at[0],dy=touch.p[1]-oneBase.at[1];
       points=oneBase.points.map((p,i)=>toGeo(oneBase.end===null||oneBase.end===i?[p[0]+dx,p[1]+dy]:p));
     }
-    render();
+    constrainLocks();render();
   }
   function touchStart(event) {
     const added=[...event.changedTouches].filter(t=>inside(t)&&!excluded(t.target));
@@ -126,7 +150,7 @@ export function createNavigationRuler({ map, getReference, formatDistance, onVis
         timer=null;
         if(touches.size!==2||[...touches.values()].some(t=>t.moved))return;
         pause();blockedClick=true;
-        show([...touches.values()].map(t=>toGeo(t.p)));
+        locks.fill(null);released.fill(null);show([...touches.values()].map(t=>toGeo(t.p)));
         [...touches.values()].forEach((t,i)=>t.end=i);
         resetBase();
       },1000);
@@ -153,9 +177,10 @@ export function createNavigationRuler({ map, getReference, formatDistance, onVis
     }
     ended.forEach(t=>touches.delete(t.identifier));
     if(wasOwned){
-      if(tap&&points)show(null);
+      const tappedEnd=ended.length===1?touches.get(ended[0].identifier)?.end:null;
+      if(tap&&points&&!releaseEnd(tappedEnd??rulerEnd(ended[0].target)))show(null);
       if(cancelled){touches.clear();oneBase=pinchBase=null;resume();}
-      else if(touches.size)resetBase();else{oneBase=pinchBase=null;resume();}
+      else if(touches.size)resetBase();else{if(!tap)snapEnds();oneBase=pinchBase=null;resume();}
       blockedClick=true;suppress(event);
     }else if(tap&&points&&candidate&&!candidate.moved){show(null);onGestureStart?.();blockedClick=true;suppress(event);}
     else if(multiTouch||cancelled||candidate?.moved)blockedClick=true;
@@ -178,7 +203,7 @@ export function createNavigationRuler({ map, getReference, formatDistance, onVis
     const p = local(event);
     if (candidate?.id === event.pointerId && Math.hypot(p[0]-candidate.p[0],p[1]-candidate.p[1]) > 6) candidate.moved = true;
     if (!drag) return;
-    if (drag.id === event.pointerId) { points[drag.end] = toGeo(p); drag.moved ||= Math.hypot(p[0]-drag.start[0],p[1]-drag.start[1]) > 4; }
+    if (drag.id === event.pointerId) { if(!locks[drag.end])points[drag.end] = toGeo(p); drag.moved ||= Math.hypot(p[0]-drag.start[0],p[1]-drag.start[1]) > 4; }
     else return;
     render(); suppress(event);
   }
@@ -186,7 +211,8 @@ export function createNavigationRuler({ map, getReference, formatDistance, onVis
     if(event.pointerType==='touch')return;
     if (drag) {
       if (drag.id !== event.pointerId) return;
-      if (!drag.moved && event.type !== 'pointercancel') show(null);
+      if (!drag.moved && event.type !== 'pointercancel'&&!releaseEnd(drag.end)) show(null);
+      else if(drag.moved&&event.type!=='pointercancel')snapEnds();
       drag = null; resume();
       blockedClick = true; suppress(event); return;
     }
@@ -217,7 +243,7 @@ export function createNavigationRuler({ map, getReference, formatDistance, onVis
   render();
   return {
     get visible() { return !!points; }, render,
-    showDefault() { const s = map.getSize(); show([toGeo([s.x*.25,s.y*.5]),toGeo([s.x*.75,s.y*.5])]); },
-    hide() { cancel(); show(null); }
+    showDefault() { const s = map.getSize();locks.fill(null);released.fill(null);show([toGeo([s.x*.25,s.y*.5]),toGeo([s.x*.75,s.y*.5])]); },
+    hide() { cancel(); locks.fill(null);released.fill(null);show(null); }
   };
 }
