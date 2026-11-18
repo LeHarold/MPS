@@ -56,5 +56,9 @@
   "label-stability.mjs",
   "area-labels.mjs",
   "display-performance.mjs",
-  "workspace-storage.mjs"
+  "workspace-storage.mjs",
+  "navigation-ruler.mjs",
+  "navigation-ruler.css",
+  "vendor/wmm2025.mjs",
+  "vendor/wmm2025.LICENSE"
 ]
