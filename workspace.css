@@ -148,6 +148,9 @@ body.history-modal-open{overflow:hidden;overscroll-behavior:none}
 #action-history-list .history-step strong{min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size:12px}
 
 #action-history-dialog>label{margin:0;font-size:12px;flex:none}#action-history-select{width:100%;min-width:0;flex:none;font-size:12px}#action-history-dialog{width:360px}
+.section-body label.line-style-field{display:flex!important;flex-direction:column;align-items:stretch;gap:6px;clear:both;flex:0 0 100%;grid-column:1/-1;width:100%;min-width:0;max-width:100%;box-sizing:border-box;margin:10px 0}
+.section-body .line-style-field>select{display:block;width:100%;min-width:0;max-width:100%;box-sizing:border-box;flex:none;margin:0}
+.section-body .line-style-row{flex-wrap:wrap}
 
 /* Modeless history dropdown anchored beneath its toolbar button. */
 #action-history-dialog.history-menu{position:fixed;inset:auto;margin:0;z-index:1500;width:320px;max-width:calc(100vw - 16px);max-height:var(--history-menu-max-height,260px);padding:10px;border:1px solid var(--line);border-radius:6px;background:var(--panel);color:var(--text);overflow:hidden;box-shadow:none;overscroll-behavior:contain}
