@@ -46,6 +46,7 @@ export function createNavigationRuler({ map, getReference, formatDistance, onVis
   let points = null, timer = null, drag = null, candidate = null, blockedClick = false;
   let owned = false, oneBase = null, pinchBase = null, multiTouch = false;
   const locks=[null,null],released=[null,null];
+  let cachedReadout=null,cachedReadoutKey='';
   const geo=position=>({lat:position[0],lng:position[1]});
   function constrainLocks(){if(!points)return;for(let i=0;i<2;i++)if(locks[i])points[i]=geo(locks[i].position);}
   function snapEnds(){
@@ -93,7 +94,9 @@ export function createNavigationRuler({ map, getReference, formatDistance, onVis
     const band = svg.querySelector('g'); band.setAttribute('transform', `translate(${a.x} ${a.y}) rotate(${angle})`);
     svg.querySelector('rect').setAttribute('width', length);
     svg.querySelector('path').setAttribute('d', `M0,-35V35 M${length},-35V35 M0,-30H${length} M0,30H${length} M0,0H${length}`);
-    const reference = getReference(), data = navigationReadout(from, to, reference);
+    const reference=getReference(),key=[from.lat,from.lng,to.lat,to.lng,reference,Math.floor(Date.now()/86400000)].join('|');
+    if(key!==cachedReadoutKey){cachedReadoutKey=key;cachedReadout=navigationReadout(from,to,reference);}
+    const data=cachedReadout;
     const course = value => (value === null ? '—' : String(Math.round(value) % 360).padStart(3, '0') + '°') + (reference === 'true' ? ' T' : ' M');
     for (const text of svg.querySelectorAll('text')) text.setAttribute('x', length / 2);
     svg.querySelector('.navigation-forward').textContent = course(data.forward) + ' →';

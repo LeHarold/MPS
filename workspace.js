@@ -1,42 +1,43 @@
-import { createNavigationRuler } from './navigation-ruler.mjs?v=163';
-import { coordinateRows, coordinateWorkbook } from './coordinate-excel.mjs?v=163';
-import { LINE_STYLES, lineStyleOptions, installDoubleLines } from './line-appearance.mjs?v=163';
-import {openWorkspaceStorage} from './workspace-storage.mjs?v=163';
-import {labelDisplaySize,frameTask,memoAreaOffset} from './display-performance.mjs?v=163';
-import {areaSouthwest,limitAreaOffset,areaInteriorOffset} from './area-labels.mjs?v=163';
-import {stableLabelOffset,rememberLabelOffset,validAreaPlacement} from './label-stability.mjs?v=163';
-import {buildTimeline,seekTimeline,formatActionTime} from './history-timeline.mjs?v=163';
-import {pdfTimeName,translatePixels,pointAlongScreenPath,horizontalTurn,rotatePixels,usableMapSize} from './movement.mjs?v=163';
-import {applyLabelRotation,preserveLabelCenter,rotatedLabelEdge,labelBorderSize} from './label-rotation.mjs?v=163';
-import {nearestPoint,attachPoint,releasePoint} from './point-snap.mjs?v=163';
-import {decodeTerrainBlob,bindTouchCursor,setupIOSStorage} from './ios-pwa.mjs?v=163';
-import {actionDescription} from './action-history.mjs?v=163';
-import {setupLicenseSharing} from './license-transfer.mjs?v=163';
-import {setupDeviceTransfer} from './device-transfer.mjs?v=163';
-import {printRaster} from './print-raster.mjs?v=163';
-import {uniqueLabelIds} from './label-visibility.mjs?v=163';
-import {outerVertices,transformPoints,nearestPathFraction} from './map-editing.mjs?v=163';
-import {createPressControls} from './press-controls.mjs?v=163';
-import {applyPointMOMs,validatePointMOMs} from './point-relations.mjs?v=163';
-import {requireAuthorization,currentAuthorization,deleteAuthorization,canPackageWebsite,canShareLicense,getLicenseShareProof,getActiveLicenseFile} from './authorization.mjs?v=163';
-import {startLicensedTool,sanitizeToolIcon} from './licensed-tools.mjs?v=163';
+import { createNavigationRuler, navigationReadout } from './navigation-ruler.mjs?v=167';
+import { placeNearbyWaypoints, viewportPaintDue } from './compact-waypoints.mjs?v=167';
+import { coordinateRows, coordinateWorkbook } from './coordinate-excel.mjs?v=167';
+import { LINE_STYLES, lineStyleOptions, installDoubleLines } from './line-appearance.mjs?v=167';
+import {openWorkspaceStorage} from './workspace-storage.mjs?v=167';
+import {labelDisplaySize,frameTask,memoAreaOffset} from './display-performance.mjs?v=167';
+import {areaSouthwest,limitAreaOffset,areaInteriorOffset} from './area-labels.mjs?v=167';
+import {stableLabelOffset,rememberLabelOffset,validAreaPlacement} from './label-stability.mjs?v=167';
+import {buildTimeline,seekTimeline,formatActionTime} from './history-timeline.mjs?v=167';
+import {pdfTimeName,translatePixels,pointAlongScreenPath,horizontalTurn,rotatePixels,usableMapSize} from './movement.mjs?v=167';
+import {applyLabelRotation,preserveLabelCenter,rotatedLabelEdge,labelBorderSize} from './label-rotation.mjs?v=167';
+import {nearestPoint,attachPoint,releasePoint} from './point-snap.mjs?v=167';
+import {decodeTerrainBlob,bindTouchCursor,setupIOSStorage} from './ios-pwa.mjs?v=167';
+import {actionDescription} from './action-history.mjs?v=167';
+import {setupLicenseSharing} from './license-transfer.mjs?v=167';
+import {setupDeviceTransfer} from './device-transfer.mjs?v=167';
+import {printRaster} from './print-raster.mjs?v=167';
+import {uniqueLabelIds} from './label-visibility.mjs?v=167';
+import {outerVertices,transformPoints,nearestPathFraction} from './map-editing.mjs?v=167';
+import {createPressControls} from './press-controls.mjs?v=167';
+import {applyPointMOMs,validatePointMOMs} from './point-relations.mjs?v=167';
+import {requireAuthorization,currentAuthorization,deleteAuthorization,canPackageWebsite,canShareLicense,getLicenseShareProof,getActiveLicenseFile} from './authorization.mjs?v=167';
+import {startLicensedTool,sanitizeToolIcon} from './licensed-tools.mjs?v=167';
 await requireAuthorization();
 if(window.MPS_IMPORT_BUNDLE)await window.MPS_IMPORT_BUNDLE();
-import {intervalPlan,placeCursorBox,extensionEndpoint} from './workspace-interactions.mjs?v=163';
-import {planProjectImport,mergeProjectItems} from './project-merge.mjs?v=163';
-import {parseSearchPosition,searchCatalog,placeLabelBoxes,labelRank,calibrationDistance,readPrintTemplate,openBackupHistory} from './workspace-ux.mjs?v=163';
+import {intervalPlan,placeCursorBox,extensionEndpoint} from './workspace-interactions.mjs?v=167';
+import {planProjectImport,mergeProjectItems} from './project-merge.mjs?v=167';
+import {parseSearchPosition,searchCatalog,placeLabelBoxes,labelRank,calibrationDistance,readPrintTemplate,openBackupHistory} from './workspace-ux.mjs?v=167';
 if(window.MPS_BUNDLE_READY)await window.MPS_BUNDLE_READY;
 const workspaceStorage = await openWorkspaceStorage(error => {
   console.warn('MPS workspace storage', error);
   const status = document.getElementById('saved');
   if (status) status.textContent = '儲存失敗';
 });
-import {createBoxPointEditor,orderedPolygon} from './map-inputs.mjs?v=163';
-import {positionFromAnchor,resizeFromAnchor,rulerContact,labelLayout,cursorVisibility,snapRulerToPoint} from './instrument-lock.mjs?v=163';
-import {sampleGrid,openElevationStore,terrainCoordinate,sampleTerrainTile} from './elevation-store.mjs?v=163';
+import {createBoxPointEditor,orderedPolygon} from './map-inputs.mjs?v=167';
+import {positionFromAnchor,resizeFromAnchor,positionFromRulerEnd,resizeFromRulerEnd,rulerContact,labelLayout,cursorVisibility,snapRulerToPoint} from './instrument-lock.mjs?v=167';
+import {sampleGrid,openElevationStore,terrainCoordinate,sampleTerrainTile} from './elevation-store.mjs?v=167';
 import {parseCoordinate} from './coordinates.mjs';
-import {createWaypointPicker} from './waypoint-picker.mjs?v=163';
-import {synchronizeCoordinateColors,setPointColor,resolveObjectColor,resolvePointColor,distance,dms as originalDms,factor,rad,snapRulerEndpoints,parseVertices,boundingRectangle,pointOnInstrument,gestureAngle,angleDelta,niceInterval,validateRange,duplicateLayer,validateProject} from './workspace-model.mjs?v=163';
+import {createWaypointPicker} from './waypoint-picker.mjs?v=167';
+import {synchronizeCoordinateColors,setPointColor,resolveObjectColor,resolvePointColor,distance,dms as originalDms,factor,rad,snapRulerEndpoints,parseVertices,boundingRectangle,pointOnInstrument,gestureAngle,angleDelta,niceInterval,validateRange,duplicateLayer,validateProject} from './workspace-model.mjs?v=167';
 const $=id=>document.getElementById(id),uid=()=>crypto.randomUUID(),clone=x=>structuredClone(x),STORE='map-workspace-project-v2';
 const defaultLayer={id:uid(),name:'標繪圖層 1',visible:true,objects:[]};
 let state={version:2,layers:[defaultLayer],activeLayerId:defaultLayer.id,settings:{unit:'nm',format:'dms',color:'#f3ba68',basemap:'vector',routes:true,fixes:true,grid:true,selectedRoutes:null,referenceVisibility:{}},instruments:{ruler:{visible:false,x:.53,y:.43,rotation:0,range:null},protractor:{visible:false,x:.55,y:.5,rotation:0}}};
@@ -120,7 +121,7 @@ function coordinateAction(mark){try{const p=[...pointEditor.read()[0].position];
 $('coordinate-form').onsubmit=e=>{e.preventDefault();coordinateAction(true)};$('locate-coordinate').onclick=()=>coordinateAction(false);
 function showPointPopup(name,p,source){const node=document.createElement('div'),title=document.createElement('b'),coords=document.createElement('p');title.textContent=name;coords.textContent=pair(p);node.append(title,coords);if(source){const a=document.createElement('a');a.textContent='資料來源 ↗';a.href=source;a.target='_blank';a.rel='noopener';node.append(a)}return node}
 function selectedRouteNames(){return new Set(state.settings.selectedRoutes===null?routes.map(r=>r.name):state.settings.selectedRoutes)}
-function renderRoutes(){routeLines.clearLayers();fixes.clearLayers();routePaths.clear();const selectedNames=selectedRouteNames(),seen=new Set();for(const r of routes){if(!selectedNames.has(r.name))continue;const points=r.points.map(p=>[p.lat,p.lng,0]);if(state.settings.routes){const routeStyle=state.settings.routeStyles?.[r.name]||{};const line=L.polyline(points,{pane:'routePane',interactive:false,color:r.name.includes('TRANSITION')?'#7ba6cf':'#6ed7bd',weight:1.7,opacity:.7,bubblingMouseEvents:false}).bindPopup(showPointPopup(r.name,points[0],r.source)).addTo(routeLines);line.on('click',()=>{openPanel('routes-panel');const row=[...$('route-list').children].find(x=>x.dataset.name===r.name);if(row){row.querySelector('details').open=true;row.scrollIntoView({block:'nearest'})}});routePaths.set(r.name,line);line.setStyle({color:routeStyle.color||state.settings.routeColor||'#6ed7bd',opacity:routeStyle.opacity??state.settings.routeOpacity??1});if(routeStyle.names)line.bindTooltip(r.name,{permanent:true})}if(state.settings.fixes)r.points.forEach(p=>{const key=p.name+p.lat+p.lng;if(seen.has(key))return;seen.add(key);const ll=[p.lat,p.lng,0];L.circleMarker(ll,{radius:3*pointSize('航路'),color:'#8de4ce',weight:1,fillColor:'#163642',fillOpacity:1,bubblingMouseEvents:false}).bindTooltip(p.name,{permanent:state.settings.routeNames!==false,direction:'right',offset:[4,0]}).bindPopup(showPointPopup(p.name,ll,r.source)).addTo(fixes)})}$('route-count').textContent=selectedNames.size+'/'+routes.length;$('route-selection').textContent=`已選 ${selectedNames.size} / ${routes.length} 條航路`;waypointPicker.renderMap();applyRouteOpacity()}
+function renderRoutes(){routeLines.clearLayers();fixes.clearLayers();routePaths.clear();const selectedNames=selectedRouteNames();for(const r of routes){if(!selectedNames.has(r.name))continue;const points=r.points.map(p=>[p.lat,p.lng,0]);if(state.settings.routes){const routeStyle=state.settings.routeStyles?.[r.name]||{};const line=L.polyline(points,{pane:'routePane',interactive:false,color:r.name.includes('TRANSITION')?'#7ba6cf':'#6ed7bd',weight:1.7,opacity:.7,bubblingMouseEvents:false}).bindPopup(showPointPopup(r.name,points[0],r.source)).addTo(routeLines);line.on('click',()=>{openPanel('routes-panel');const row=[...$('route-list').children].find(x=>x.dataset.name===r.name);if(row){row.querySelector('details').open=true;row.scrollIntoView({block:'nearest'})}});routePaths.set(r.name,line);line.setStyle({color:routeStyle.color||state.settings.routeColor||'#6ed7bd',opacity:routeStyle.opacity??state.settings.routeOpacity??1});if(routeStyle.names)line.bindTooltip(r.name,{permanent:true})}}$('route-count').textContent=selectedNames.size+'/'+routes.length;$('route-selection').textContent=`已選 ${selectedNames.size} / ${routes.length} 條航路`;waypointPicker.renderMap();applyRouteOpacity()}
 function renderRouteList(){const opened=new Set([...$('route-list').querySelectorAll('details[open]')].map(d=>d.dataset.name)),query=$('route-search').value.trim().toUpperCase(),chosen=selectedRouteNames();$('route-list').replaceChildren();for(const r of routes){if(query&&!r.name.includes(query)&&!r.points.some(p=>p.name.includes(query)))continue;const row=document.createElement('div');row.className='route-entry';row.dataset.name=r.name;row.dataset.workspaceKey='route:'+r.name;const input=document.createElement('input');input.type='checkbox';input.checked=chosen.has(r.name);input.setAttribute('aria-label','顯示航路 '+r.name);input.onchange=()=>{const names=selectedRouteNames();if(input.checked)names.add(r.name);else names.delete(r.name);state.settings.selectedRoutes=[...names];save();renderRoutes()};const details=document.createElement('details');details.dataset.name=r.name;details.open=opened.has(r.name);const summary=document.createElement('summary');summary.textContent=r.name;const count=document.createElement('span');count.textContent=r.points.length+' 點';summary.append(count);details.append(summary,makePointsTable(r.points.map(p=>[p.lat,p.lng,0]),i=>r.points[i].name));const locate=makeLocateButton({key:'route:'+r.name,name:r.name,points:r.points.map(p=>[p.lat,p.lng]),panel:'routes-panel'});const copy=document.createElement('button');copy.textContent='建立此航路可修改副本';copy.onclick=()=>{snapshot();const layer={id:uid(),name:r.name+' 副本',visible:true,objects:[{id:uid(),name:r.name,type:'line',points:r.points.map(p=>[p.lat,p.lng,0]),color:state.settings.color,description:'來源：'+r.source}]};state.layers.push(layer);state.activeLayerId=layer.id;save();renderLayers();renderObjects();openPanel('layers-panel')};state.settings.routeStyles||={};const prefs=state.settings.routeStyles[r.name]||={name:r.name,names:false,color:'#6ed7bd',opacity:1};details.append(layerStyle(prefs,()=>{renderRoutes();save()}),opacityControl(r.name,prefs.opacity,v=>{prefs.opacity=v;renderRoutes();save()}),locate,copy);row.append(input,details);$('route-list').append(row)}}
 $('route-search').oninput=renderRouteList;for(const id of ['routes-all','routes-none'])$(id).onclick=()=>{state.settings.selectedRoutes=id==='routes-all'?null:[];save();renderRoutes();renderRouteList()};for(const [id,key] of [['show-routes','routes'],['show-fixes','fixes']])$(id).onchange=()=>{state.settings[key]=$(id).checked;save();renderRoutes()};
 function renderReferences(){referenceGroup.clearLayers();referencePaths.clear();$('reference-list').replaceChildren();for(const ref of references){const entry=document.createElement('div');entry.className='reference-entry';entry.dataset.workspaceKey='reference:'+ref.id;const label=document.createElement('label'),input=document.createElement('input');input.type='checkbox';input.checked=state.settings.referenceVisibility?.[ref.id]!==false;input.setAttribute('aria-label','顯示 '+ref.name);label.append(input,document.createTextNode(ref.name));const details=document.createElement('details'),summary=document.createElement('summary');summary.textContent='各頂點經緯度與來源';const note=document.createElement('p');note.className='reference-note';note.textContent=ref.note+' 資料日期：'+ref.date;const link=document.createElement('a');link.href=ref.source;link.textContent=ref.sourceLabel+' ↗';link.target='_blank';link.rel='noopener';details.append(summary,note,makePointsTable(ref.points,ref.pointNames?i=>ref.pointNames[i]:ref.name),link);if(ref.additionalSource){const a=document.createElement('a');a.href=ref.additionalSource;a.textContent=ref.id==='strait-median'?'立法院公開議事錄佐證 ↗':'官方基點座標表 ↗';a.target='_blank';a.rel='noopener';details.append(document.createElement('br'),a)}const copy=document.createElement('button');copy.textContent='建立可修改副本';copy.onclick=()=>{snapshot();const layer={id:uid(),name:ref.name+' 副本',visible:true,objects:[{id:uid(),name:ref.name,type:ref.type,points:clone(ref.pathPoints||ref.points),color:ref.color,description:ref.note+'\n來源：'+ref.source}]};state.layers.push(layer);state.activeLayerId=layer.id;save('已建立獨立參考圖層副本，原始參考資料不變');renderObjects();renderLayers();openPanel('layers-panel')};details.append(document.createElement('br'),copy,makeLocateButton({key:'reference:'+ref.id,name:ref.name,points:ref.pathPoints||ref.points,panel:'reference-panel'}));entry.append(label,opacityControl(ref.name,state.settings.referenceOpacity?.[ref.id]??1,value=>{state.settings.referenceOpacity||={};state.settings.referenceOpacity[ref.id]=value;applyReferenceOpacity();save()}),details);$('reference-list').append(entry);const drawRef=()=>{if(!input.checked)return;const options={pane:'referencePane',interactive:false,referenceId:ref.id,color:ref.color,weight:2,dashArray:'8 6',fillOpacity:.025,bubblingMouseEvents:false};const line=(ref.type==='polygon'?L.polygon(ref.pathPoints||ref.points,options):L.polyline(ref.pathPoints||ref.points,options)).addTo(referenceGroup).bindTooltip(ref.name);referencePaths.set(ref.id,line);ref.points.forEach((p,i)=>L.circleMarker(p,{pane:'referencePointPane',referenceId:ref.id,radius:5*pointSize(ref.name),color:ref.color,fillOpacity:1,bubblingMouseEvents:false}).addTo(referenceGroup).bindPopup(showPointPopup(ref.pointNames?.[i]||ref.name+' · 頂點 '+(i+1),p,ref.source)).on('click',e=>{if(tool==='pan')revealWorkspaceItem('reference:'+ref.id);if(tool==='tape'){L.DomEvent.stopPropagation(e);map.closePopup();pickTape(p,ref.pointNames?.[i]||ref.name+' · 頂點 '+(i+1))}}))};input.onchange=()=>{state.settings.referenceVisibility||={};state.settings.referenceVisibility[ref.id]=input.checked;save();renderReferences()};drawRef()}applyReferenceOpacity();updateOpacityInputs()}
@@ -176,9 +177,9 @@ function snapRulerBody(){if(state.settings.rulerSnap===false)return;const s=stat
 
 function settleInstrument(name){const s=state.instruments[name];if(!s.lock)snapOrigin(name);if(name==='ruler')snapRulerBody();else if(!s.lock){if(snapProtractor()){const at=map.containerPointToLatLng(originPixel(name));lockOrigin(name,[at.lat,at.lng])}}save()}
 const gestures=new Map();
-for(const name of ['ruler','protractor']){const el=$(name),pointers=new Map();let baseline=null;const begin=()=>{const ps=[...pointers.values()],s=state.instruments[name];baseline={p:ps[0],x:s.x,y:s.y,rotation:s.rotation,scale:s.scale||1,width:el.clientWidth,end:endPixel(name)};if(ps.length>=2){baseline.mid={x:(ps[0].x+ps[1].x)/2,y:(ps[0].y+ps[1].y)/2};baseline.distance=Math.hypot(ps[1].x-ps[0].x,ps[1].y-ps[0].y);baseline.angle=gestureAngle(ps[0],ps[1])}};
+for(const name of ['ruler','protractor']){const el=$(name),pointers=new Map();let baseline=null;const begin=()=>{const ps=[...pointers.values()],s=state.instruments[name];baseline={p:ps[0],x:s.x,y:s.y,rotation:s.rotation,scale:s.scale||1,width:el.clientWidth,zero:s.endLock?originPixel(name):null,end:endPixel(name)};if(ps.length>=2){baseline.mid={x:(ps[0].x+ps[1].x)/2,y:(ps[0].y+ps[1].y)/2};baseline.distance=Math.hypot(ps[1].x-ps[0].x,ps[1].y-ps[0].y);baseline.angle=gestureAngle(ps[0],ps[1])}};
  el.addEventListener('pointerdown',e=>{if(tool==='free'&&!e.target.closest('[data-instrument]')||e.pointerType==='mouse'&&e.button!==0)return;e.preventDefault();e.stopPropagation();const s=state.instruments[name];if(e.target.closest('[data-zero]')&&s.lock){snapshot();s.lock=null;s.contact=null;renderInstruments();save('0 點已解除鎖定');return}if(!pointers.size)snapshot();pointers.set(e.pointerId,{x:e.clientX,y:e.clientY});el.setPointerCapture(e.pointerId);gestures.set(name,true);begin()});
- el.addEventListener('pointermove',e=>{if(!pointers.has(e.pointerId)||!baseline)return;e.preventDefault();pointers.set(e.pointerId,{x:e.clientX,y:e.clientY});const ps=[...pointers.values()],size=map.getSize(),s=state.instruments[name];if(s.lock){const anchor=map.latLngToContainerPoint(s.lock.point);if(ps.length>=2&&baseline.mid){s.rotation=baseline.rotation+angleDelta(gestureAngle(ps[0],ps[1]),baseline.angle);s.scale=Math.max(.2,Math.min(3,baseline.scale*Math.hypot(ps[1].x-ps[0].x,ps[1].y-ps[0].y)/Math.max(1,baseline.distance)))}else{const desired=[baseline.end[0]+e.clientX-baseline.p.x,baseline.end[1]+e.clientY-baseline.p.y],g=resizeFromAnchor(name,[anchor.x,anchor.y],desired,Math.min(size.x*2,instrumentSizes[name].width*3));applyInstrumentGeometry(name,g)}renderInstruments();if(name==='ruler')snapRulerBody()}else if(ps.length>=2&&baseline.mid){const mid={x:(ps[0].x+ps[1].x)/2,y:(ps[0].y+ps[1].y)/2};s.x=Math.max(0,Math.min(1,baseline.x+(mid.x-baseline.mid.x)/size.x));s.y=Math.max(0,Math.min(.88,baseline.y+(mid.y-baseline.mid.y)/size.y));s.rotation=baseline.rotation+angleDelta(gestureAngle(ps[0],ps[1]),baseline.angle);s.scale=Math.max(.2,Math.min(3,baseline.scale*Math.hypot(ps[1].x-ps[0].x,ps[1].y-ps[0].y)/Math.max(1,baseline.distance)))}else{s.x=Math.max(0,Math.min(1,baseline.x+(e.clientX-baseline.p.x)/size.x));s.y=Math.max(0,Math.min(.88,baseline.y+(e.clientY-baseline.p.y)/size.y))}renderInstruments();if(name==='ruler'&&!s.lock)snapRulerBody();updateInstrumentControls()});
+ el.addEventListener('pointermove',e=>{if(!pointers.has(e.pointerId)||!baseline)return;e.preventDefault();pointers.set(e.pointerId,{x:e.clientX,y:e.clientY});const ps=[...pointers.values()],size=map.getSize(),s=state.instruments[name];if(name==='ruler'&&s.endLock){if(!s.lock){const anchor=map.latLngToContainerPoint(s.endLock.point),desired=[baseline.zero[0]+e.clientX-baseline.p.x,baseline.zero[1]+e.clientY-baseline.p.y];if(ps.length>=2&&baseline.mid){s.rotation=baseline.rotation+angleDelta(gestureAngle(ps[0],ps[1]),baseline.angle);s.scale=Math.max(.2,Math.min(3,baseline.scale*Math.hypot(ps[1].x-ps[0].x,ps[1].y-ps[0].y)/Math.max(1,baseline.distance)))}else applyInstrumentGeometry(name,resizeFromRulerEnd([anchor.x,anchor.y],desired,Math.min(size.x*2,1440)));}renderInstruments();}else if(s.lock){const anchor=map.latLngToContainerPoint(s.lock.point);if(ps.length>=2&&baseline.mid){s.rotation=baseline.rotation+angleDelta(gestureAngle(ps[0],ps[1]),baseline.angle);s.scale=Math.max(.2,Math.min(3,baseline.scale*Math.hypot(ps[1].x-ps[0].x,ps[1].y-ps[0].y)/Math.max(1,baseline.distance)))}else{const desired=[baseline.end[0]+e.clientX-baseline.p.x,baseline.end[1]+e.clientY-baseline.p.y],g=resizeFromAnchor(name,[anchor.x,anchor.y],desired,Math.min(size.x*2,instrumentSizes[name].width*3));applyInstrumentGeometry(name,g)}renderInstruments();if(name==='ruler')snapRulerBody()}else if(ps.length>=2&&baseline.mid){const mid={x:(ps[0].x+ps[1].x)/2,y:(ps[0].y+ps[1].y)/2};s.x=Math.max(0,Math.min(1,baseline.x+(mid.x-baseline.mid.x)/size.x));s.y=Math.max(0,Math.min(.88,baseline.y+(mid.y-baseline.mid.y)/size.y));s.rotation=baseline.rotation+angleDelta(gestureAngle(ps[0],ps[1]),baseline.angle);s.scale=Math.max(.2,Math.min(3,baseline.scale*Math.hypot(ps[1].x-ps[0].x,ps[1].y-ps[0].y)/Math.max(1,baseline.distance)))}else{s.x=Math.max(0,Math.min(1,baseline.x+(e.clientX-baseline.p.x)/size.x));s.y=Math.max(0,Math.min(.88,baseline.y+(e.clientY-baseline.p.y)/size.y))}renderInstruments();if(name==='ruler'&&!s.lock)snapRulerBody();updateInstrumentControls()});
  const end=e=>{if(!pointers.has(e.pointerId))return;pointers.delete(e.pointerId);if(!pointers.size){baseline=null;gestures.delete(name);settleInstrument(name)}else begin()};el.addEventListener('pointerup',end);el.addEventListener('pointercancel',end);
 }
 
@@ -194,7 +195,14 @@ function exportKML(){const layer=activeLayer();const placemarks=layer.objects.ma
 $('export-kml').onclick=exportKML;$('import-kml').onclick=()=>$('kml-file').click();
 $('kml-file').onchange=async e=>{const file=e.target.files[0];if(!file)return;try{if(file.size>10*1024*1024)throw Error('KML 超過 10 MB');reportActiveProgress(5,'讀取 KML');const xml=new DOMParser().parseFromString(await file.text(),'application/xml');reportActiveProgress(15,'解析 KML');if(xml.querySelector('parsererror'))throw Error('XML 格式不正確');const tags=(root,name)=>[...root.getElementsByTagNameNS('*',name)],objects=[];const placemarks=tags(xml,'Placemark');let parsedMarks=0;for(const mark of placemarks){if(parsedMarks%40===0){reportActiveProgress(15+parsedMarks/placemarks.length*65,'解析 KML');await new Promise(r=>setTimeout(r,0))}parsedMarks++;const name=tags(mark,'name')[0]?.textContent||'匯入標繪',description=tags(mark,'description')[0]?.textContent||'';const geometries=[...mark.getElementsByTagName('*')].filter(n=>['Point','LineString','Polygon'].includes(n.localName));for(const g of geometries){if(g.localName==='Polygon'&&tags(g,'innerBoundaryIs').length)throw Error('不支援含孔洞的多邊形；請先轉為單環');const raw=tags(g,'coordinates')[0]?.textContent?.trim();if(!raw)continue;let points=raw.split(/\s+/).map(s=>{const p=s.split(',').map(Number);return[p[1],p[0],p[2]??0]});const type=g.localName==='Point'?'point':g.localName==='LineString'?'line':'polygon';if(type==='polygon'&&points.length>1&&points[0][0]===points.at(-1)[0]&&points[0][1]===points.at(-1)[1])points.pop();const rawColor=tags(mark,'color')[0]?.textContent?.trim();let color=state.settings.color;if(/^[\da-f]{8}$/i.test(rawColor))color='#'+rawColor.slice(6,8)+rawColor.slice(4,6)+rawColor.slice(2,4);objects.push({id:uid(),name,description,type,points,color,altitudeMode:tags(g,'altitudeMode')[0]?.textContent||'clampToGround'})}}if(!objects.length)throw Error('沒有 Point、LineString 或 Polygon');const layer={id:uid(),name:file.name.replace(/\.kml$/i,''),visible:true,objects};validateProject({version:2,layers:[layer],activeLayerId:layer.id});snapshot();state.layers.push(layer);state.activeLayerId=layer.id;save('已匯入 '+objects.length+' 個幾何物件，並建立獨立圖層。其他 KML 中繼資料未保留。');renderObjects();renderLayers();openPanel('layers-panel');map.fitBounds(L.latLngBounds(objects.flatMap(o=>o.points)),{padding:[40,40],maxZoom:10})}catch(e){toast('匯入失敗：'+e.message)}e.target.value=''};
 function refreshUI(){sanitizePreferences();renderPalette();$('unit').value=state.settings.unit;$('coordinate-format').value=state.settings.format;$('drawing-color').value=state.settings.color;$('basemap').value=state.settings.basemap;$('grid').checked=state.settings.grid;$('show-routes').checked=state.settings.routes;$('show-fixes').checked=state.settings.fixes;setBasemap();renderLayers();renderObjects();renderRouteList();renderRoutes();renderReferences();waypointPicker.renderList();waypointPicker.renderMap();renderGrid();updateCursor();updateInstrumentControls();drawProtractor();renderInstruments();updateScale();renderAxes();updateOpacityInputs();renderRangeLists();renderAirports();if($('cursor-display'))$('cursor-display').value=cursorVisibility(state.settings.cursorDisplay).mode;if($('altitude-unit'))$('altitude-unit').value=state.settings.altitudeUnit||'ft';if($('ruler-snap'))$('ruler-snap').checked=state.settings.rulerSnap!==false;}
-const scheduleViewportPaint=frameTask(()=>{updateScale();renderAxes();if(!gestures.size)renderInstruments()});map.on('move zoom resize',scheduleViewportPaint);map.on('moveend',renderGrid);map.on('zoomend moveend resize',repositionAreaNames);window.addEventListener('resize',()=>requestAnimationFrame(()=>{map.invalidateSize({pan:false});renderInstruments()}));
+let viewportMoving=false,lastAxisPaint=-Infinity;
+const scheduleViewportPaint=frameTask(()=>{
+  updateScale();const now=performance.now();if(viewportPaintDue(now,lastAxisPaint,viewportMoving)){renderAxes();lastAxisPaint=now;}
+  if(!gestures.size){if(!viewportMoving)renderInstruments();else for(const name of ['ruler','protractor'])if(state.instruments[name].visible)instrumentPosition(name);}
+});
+map.on('movestart zoomstart',()=>{viewportMoving=true;map.getContainer().classList.add('mps-map-moving');});
+map.on('moveend zoomend',()=>{viewportMoving=false;map.getContainer().classList.remove('mps-map-moving');scheduleViewportPaint();});
+map.on('move zoom resize',scheduleViewportPaint);map.on('moveend',renderGrid);map.on('zoomend moveend resize',repositionAreaNames);window.addEventListener('resize',()=>requestAnimationFrame(()=>{map.invalidateSize({pan:false});renderInstruments()}));
 function network(){$('network').textContent=navigator.onLine?'● 連線':'● 離線'}window.addEventListener('online',network);window.addEventListener('offline',network);network();
 window.addEventListener('beforeinstallprompt',e=>{e.preventDefault();installPrompt=e;$('install').hidden=false});$('install').onclick=async()=>{if(installPrompt){await installPrompt.prompt();installPrompt=null;$('install').hidden=true}};
 if('serviceWorker'in navigator&&!window.MPS_BUNDLE)navigator.serviceWorker.register('sw.js',{updateViaCache:'none'}).catch(()=>toast('離線快取無法啟用，請使用 HTTPS 或 localhost'));
@@ -229,7 +237,7 @@ function snapDrawing(p){let best=p,dist=17;for(const n of ['ruler','protractor']
 const airportGroup=L.layerGroup().addTo(map);let airportData=[];
 function renderAirports(){if(!airportData.length)return;airportGroup.clearLayers();$('airport-list').replaceChildren();let count=0;for(const a of airportData){const key=a.category==='military'?'airportsMilitary':'airportsCivil';const airportStyle=state.settings.airportStyles?.[key]||{};const label=document.createElement('label'),check=document.createElement('input');check.type='checkbox';check.checked=state.settings.airportVisibility?.[a.id]??!!state.settings[key];check.onchange=()=>{state.settings.airportVisibility||={};state.settings.airportVisibility[a.id]=check.checked;save();renderAirports()};label.append(check,document.createTextNode(a.name+' '+a.id));const airportRow=document.createElement('div');airportRow.dataset.workspaceKey='airport:'+a.id;airportRow.append(label,makeLocateButton({key:'airport:'+a.id,name:a.id,points:[a.position],panel:'airports-panel'}));$('airport-list').append(airportRow);if(!check.checked)continue;count++;L.circleMarker(a.position,{radius:6*pointSize(a.category==='military'?'軍用':'民用／軍民合用'),weight:0,fillOpacity:0,bubblingMouseEvents:false,className:'airport-hit-point'}).bindPopup(showPointPopup(a.id+' · '+a.name,a.position,a.source)).bindTooltip(a.id,{permanent:airportStyle.names===true,opacity:airportStyle.opacity??1}).addTo(airportGroup).on('click',e=>{if(tool==='pan')revealWorkspaceItem('airport:'+a.id);if(tool==='tape'){L.DomEvent.stopPropagation(e);map.closePopup();pickTape(a.position,a.id)}});for(const r of a.runways||[])L.polyline(r.points,{interactive:false,color:airportStyle.color||'#ffdb8f',weight:4,opacity:airportStyle.opacity??1}).bindTooltip(a.id).bindPopup(showPointPopup(a.id+' · '+a.name,a.position,a.source)).addTo(airportGroup)}$('airport-count').textContent=count+'/'+airportData.length;renderAirportControls();for(const [id,key] of [['airports-civil','airportsCivil'],['airports-military','airportsMilitary']])$(id).checked=!!state.settings[key]}
 for(const [id,key] of [['airports-civil','airportsCivil'],['airports-military','airportsMilitary']])$(id).onchange=()=>{state.settings[key]=$(id).checked;state.settings.airportVisibility||={};for(const a of airportData)if((a.category==='military')===(key==='airportsMilitary'))delete state.settings.airportVisibility[a.id];save();renderAirports()};
-fetch('airports.json?v=163').then(r=>r.json()).then(d=>{airportData=d.airports;renderAirports()}).catch(()=>toast('機場資料尚未載入'));
+fetch('airports.json?v=167').then(r=>r.json()).then(d=>{airportData=d.airports;renderAirports()}).catch(()=>toast('機場資料尚未載入'));
 function altitudeText(m){return state.settings.altitudeUnit==='m'?m.toFixed(precision('m',0))+' m':(m/0.3048).toFixed(precision('ft',0))+' feet'}
 let terrainRegions=[],terrainDB=null,currentHeight=null,heightMode='',lastHeightPosition=null,elevationAbort=null;
 const altitudeLabel=document.createElement('strong');altitudeLabel.id='cursor-altitude';altitudeLabel.textContent='高度 —';const inline=document.createElement('div');inline.className='cursor-inline';$('position').before(inline);inline.append($('position'),altitudeLabel);
@@ -281,7 +289,7 @@ const cursorModeLabel=document.createElement('label');cursorModeLabel.htmlFor='c
 const rulerInfo=document.createElement('div');rulerInfo.id='ruler-contact-info';rulerInfo.className='ruler-contact-info';rulerInfo.hidden=true;$('ruler').parentElement.append(rulerInfo);const rulerList=document.createElement('div');rulerList.id='ruler-contact-list';const rulerDetails=document.createElement('details'),rulerSummary=document.createElement('summary');rulerSummary.textContent='吸附點詳細距離（由直尺 0 點量起）';rulerDetails.append(rulerSummary,rulerList);$('ruler-panel').querySelector('.section-body').prepend(rulerDetails);
 const boxEditor=createBoxPointEditor($('box-point-rows'));boxEditor.load([]);$('box-add-point').onclick=()=>boxEditor.add();
 refreshUI();try{if(workspaceStorage.getItem('map-sidebar-collapsed')==='true')collapseWorkspace(true)}catch{}
-const initialDataReady=Promise.all([fetch('world.json?v=163').then(r=>{if(!r.ok)throw Error('底圖資料');return r.json()}),fetch('routes.json?v=163').then(r=>{if(!r.ok)throw Error('航路資料');return r.json()}),fetch('references.json?v=163').then(r=>{if(!r.ok)throw Error('參考圖層');return r.json()}),fetch('navaids.json?v=163').then(r=>{if(!r.ok)throw Error('航點資料');return r.json()})]).then(([world,data,refs,navaids])=>{L.geoJSON(world,{pane:'basePane',style:{color:'#567687',weight:1,fillColor:'#1b3745',fillOpacity:.9},onEachFeature:(feature,layer)=>layer.bindTooltip(feature.properties.NAME||feature.properties.ADMIN||'')}).addTo(land);routes=data.routes;references=refs.layers;waypointPicker.setSources(routes,navaids);$('source').href=data.source;refreshUI();save();$('notice').textContent=initialWarning||`已載入 ${routes.length} 條航路、8 座 VOR/DME、ADIZ、海峽中線及官方領海基線。${repairedRegionCount?' 已依原始輸入點校正 '+repairedRegionCount+' 個舊外框。':''}`}).catch(e=>toast('部分圖層載入失敗：'+e.message+'；可繼續本機標繪'));
+const initialDataReady=Promise.all([fetch('world.json?v=167').then(r=>{if(!r.ok)throw Error('底圖資料');return r.json()}),fetch('routes.json?v=167').then(r=>{if(!r.ok)throw Error('航路資料');return r.json()}),fetch('references.json?v=167').then(r=>{if(!r.ok)throw Error('參考圖層');return r.json()}),fetch('navaids.json?v=167').then(r=>{if(!r.ok)throw Error('航點資料');return r.json()})]).then(([world,data,refs,navaids])=>{L.geoJSON(world,{pane:'basePane',style:{color:'#567687',weight:1,fillColor:'#1b3745',fillOpacity:.9},onEachFeature:(feature,layer)=>layer.bindTooltip(feature.properties.NAME||feature.properties.ADMIN||'')}).addTo(land);routes=data.routes;references=refs.layers;waypointPicker.setSources(routes,navaids);$('source').href=data.source;refreshUI();save();$('notice').textContent=initialWarning||`已載入 ${routes.length} 條航路、8 座 VOR/DME、ADIZ、海峽中線及官方領海基線。${repairedRegionCount?' 已依原始輸入點校正 '+repairedRegionCount+' 個舊外框。':''}`}).catch(e=>toast('部分圖層載入失敗：'+e.message+'；可繼續本機標繪'));
 
 
 
@@ -578,7 +586,7 @@ for(const[id,mode]of [['project-add-new','new'],['project-add-all','all'],['proj
 $('project-add-apply').onclick=async()=>{if(!stagedImport||!importSelection.size)return;const button=$('project-add-apply');button.disabled=true;try{await processing('匯入勾選項目',async report=>{report(10,'檢查合併結果');const merged=await runProjectWorker({mode:'merge',current:stagedImport.current,project:stagedImport.project,selected:[...importSelection]},(p,label)=>report(p*.25,label)),next=validateProject(merged.project);report(30,'建立匯入前保護備份');if(backupHistory)await createBackupVersion('新增匯入前自動保護');else download(JSON.stringify(captureCompleteProject(),null,2),'MPS-before-add.json','application/json');snapshot();report(70,'套用勾選項目');state=next;selected=null;inspected=null;locatedTarget=null;searchHighlights.clearLayers();$('editor-panel').hidden=true;setTool('pan');sanitizePreferences();refreshUI();restoreLayout();restoreCompleteProject();save();await renderBackupVersions();const stats=merged.stats;$('backup-center-status').textContent='已新增 '+stats.layers+' 圖層、'+stats.objects+' 物件（含 '+stats.copies+' 份副本），套用 '+stats.settings+' 項設定及 '+stats.layerSettings+' 組圖層設定；原狀態已備份。';addJsonDialog.close();stagedImport=null;report(100)})}catch(e){$('project-add-status').textContent='匯入未完成：'+e.message}finally{button.disabled=false}};
 
 
-function runProjectWorker(input,report){if(typeof Worker==='undefined'){return Promise.resolve().then(()=>{if(input.mode==='analyze'){const project=validateProject(JSON.parse(input.text));return{project,items:planProjectImport(input.current,project)}}return mergeProjectItems(input.current,input.project,input.selected,uid)})}return new Promise((resolve,reject)=>{const worker=new Worker(new URL('./project-merge-worker.mjs?v=163',import.meta.url),{type:'module'});worker.onmessage=e=>{if(e.data.progress!==undefined){report(e.data.progress,e.data.label);return}worker.terminate();e.data.error?reject(Error(e.data.error)):resolve(e.data.result)};worker.onerror=()=>{worker.terminate();reject(Error('JSON 比較元件無法載入，請重新整理後再試'))};worker.postMessage(input)})}
+function runProjectWorker(input,report){if(typeof Worker==='undefined'){return Promise.resolve().then(()=>{if(input.mode==='analyze'){const project=validateProject(JSON.parse(input.text));return{project,items:planProjectImport(input.current,project)}}return mergeProjectItems(input.current,input.project,input.selected,uid)})}return new Promise((resolve,reject)=>{const worker=new Worker(new URL('./project-merge-worker.mjs?v=167',import.meta.url),{type:'module'});worker.onmessage=e=>{if(e.data.progress!==undefined){report(e.data.progress,e.data.label);return}worker.terminate();e.data.error?reject(Error(e.data.error)):resolve(e.data.result)};worker.onerror=()=>{worker.terminate();reject(Error('JSON 比較元件無法載入，請重新整理後再試'))};worker.postMessage(input)})}
 
 if(window.MPS_BUNDLE)initialDataReady.then(()=>restoreCompleteProject());
 
@@ -615,8 +623,9 @@ const detailBeforeMarkSize=loadDetailPoints;loadDetailPoints=function(o){detailB
 const layersBeforeMoveGroup=renderLayers;renderLayers=function(){layersBeforeMoveGroup();for(const layer of state.layers){const entry=[...$('layer-list').querySelectorAll('[data-workspace-key]')].find(n=>n.dataset.workspaceKey==='layer:'+layer.id);if(!entry)continue;const b=document.createElement('button');b.type='button';b.className='layer-move-group';b.dataset.groupLayer=layer.id;b.setAttribute('aria-pressed',String(layer.moveAsGroup===true));b.textContent=layer.moveAsGroup?'解除各點群組':'群組圖層各點';b.title='群組後長按圖上任一物件，可整組移動、旋轉及縮放';b.onclick=()=>{snapshot();layer.moveAsGroup=!layer.moveAsGroup;save();renderLayers();mainTransform.close()};entry.querySelector(':scope>summary').after(b)}};
 
 function renderLabelConnections(ownerMap){
+ if(ownerMap===map&&typeof viewportMoving!=='undefined'&&viewportMoving)return;
  deduplicateMapLabels(ownerMap);const host=ownerMap.getContainer();let svg=ownerMap===map?labelLeaders:host.querySelector('.label-leader-overlay');if(!svg){svg=document.createElementNS('http://www.w3.org/2000/svg','svg');svg.classList.add('label-leader-overlay');svg.setAttribute('aria-hidden','true');host.append(svg)}
- const root=host.getBoundingClientRect(),lines=[];ownerMap.eachLayer(label=>{if(!(label instanceof L.Tooltip)||!label.options.permanent||!constrainedName(label))return;const el=label.getElement(),at=label.getLatLng();if(!el||!at||el.dataset.mpsDuplicate==='true'||el.style.visibility==='hidden'||el.hidden)return;if(ownerMap===map&&(compassGroup.hasLayer(label._source||label)||draft.hasLayer(label._source||label)))return;const old=L.point(label.options.offset||[0,0]),offset=constrainNameOffset(label,ownerMap,old);if(Math.hypot(offset.x-old.x,offset.y-old.y)>.001){label.options.offset=offset;label.update()}const r=el.getBoundingClientRect();if(!r.width||!r.height)return;const a=ownerMap.latLngToContainerPoint(at);if((r.right<root.left&&a.x<0)||(r.left>root.right&&a.x>root.width)||(r.bottom<root.top&&a.y<0)||(r.top>root.bottom&&a.y>root.height))return;const {x,y}=rotatedLabelEdge(a,{cx:(r.left+r.right)/2-root.left,cy:(r.top+r.bottom)/2-root.top,...labelBorderSize(el),angle:label.options.mpsHeading||0});if(Math.hypot(x-a.x,y-a.y)<1)return;const line=document.createElementNS('http://www.w3.org/2000/svg','line');for(const [k,v]of Object.entries({x1:a.x,y1:a.y,x2:x,y2:y}))line.setAttribute(k,v);lines.push(line)});svg.replaceChildren(...lines);
+ const root=host.getBoundingClientRect(),lines=[];ownerMap.eachLayer(label=>{if(!(label instanceof L.Tooltip)||!label.options.permanent||label.options.mpsManagedNear||!constrainedName(label))return;const el=label.getElement(),at=label.getLatLng();if(!el||!at||el.dataset.mpsDuplicate==='true'||el.style.visibility==='hidden'||el.hidden)return;if(ownerMap===map&&(compassGroup.hasLayer(label._source||label)||draft.hasLayer(label._source||label)))return;const old=L.point(label.options.offset||[0,0]),offset=constrainNameOffset(label,ownerMap,old);if(Math.hypot(offset.x-old.x,offset.y-old.y)>.001){label.options.offset=offset;label.update()}const r=el.getBoundingClientRect();if(!r.width||!r.height)return;const a=ownerMap.latLngToContainerPoint(at);if((r.right<root.left&&a.x<0)||(r.left>root.right&&a.x>root.width)||(r.bottom<root.top&&a.y<0)||(r.top>root.bottom&&a.y>root.height))return;const {x,y}=rotatedLabelEdge(a,{cx:(r.left+r.right)/2-root.left,cy:(r.top+r.bottom)/2-root.top,...labelBorderSize(el),angle:label.options.mpsHeading||0});if(Math.hypot(x-a.x,y-a.y)<1)return;const line=document.createElementNS('http://www.w3.org/2000/svg','line');for(const [k,v]of Object.entries({x1:a.x,y1:a.y,x2:x,y2:y}))line.setAttribute(k,v);lines.push(line)});svg.replaceChildren(...lines);
 }
 
 // Keep area names near the actual boundary vertex rather than a remote centre.
@@ -639,7 +648,7 @@ function resolveMapMove(node,host,ownerMap=map,event){if(node.closest?.('.instru
  if(tool!=='pan')return null;const point=node.closest?.('[data-object-id]'),geometry=node.closest?.('[data-geometry-id]');if(point)return objectMoveTarget(point.dataset.objectId,host,point.dataset.vertexHandle==='true'?Number(point.dataset.vertexIndex):null,Number(point.dataset.vertexIndex)||0);if(geometry)return objectMoveTarget(geometry.dataset.geometryId,host);return null;
 }
 const mainTransform=createPressControls({host:document.querySelector('.map-wrap'),resolve:(node,event)=>resolveMapMove(node,document.querySelector('.map-wrap'),map,event),onBegin:(name,mode)=>snapshot(({move:"移動",rotate:"旋轉",scale:"縮放",level:"水平歸位並鎖定旋轉","unlock-rotation":"解除旋轉鎖定"}[mode]||"移動")+"："+name),onCommit:()=>save()});
-map.on('moveend zoomend resize',()=>{mainTransform.position();renderLabelConnections(map)});
+map.on('moveend zoomend resize',()=>{mainTransform.position();scheduleLabelLayout()});
 const toolBeforeTransform=setTool;setTool=function(next){mainTransform.close();operationHintTool=null;toolBeforeTransform(next)};
 const previewBeforeTransform=mountPrintPreview;mountPrintPreview=function(){mainTransform.close();previewBeforeTransform();if(!livePrintRoot)return;const pm=livePrintMap,root=livePrintRoot;root.querySelectorAll('.object-transform').forEach(e=>e.remove());const controller=createPressControls({host:root,resolve:(node,event)=>resolveMapMove(node,root,pm,event),onBegin:(name,mode)=>snapshot(({move:"移動",rotate:"旋轉",scale:"縮放",level:"水平歸位並鎖定旋轉","unlock-rotation":"解除旋轉鎖定"}[mode]||"移動")+"："+name),onCommit:()=>save()});root.mpsPressController=controller;controller.element.setAttribute('data-html2canvas-ignore','true');pm.on('moveend',controller.position);$('print-download').addEventListener('click',()=>controller.close(),{once:true});renderLabelConnections(pm)};
 mainTransform.element.setAttribute('data-html2canvas-ignore','true');
@@ -776,7 +785,7 @@ opacityButton.onclick=()=>{const levels=[1,.75,.5,.25],value=levels.includes(sta
 $('settings-panel').querySelector('.section-body').append(opacityButton);const refreshBeforeMovementOpacity=refreshUI;refreshUI=function(){refreshBeforeMovementOpacity();paintMovementOpacity()};paintMovementOpacity();
 }
 
-if(typeof document!=='undefined'){const version=document.createElement('p');version.id='app-version';version.textContent='程式版本 v163';$('settings-panel').querySelector('.section-body').append(version)}
+if(typeof document!=='undefined'){const version=document.createElement('p');version.id='app-version';version.textContent='程式版本 v167';$('settings-panel').querySelector('.section-body').append(version)}
 
 // Quick navigation ruler and persistent graduated ruler are independent tools.
 if (typeof document !== 'undefined') {
@@ -808,13 +817,13 @@ if (typeof document !== 'undefined') {
     onVisibility: visible => { const button=$('navigation-ruler-tool');if(button)button.setAttribute('aria-pressed',String(visible)); }
   });
   select.value = state.settings.rulerNorthReference === 'true' ? 'true' : 'magnetic';
-  select.onchange = () => { state.settings.rulerNorthReference = select.value; ruler.render(); save(); };
+  select.onchange = () => { state.settings.rulerNorthReference = select.value; renderInstruments(); save(); };
   const priorRefresh = refreshUI;
   refreshUI = function () { priorRefresh(); select.value = state.settings.rulerNorthReference === 'true' ? 'true' : 'magnetic'; ruler.render(); };
   renderInstruments = function () {
     if (!usableMapSize(map.getSize())) return;
     for(const name of ['ruler','protractor'])instrumentPosition(name);
-    drawRuler();renderRulerContactDetails();
+    if(!viewportMoving){drawRuler();renderRulerContactDetails();}
     ruler.render();
   };
   $('ruler-tool').onclick = () => {
@@ -826,7 +835,7 @@ if (typeof document !== 'undefined') {
   $('ruler-tool').querySelector('span').textContent='刻度直尺';
   $('ruler-reset').onclick = () => {state.instruments.ruler.rotation=0;renderInstruments();save();};
   $('ruler-hide').onclick = () => toggleInstrument('ruler',false);
-  let releasedGraduatedCenter=null;
+  let releasedGraduatedCenter=null,adjustingGraduatedEnd=false;
   const graduatedSnapAllowed=()=>{
     if(!releasedGraduatedCenter)return true;
     const g=instrumentGeometry('ruler');
@@ -835,34 +844,59 @@ if (typeof document !== 'undefined') {
   };
   const priorOriginSnap=snapOrigin,priorBodySnap=snapRulerBody,priorEndpointSnap=snapRuler;
   snapOrigin=function(name){return name==='ruler'&&!graduatedSnapAllowed()?false:priorOriginSnap(name);};
-  snapRulerBody=function(){if(graduatedSnapAllowed())return priorBodySnap();};
-  snapRuler=function(){if(graduatedSnapAllowed())return priorEndpointSnap();};
-  $('ruler').addEventListener('pointerdown',event=>{
-    if(!event.target.closest('.instrument-zero,.instrument-end'))return;
-    const s=state.instruments.ruler;if(!graduatedSnapAllowed())return;
-    const end=event.target.closest('.instrument-zero')?originPixel('ruler'):endPixel('ruler');
-    const near=state.settings.rulerSnap!==false&&visibleSnapPoints().some(p=>{const q=map.latLngToContainerPoint(p.position);return Math.hypot(q.x-end[0],q.y-end[1])<24;});
-    if(!s.lock&&!s.contact&&!near)return;
-    event.preventDefault();event.stopImmediatePropagation();snapshot('直尺解除吸附');
-    const g=instrumentGeometry('ruler');releasedGraduatedCenter=[g.cx,g.cy];s.lock=null;s.contact=null;renderInstruments();save('直尺已解除吸附');
-  },true);
-  const settleBeforeGraduatedSnap=settleInstrument;
-  settleInstrument=function(name){
-    if(name==='ruler'&&!state.instruments.ruler.lock){
-      snapRuler();
-      if(state.settings.rulerSnap!==false&&graduatedSnapAllowed()){
-        const candidates=visibleSnapPoints(),ends=[originPixel('ruler'),endPixel('ruler')];
-        const attached=ends.map(end=>candidates.find(p=>{const q=map.latLngToContainerPoint(p.position);return Math.hypot(q.x-end[0],q.y-end[1])<2;}));
-        if(attached.every(Boolean)){lockOrigin('ruler',attached[0].position);renderInstruments();save();return;}
+  snapRulerBody=function(){const s=state.instruments.ruler;if(!s.lock&&!s.endLock&&!adjustingGraduatedEnd&&graduatedSnapAllowed())return priorBodySnap();};
+  snapRuler=function(){const s=state.instruments.ruler;if(!s.lock&&!s.endLock&&graduatedSnapAllowed())return priorEndpointSnap();};
+  const originalInstrumentPosition=instrumentPosition;
+  instrumentPosition=function(name){
+    if(name==='ruler'){
+      const s=state.instruments.ruler,size=map.getSize();
+      if(s.endLock&&usableMapSize(size)){
+        const b=map.latLngToContainerPoint(s.endLock.point);
+        if(s.lock){const a=map.latLngToContainerPoint(s.lock.point);applyInstrumentGeometry(name,resizeFromAnchor(name,[a.x,a.y],[b.x,b.y],Math.min(size.x*2,1440)));}
+        else{const width=Math.max(100,Math.min(480*(s.scale||1),size.x*2)),g=positionFromRulerEnd([b.x,b.y],width,s.rotation||0);s.x=g.cx/size.x;s.y=g.cy/size.y;}
       }
     }
-    settleBeforeGraduatedSnap(name);
+    originalInstrumentPosition(name);
+    if(name==='ruler'){const s=state.instruments.ruler,el=$('ruler'),end=el.querySelector('.instrument-end');el.classList.toggle('end-locked',!!s.endLock);end.textContent=s.endLock?'▣':'●';end.setAttribute('aria-label',s.endLock?'直尺末端：已鎖定，點擊解鎖':'直尺末端：拖曳吸附');}
+  };
+  $('ruler').addEventListener('pointerdown',event=>{
+    const target=event.target.closest('.instrument-zero,.instrument-end');
+    if(!target)return;
+    const s=state.instruments.ruler,isZero=target.classList.contains('instrument-zero'),key=isZero?'lock':'endLock';
+    if(s[key]){
+      event.preventDefault();event.stopImmediatePropagation();snapshot('直尺端點解除鎖定');
+      const g=instrumentGeometry('ruler');releasedGraduatedCenter=[g.cx,g.cy];s[key]=null;s.contact=null;renderInstruments();save(isZero?'直尺 0 點已解除鎖定':'直尺末端已解除鎖定');return;
+    }
+    adjustingGraduatedEnd=true;
+  },true);
+  for(const type of ['pointerup','pointercancel'])$('ruler').addEventListener(type,()=>queueMicrotask(()=>{adjustingGraduatedEnd=false;}),true);
+  const settleBeforeGraduatedSnap=settleInstrument;
+  settleInstrument=function(name){
+    if(name!=='ruler'){settleBeforeGraduatedSnap(name);return;}
+    const s=state.instruments.ruler;
+    if(state.settings.rulerSnap!==false&&graduatedSnapAllowed()){
+      if(!s.lock&&!s.endLock&&!adjustingGraduatedEnd)snapRulerBody();
+      const points=visibleSnapPoints(),near=end=>points.map(p=>{const q=map.latLngToContainerPoint(p.position);return{...p,q,d:Math.hypot(q.x-end[0],q.y-end[1])};}).filter(p=>p.d<24).sort((a,b)=>a.d-b.d)[0];
+      const a=s.lock?null:near(originPixel(name)),b=s.endLock?null:near(endPixel(name));
+      if(a&&(!s.endLock||distance(a.position,s.endLock.point)>1))s.lock={point:[...a.position]};
+      if(b&&(!s.lock||distance(b.position,s.lock.point)>1))s.endLock={point:[...b.position]};
+    }
+    renderInstruments();save();
   };
   const quickButton=document.createElement('button');quickButton.id='navigation-ruler-tool';quickButton.textContent='雙點量尺';quickButton.setAttribute('aria-pressed','false');
   quickButton.onclick=()=>{if(ruler.visible)ruler.hide();else ruler.showDefault();$('instrument-menu').hidden=true;};
   $('instrument-menu').append(quickButton);
   const oldResolve = resolveMapMove;
   resolveMapMove = function (...args) { return ruler.visible && (!args[2] || args[2] === map) ? null : oldResolve(...args); };
+  const drawGraduatedTicks=drawRuler;
+  drawRuler=function(){
+    drawGraduatedTicks();if(!state.instruments.ruler.visible)return;
+    const svg=$('ruler-svg'),g=instrumentGeometry('ruler'),a=map.containerPointToLatLng(originPixel('ruler')),b=map.containerPointToLatLng(endPixel('ruler')),reference=state.settings.rulerNorthReference==='true'?'true':'magnetic';
+    const data=navigationReadout(a,b,reference),suffix=reference==='true'?'T':'M',format=v=>(v===null?'—':String(Math.round(v)%360).padStart(3,'0')+'°')+suffix;
+    const caption=svg.lastElementChild;caption.id='graduated-ruler-bearings';caption.textContent=format(data.forward)+' →   ← '+format(data.reverse);caption.setAttribute('font-size',g.width<220?'9':'11');caption.setAttribute('y','76');
+    const unit=document.createElementNS('http://www.w3.org/2000/svg','text');unit.setAttribute('x',g.width/2);unit.setAttribute('y','88');unit.setAttribute('text-anchor','middle');unit.setAttribute('fill','#fff0c6');unit.setAttribute('font-size','8');unit.textContent=state.settings.unit.toUpperCase();svg.append(unit);
+    svg.setAttribute('aria-label','刻度直尺 '+caption.textContent+' '+unit.textContent);
+  };
   renderInstruments();
 }
 
@@ -932,4 +966,67 @@ if(typeof document!=='undefined'){
       report(100);$('print-status').textContent='已匯出 '+rows.length+' 筆座標與物件名稱。';
     }finally{button.disabled=false;}
   }).catch(error=>$('print-status').textContent=error.message);
+}
+
+// Bounded waypoint decluttering. Other labels retain their saved/manual arrangement.
+if(typeof document!=='undefined'){
+  const nearbyPositions=new WeakMap(),hoverBound=new WeakSet();
+  map.on('movestart zoomstart',()=>clearTimeout(labelLayoutTimer));
+  layoutMapLabels=function(){
+    if(viewportMoving||map._animatingZoom)return;
+    deduplicateMapLabels(map);
+    const size=map.getSize(),root=map.getContainer().getBoundingClientRect(),items=[],records=new Map(),obstacles=[],updates=[];
+    let id=0;
+    map.eachLayer(label=>{
+      if(!(label instanceof L.Tooltip)||!label.options.permanent)return;
+      const el=label.getElement(),at=label.getLatLng();
+      if(!el||!at||el.dataset.mpsDuplicate==='true'||compassGroup.hasLayer(label._source||label)||draft.hasLayer(label._source||label))return;
+      const category=labelCategory(label),key=label.options.mpsLabelKey||label.options.mpsStableKey||el.textContent.trim()+'@'+at.lat.toFixed(7)+','+at.lng.toFixed(7);
+      let manual=state.settings.labelPositions?.[key];
+      label.options.mpsLabelKey=key;label.options.mpsCategory=category;el.dataset.mpsCategory=category;
+      const automaticName=!label.areaPoints&&!label.options.mpsAreaCorner&&category!=='distance'&&!label.options.className?.includes('coordinate-label')&&!label.options.className?.includes('cursor-readout');
+      if(manual&&automaticName){
+        const anchor=map.latLngToContainerPoint(at),rect=el.getBoundingClientRect(),x=anchor.x+root.left,y=anchor.y+root.top;
+        // Preserve close manual arrangements; repair remote legacy offsets without deleting saved settings.
+        if(Math.hypot(Math.max(rect.left-x,0,x-rect.right),Math.max(rect.top-y,0,y-rect.bottom))>32)manual=null;
+      }
+      if((automaticName||label.options.mpsWaypointDistance)&&!manual&&el.textContent.trim()){
+        label.options.mpsManagedNear=true;
+        const anchor=map.latLngToContainerPoint(at);
+        if(anchor.x<0||anchor.x>size.x||anchor.y<0||anchor.y>size.y){updates.push({label,el,hidden:true});return;}
+        // Hidden labels still have measurable layout via their cached dimensions.
+        const previous=nearbyPositions.get(label),w=el.offsetWidth||previous?.w||Math.max(20,el.textContent.length*8),h=el.offsetHeight||previous?.h||16,n=id++;
+        const priority=map._popup?._source===label._source?1100:label.options.mpsWaypointDistance?200:labelRank(category,state.settings.labelPriority)+(label.options.mpsWaypointPriority||0);
+        records.set(n,{label,el,w,h});items.push({id:n,key,anchor,w,h,priority,previous});
+        if(label._source&&!hoverBound.has(label._source)){
+          hoverBound.add(label._source);
+          label._source.on('mouseover',()=>{if(el.dataset.mpsDensityHidden==='true'){el.hidden=false;el.style.visibility='';el.classList.add('mps-label-peek');label.update();}});
+          label._source.on('mouseout',()=>{el.classList.remove('mps-label-peek');if(el.dataset.mpsDensityHidden==='true')el.hidden=true;});
+        }
+        return;
+      }
+      if(el.hidden)return;
+      const rect=el.getBoundingClientRect();
+      if(rect.width&&rect.height&&rect.right>=root.left&&rect.left<=root.right&&rect.bottom>=root.top&&rect.top<=root.bottom)obstacles.push({x:rect.left-root.left,y:rect.top-root.top,w:rect.width,h:rect.height});
+    });
+    const result=placeNearbyWaypoints(items,{x:0,y:0,w:size.x,h:size.y},obstacles,state.settings.labelAvoidance!==false);
+    let hidden=0;
+    for(const p of result.placements){
+      const record=records.get(p.id);updates.push({...record,...p});
+      nearbyPositions.set(record.label,{x:p.dx,y:p.dy,w:record.w,h:record.h});if(p.hidden)hidden++;
+    }
+    // Batched writes after all measurements avoid read/write layout thrashing.
+    for(const {label,el,dx,dy,hidden}of updates){
+      el.dataset.mpsDensityHidden=String(hidden);el.hidden=hidden;
+      if(el.style.visibility)el.style.visibility='';
+      if(dx===undefined)continue;
+      const old=L.point(label.options.offset||[0,0]),direction=label.options.direction;
+      label.options.direction='center';label.options.mpsAutoOffset=[dx,dy];
+      if(Math.abs(old.x-dx)>.01||Math.abs(old.y-dy)>.01||direction!=='center'){label.options.offset=L.point(dx,dy);label.update();}
+    }
+    renderLabelConnections(map);
+    $('label-layout-status').textContent='自動名稱標籤靠近對應物件'+(hidden?'；密集處暫隱 '+hidden+' 個名稱／相鄰距離，點選物件可查看':'');
+  };
+  scheduleLabelLayout();
+  map.on('popupopen popupclose',scheduleLabelLayout);
 }
