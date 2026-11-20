@@ -63,5 +63,6 @@
   "vendor/wmm2025.LICENSE",
   "line-appearance.mjs",
   "coordinate-excel.mjs",
-  "compact-waypoints.mjs"
+  "compact-waypoints.mjs",
+  "spatial-objects.mjs"
 ]

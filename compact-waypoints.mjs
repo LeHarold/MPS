@@ -8,10 +8,15 @@ export class LabelBoxIndex {
 
 export function labelEdgeGap(anchor,box){return Math.hypot(Math.max(box.x-anchor.x,0,anchor.x-box.x-box.w),Math.max(box.y-anchor.y,0,anchor.y-box.y-box.h));}
 
-export function placeNearbyWaypoints(items,bounds,obstacles=[],avoid=true){
+export function placeNearbyWaypoints(items,bounds,obstacles=[],avoid=true,{density='standard',zoom=10}={}){
+  if(density==='full')avoid=false;
+  const padding=density==='compact'?10:2;
+  const quota=density==='full'?Infinity:density==='compact'?(zoom<8?1:2):zoom<6?2:Infinity,cells=new Map();
   const index=new LabelBoxIndex();for(const box of obstacles)index.add(box);
   const results=[];
   for(const item of [...items].sort((a,b)=>b.priority-a.priority||String(a.key).localeCompare(String(b.key)))){
+    const cell=Math.floor(item.anchor.x/96)+':'+Math.floor(item.anchor.y/96),used=cells.get(cell)||0;
+    if(used>=quota&&item.priority<1000){results.push({id:item.id,dx:item.w/2+7,dy:0,hidden:true});continue;}
     const gap=7,x=item.w/2+gap,y=item.h/2+gap;
     const choices=[[x,0],[-x,0],[0,-y],[0,y],[x,-y],[-x,-y],[x,y],[-x,y]];
     if(item.previous){const p=item.previous,box={x:item.anchor.x+p.x-item.w/2,y:item.anchor.y+p.y-item.h/2,w:item.w,h:item.h};if(labelEdgeGap(item.anchor,box)<=12)choices.unshift([p.x,p.y]);}
@@ -19,10 +24,11 @@ export function placeNearbyWaypoints(items,bounds,obstacles=[],avoid=true){
     for(const [dx,dy]of choices){
       const box={x:item.anchor.x+dx-item.w/2,y:item.anchor.y+dy-item.h/2,w:item.w,h:item.h};
       if(box.x<bounds.x||box.y<bounds.y||box.x+box.w>bounds.x+bounds.w||box.y+box.h>bounds.y+bounds.h)continue;
-      const padded={x:box.x-2,y:box.y-2,w:box.w+4,h:box.h+4};
+      const padded={x:box.x-padding,y:box.y-padding,w:box.w+padding*2,h:box.h+padding*2};
       if(!avoid||!index.overlaps(padded)){selected={id:item.id,dx,dy,hidden:false};index.add(padded);break;}
     }
     results.push(selected||{id:item.id,dx:x,dy:0,hidden:avoid});
+    if(selected||!avoid)cells.set(cell,used+1);
   }
   return {placements:results,checks:index.checks};
 }
