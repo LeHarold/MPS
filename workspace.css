@@ -192,3 +192,5 @@ body.history-modal-open{overflow:hidden;overscroll-behavior:none}
 .live-roster-list{max-height:240px;overflow:auto;overscroll-behavior:contain}.live-roster-entry{padding:8px 0;border-bottom:1px solid var(--line)}.live-roster-entry strong,.live-roster-entry small{display:block;overflow-wrap:anywhere}.live-roster-entry small,.live-roster-id-hint{color:var(--muted);font-size:10px;line-height:1.6}.live-roster-entry .row{margin-top:5px}
 
 .live-roster-editor label{display:block;line-height:1.7;margin:10px 0 4px}.live-roster-editor label>input,.live-roster-editor label>select{display:block;width:100%;margin-top:4px}.live-roster-id-title{display:block}.live-roster-options{margin:8px 0}.live-roster-options>summary{font-size:11px;padding:9px 0}
+
+.live-ship-legend-row{display:flex;align-items:center;gap:8px;margin:9px 0;font-size:12px;line-height:1.5}.live-ship-legend-row svg{flex:none}.popover #navigation-ruler-tool{font-family:inherit;font-size:12px;font-weight:400;line-height:1.5;padding:6px 8px} .cursor-location{color:#116c86;text-shadow:0 0 2px #fff}
