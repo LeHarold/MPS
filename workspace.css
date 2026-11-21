@@ -182,3 +182,9 @@ body.history-modal-open{overflow:hidden;overscroll-behavior:none}
 .bright-mode .ruler.end-locked .instrument-end{background:#ead789;color:#173e2d}
 
 #print-interactive[data-spatial-ready="false"]{visibility:hidden!important}
+
+/* Connection leaders must never draw over an information card. */
+.mps-popup-open .label-leader-overlay{visibility:hidden!important}
+.live-vehicle-icon{background:none;border:0}.live-vehicle-icon svg{display:block;transform-origin:center}.live-stale{opacity:.5}.live-target-list{max-height:220px;overflow:auto;overscroll-behavior:contain}.live-target-list button{display:block;width:100%;text-align:left;margin:3px 0}.live-info-card p{margin:5px 0;line-height:1.5}.live-filters{display:grid;grid-template-columns:1fr 1fr;gap:5px}.live-filters label{margin:4px 0}.live-filters legend{grid-column:1/-1}
+
+.live-category-counts table{width:100%;border-collapse:collapse;margin:8px 0;font-size:11px}.live-category-counts th,.live-category-counts td{padding:4px 3px;border-bottom:1px solid var(--line);text-align:right}.live-category-counts th:first-child{text-align:left}.live-category-counts caption{font-size:11px;text-align:left;padding:5px 0;color:var(--muted)}.live-category-counts small{font-size:10px;color:var(--muted);display:block;line-height:1.6}

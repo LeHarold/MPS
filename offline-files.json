@@ -64,5 +64,6 @@
   "line-appearance.mjs",
   "coordinate-excel.mjs",
   "compact-waypoints.mjs",
-  "spatial-objects.mjs"
+  "spatial-objects.mjs",
+  "live-vehicles.mjs"
 ]
