@@ -1,4 +1,4 @@
-import {validatePointMOMs} from './point-relations.mjs?v=180';
+import {validatePointMOMs} from './point-relations.mjs?v=182';
 import {parseCoordinate} from './coordinates.mjs';
 export const factor=u=>({nm:1852,km:1000,m:1}[u]||1852);
 export const rad=n=>n*Math.PI/180;

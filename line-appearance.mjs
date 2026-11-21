@@ -38,10 +38,11 @@ export function installDoubleLines(L) {
   const prototype=L.SVG.prototype;
   if(prototype._mpsDoubleInstalled)return;
   prototype._mpsDoubleInstalled=true;
+  const addPath=prototype._addPath;prototype._addPath=function(layer){addPath.call(this,layer);paint(layer);};
   const updatePoly=prototype._updatePoly,updateStyle=prototype._updateStyle,removePath=prototype._removePath;
   const clear=layer=>{for(const path of layer._mpsTwinPaths||[])path.remove();layer._mpsTwinPaths=null;};
   function paint(layer,closed=layer._mpsClosed) {
-    if(!layer._path)return;
+    if(!layer._path?.parentNode)return;
     if(layer.options.mpsLineStyle!=='double'){clear(layer);return;}
     layer._path.setAttribute('stroke-opacity','0');
     if(!layer._parts)return;
