@@ -5,11 +5,11 @@ export async function printRaster(ownerMap,kind,opacity=1,progress=()=>{}){
  const west=bounds.getWest()/360*count+count/2,east=bounds.getEast()/360*count+count/2,top=tileY(bounds.getNorth()),bottom=tileY(bounds.getSouth());
  const jobs=[];for(let x=Math.floor(west);x<Math.ceil(east);x++)for(let y=Math.max(0,Math.floor(top));y<Math.min(count,Math.ceil(bottom));y++)jobs.push({x,y});
  if(jobs.length>400)throw Error('列印範圍過大，請調整比例尺');
- const tiles=new Map(),total=jobs.length;let complete=0;
+ const tiles=new Map(),total=jobs.length;let complete=0;const failed=new Set();
  await Promise.all(Array.from({length:Math.min(8,jobs.length)},async()=>{while(jobs.length){const {x,y}=jobs.shift(),tx=((x%count)+count)%count,url=kind==='satellite'?`https://services.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/${n}/${y}/${tx}`:`https://tile.openstreetmap.org/${n}/${tx}/${y}.png`;
- const response=await fetch(url,{mode:'cors',signal:AbortSignal.timeout(20000)});if(!response.ok)throw Error('底圖載入失敗，請重試');const bitmap=await createImageBitmap(await response.blob());tiles.set(x+','+y,bitmap);progress(Math.round(++complete/total*100));
+ try {const response=await fetch(url,{mode:'cors',signal:AbortSignal.timeout(20000)});if(!response.ok)throw Error('底圖載入失敗，請重試');const bitmap=await createImageBitmap(await response.blob());tiles.set(x+','+y,bitmap);} catch {failed.add(x+','+y);} finally {progress(Math.round(++complete/total*100));}
  }}));
  const canvas=document.createElement('canvas');canvas.width=size.x;canvas.height=size.y;const ctx=canvas.getContext('2d');
- for(let row=0;row<size.y;row++){const lat=ownerMap.containerPointToLatLng([0,row+.5]).lat,sy=tileY(lat),ty=Math.floor(sy);for(let x=Math.floor(west);x<Math.ceil(east);x++){const img=tiles.get(x+','+ty);if(!img)continue;const dx=(x-west)/(east-west)*size.x,dw=size.x/(east-west);ctx.drawImage(img,0,Math.min(255.99,(sy-ty)*256),256,Math.max(.01,Math.min(1,Math.abs(tileY(ownerMap.containerPointToLatLng([0,row+1]).lat)-tileY(ownerMap.containerPointToLatLng([0,row]).lat))*256)),dx,row,dw,1)}}
- for(const img of tiles.values())img.close();return L.imageOverlay(canvas.toDataURL('image/png'),bounds,{pane:'basePane',opacity,interactive:false});
+ for(let row=0;row<size.y;row++){const lat=ownerMap.containerPointToLatLng([0,row+.5]).lat,sy=tileY(lat),ty=Math.floor(sy);for(let x=Math.floor(west);x<Math.ceil(east);x++){const img=tiles.get(x+','+ty);const dx=(x-west)/(east-west)*size.x,dw=size.x/(east-west);ctx.globalAlpha=1;if(!img){if(failed.has(x+','+ty)){ctx.fillStyle=row%12<4?'#c2410c':'#fed7aa';ctx.fillRect(dx,row,dw+1,1);}continue;}ctx.globalAlpha=opacity;ctx.drawImage(img,0,Math.min(255.99,(sy-ty)*256),256,Math.max(.01,Math.min(1,Math.abs(tileY(ownerMap.containerPointToLatLng([0,row+1]).lat)-tileY(ownerMap.containerPointToLatLng([0,row]).lat))*256)),dx,row,dw,1)}}
+ for(const img of tiles.values())img.close();const overlay=L.imageOverlay(canvas.toDataURL('image/png'),bounds,{pane:'basePane',opacity:1,interactive:false});overlay.mpsMissingTiles=failed.size;return overlay;
 }
