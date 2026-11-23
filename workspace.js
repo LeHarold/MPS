@@ -92,6 +92,7 @@ function renderSpatialObject(layer,o,target=draw,owner=map,fullDetail=false){
  const displayPoints=o.id===selected?o.points:simplifyDisplay(o.points,owner.getZoom(),{polygon:o.type==='polygon',full:fullDetail});
  const alpha=(layer.opacity??1)*(o.opacity??1),style={pane:o.type==='point'?'userPointPane':'userPane',interactive:o.type==='point'||o.compassDrawing===true||/^圓規(?:圓弧|標點)/.test(o.name),color:o.type==='point'?(resolvePointColor(o,layer,0)):resolveObjectColor(o,layer),opacity:alpha,...lineStyleOptions(o.lineStyle||layer.lineStyle||'solid'),weight:o.id===selected?4:2,fillColor:o.type==='point'?(resolvePointColor(o,layer,0)):resolveObjectColor(o,layer),fillOpacity:(o.type==='point'?.9:.1)*alpha,bubblingMouseEvents:false};const geometry=o.type==='point'?L.circleMarker(o.points[0],{...style,radius:7*pointSize('圖層 '+layer.name)*(o.pointScale??1),className:'user-point'}):o.type==='polygon'?L.polygon(displayPoints,{...style,className:'noninteractive-region'}):L.polyline(displayPoints,style);geometry.addTo(target);geometry.options.mpsWorkspaceKey='object:'+o.id;if(o.type!=='point'&&(o.compassDrawing===true||/^圓規(?:圓弧|標點)/.test(o.name))){geometry.on('click',e=>{L.DomEvent.stopPropagation(e);clearTimeout(clickTimer);if(tool==='pan')clickTimer=setTimeout(()=>inspectObject(o.id),220)});geometry.on('dblclick',e=>{L.DomEvent.stopPropagation(e);clearTimeout(clickTimer);if(tool==='pan'){map.closePopup();selectObject(o.id)}})}if(o.type==='polygon'){if(nameVisible(layer,'areaNames'))addAreaName(target,o.points,o.name,alpha,'area:'+o.id)}else geometry.bindTooltip(o.measureDistance?formatDistance(o.points.reduce((n,p,i)=>i?n+distance(o.points[i-1],p):n,0)):(o.type==='point'?(o.pointProperties?.[0]?.name||o.name):o.name),{permanent:o.measureDistance===true||nameVisible(layer,'pointNames'),opacity:alpha,mpsStableKey:'object:'+o.id+':name'});if(o.type==='point')bindUserPoint(geometry,o,0);else{const element=geometry.getElement();if(element){element.style.pointerEvents=o.type==='polygon'?'none':'stroke';element.setAttribute('data-geometry-id',o.id);element.setAttribute('aria-label',o.name);element.setAttribute('aria-hidden','true')}const indices=isCompassArc(o)?[]:(!fullDetail&&owner.getZoom()<9&&o.id!==selected)?[0,o.points.length-1]:(o.type==='polygon'||o.tapeMeasure)?o.points.map((_,i)=>i):[0,o.points.length-1];for(const index of indices){if(!fullDetail&&!owner.getBounds().pad(.2).contains(o.points[index]))continue;const point=L.circleMarker(o.points[index],{pane:'userPointPane',radius:5*pointSize('圖層 '+layer.name)*(o.pointScale??1),weight:1.5,color:resolvePointColor(o,layer,index),fillColor:resolvePointColor(o,layer,index),fillOpacity:alpha,opacity:alpha,bubblingMouseEvents:false,className:'user-vertex-point'}).bindTooltip(objectVertexName(o,index),{permanent:nameVisible(layer,'pointNames'),opacity:alpha,mpsStableKey:'object:'+o.id+':vertex:'+index}).addTo(target);bindUserPoint(point,o,index)}}if(o.showCoordinates)o.points.forEach((p,i)=>{if(!fullDetail&&!owner.getBounds().pad(.2).contains(p))return;L.tooltip({permanent:true,interactive:false,direction:'right',opacity:alpha,className:'object-coordinate-label',mpsCoordinateObjectId:o.id,mpsPointIndex:i}).setLatLng(p).setContent(document.createTextNode(state.settings.format==='decimal'?p[0].toFixed(precision('decimal',6))+'\n'+p[1].toFixed(precision('decimal',6)):dms(p[0],true)+'\n'+dms(p[1],false))).addTo(target);});if(o.measureDistance){enableDistanceDrag(geometry,o);const el=geometry.getTooltip()?.getElement?.();if(el){el.classList.add('mps-label-distance');el.hidden=o.distanceLabelHidden===true;}}
  addSpatialRadius(target,layer,o);
+ if(o.type==='point') addPointRadius(target,layer,o,geometry);
  const marks=L.layerGroup();marks.options={mpsSegmentObject:o.id};addSpatialMarks(marks,layer,o,owner);marks.addTo(target);
  if(owner===map)objectPaths.set(o.id,geometry);
  return geometry;
@@ -110,6 +111,13 @@ $('apply-object').onclick=()=>{const found=getObject();if(!found)return;try{
  const next=clone(state),source=next.layers.find(l=>l.id===found.layer.id),o=source.objects.find(x=>x.id===original.id),target=next.layers.find(l=>l.id===targetId),hasMOM=vertices.some(v=>v.properties.mom);
  if(o.distanceLocked&&o.lockedDistanceM>0&&points.length===2&&!hasMOM)points[1]=destination(points[0],bearing(points[0],points[1]),o.lockedDistanceM,points[1][2]);
  o.pointKind=$('point-kind').value;o.name=$('objname').value.trim()||'未命名';o.description=$('objdescription').value;o.points=points;o.pointProperties=vertices.map(v=>clone(v.properties));
+ if(o.type==='point'&&$('object-point-radius')){
+   const raw=$('object-point-radius').value.trim();
+   const previous=$('object-point-radius').dataset.initial;
+   const metres=raw===previous?o.pointRadiusM:Number(raw)*factor(state.settings.unit);
+   if(raw&&(!Number.isFinite(metres)||metres<=0||metres>10000000))throw Error('半徑須大於 0，並且不超過 10,000 公里');
+   if(raw)o.pointRadiusM=metres;else delete o.pointRadiusM;
+ }
  if($('object-line-style')&&o.type!=='point')o.lineStyle=$('object-line-style').value;
  if(o.compassArc&&$('object-show-radius'))o.showRadius=$('object-show-radius').checked;
  if(o.compassArc&&$('object-show-radius-length'))o.showRadiusLength=$('object-show-radius-length').checked;
@@ -921,7 +929,7 @@ opacityButton.onclick=()=>{const levels=[1,.75,.5,.25],value=levels.includes(sta
 $('settings-panel').querySelector('.section-body').append(opacityButton);const refreshBeforeMovementOpacity=refreshUI;refreshUI=function(){refreshBeforeMovementOpacity();paintMovementOpacity()};paintMovementOpacity();
 }
 
-if(typeof document!=='undefined'){const version=document.createElement('p');version.id='app-version';version.textContent='程式版本 v192';$('settings-panel').querySelector('.section-body').append(version)}
+if(typeof document!=='undefined'){const version=document.createElement('p');version.id='app-version';version.textContent='程式版本 v193';$('settings-panel').querySelector('.section-body').append(version)}
 
 // Quick navigation ruler and persistent graduated ruler are independent tools.
 if (typeof document !== 'undefined') {
@@ -1163,6 +1171,25 @@ if(typeof document!=='undefined'){
 }
 // Viewport rendering keeps original object data separate from display-only geometry.
 function spatialBounds(owner){const b=owner.getBounds();return{west:b.getWest(),east:b.getEast(),south:b.getSouth(),north:b.getNorth()};}
+function addPointRadius(target,layer,object,marker){
+ const metres=object.pointRadiusM;
+ if(!Number.isFinite(metres)||metres<=0||metres>10000000)return;
+ const color=resolvePointColor(object,layer,0),opacity=(layer.opacity??1)*(object.opacity??1);
+ const options={pane:'userPane',color,opacity,weight:2,interactive:false};
+ const circle=L.polygon([],{...options,fillOpacity:.06*opacity});
+ const radius=L.polyline([],{...options,dashArray:'5 5'});
+ const label=L.tooltip({permanent:true,interactive:false,direction:'top',opacity,className:'mps-label-distance'}).setContent('半徑 '+formatDistance(metres));
+ function update({lat,lng}){
+   const center=[lat,lng];
+   const at=(angle,distance)=>{const point=destination(center,angle,distance);point[1]+=360*Math.round((lng-point[1])/360);return point;};
+   circle.setLatLngs(Array.from({length:120},(_,i)=>at(i*3,metres)));
+   radius.setLatLngs([center,at(90,metres)]);
+   label.setLatLng(at(90,metres/2));
+ }
+ update(marker.getLatLng());
+ circle.addTo(target);radius.addTo(target);label.addTo(target);
+ marker.on('move',event=>update(event.latlng));
+}
 function addSpatialRadius(target,layer,object){
  if(!object.compassArc||!(object.showRadius===true||object.showRadiusLength===true)||!object.points.length)return;
  const tip=object.points[Math.floor((object.points.length-1)/2)],alpha=(layer.opacity??1)*(object.opacity??1),radius=L.polyline([object.compassArc.center,tip],{pane:'userPane',color:resolveObjectColor(object,layer),weight:1.5,opacity:object.showRadius===true?alpha:0,dashArray:'5 5',interactive:false,bubblingMouseEvents:false,mpsRadiusOf:object.id});
@@ -1600,4 +1627,24 @@ if (typeof document !== 'undefined') {
     }catch(error){status.textContent='無法完成檢查 '+error.message;}
     finally {button.disabled=false;fill.disabled=!missing.length||!navigator.onLine||!!window.MPS_BUNDLE;}
   };
+}
+
+if(typeof document!=='undefined'){
+ const field=document.createElement('label');
+ const title=document.createElement('span');
+ const radius=document.createElement('input');
+ radius.id='object-point-radius';radius.type='number';radius.min='0';radius.step='any';
+ radius.placeholder='留空可移除圓形';
+ field.hidden=true;field.append(title,radius);
+ $('object-color').after(field);
+ const previousSelect=selectObject;
+ selectObject=function(id){
+   previousSelect(id);
+   const object=getObject(id)?.object;
+   field.hidden=object?.type!=='point';
+   const unit=state.settings.unit;
+   title.textContent='座標點半徑（'+unit.toUpperCase()+'）';
+   radius.value=field.hidden||!object.pointRadiusM?'':String(Number((object.pointRadiusM/factor(unit)).toPrecision(12)));
+   radius.dataset.initial=radius.value;
+ };
 }
