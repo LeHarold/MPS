@@ -532,7 +532,10 @@ async function requestPlaceSuggestions(){
   try{
     const endpoint=new URL('https://photon.komoot.io/api/');
     const {lat,lng}=map.getCenter();
-    endpoint.search=new URLSearchParams({q:query,limit:'10',lat:String(lat),lon:String(lng)});
+    const cleanedQuery=query.normalize('NFKC').replace(/^(?:中國大陸|中国大陆|大陸|大陆)[\s、，,:：-]*/u,'').trim()||query;
+    const xiagong=/^下[宮宫](?:[鎮镇鄉乡])?$/u.test(cleanedQuery);
+    const providerQuery=xiagong?'下宫镇':cleanedQuery;
+    endpoint.search=new URLSearchParams({q:providerQuery,limit:'10',lat:String(lat),lon:String(lng)});
     const response=await fetch(endpoint,{signal:controller.signal});
     if(!response.ok)throw Error();
     const data=await response.json();
@@ -544,10 +547,10 @@ async function requestPlaceSuggestions(){
       const row=document.createElement('button');
       row.className='ux-result';
       const label=document.createElement('b'),detail=document.createElement('small');
-      label.textContent=p.name;
+      label.textContent=xiagong&&p.name==='下宫镇'?'下宮鎮':p.name;
       detail.textContent=[...new Set([p.city,p.state,p.country].filter(Boolean))].join(' · ');
       row.append(label,detail);
-      row.onclick=()=>locateSearchResult({kind:'地名',name:p.name,points:[[lat,lon]]});
+      row.onclick=()=>locateSearchResult({kind:'地名',name:label.textContent,points:[[lat,lon]]});
       root.append(row);
     }
     count.textContent=root.childElementCount?'找到 '+root.childElementCount+' 個地名，點選可在地圖上標示':'找不到符合的地名，可加上縣市或鄉鎮名稱再試。';
@@ -929,7 +932,7 @@ opacityButton.onclick=()=>{const levels=[1,.75,.5,.25],value=levels.includes(sta
 $('settings-panel').querySelector('.section-body').append(opacityButton);const refreshBeforeMovementOpacity=refreshUI;refreshUI=function(){refreshBeforeMovementOpacity();paintMovementOpacity()};paintMovementOpacity();
 }
 
-if(typeof document!=='undefined'){const version=document.createElement('p');version.id='app-version';version.textContent='程式版本 v194';$('settings-panel').querySelector('.section-body').append(version)}
+if(typeof document!=='undefined'){const version=document.createElement('p');version.id='app-version';version.textContent='程式版本 v195';$('settings-panel').querySelector('.section-body').append(version)}
 
 // Quick navigation ruler and persistent graduated ruler are independent tools.
 if (typeof document !== 'undefined') {
