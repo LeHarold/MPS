@@ -1,45 +1,45 @@
-import {setupLiveVehicles} from './live-vehicles.mjs?v=189';
-import {ObjectSpatialIndex,simplifyDisplay,detailBucket,diffVisible} from './spatial-objects.mjs?v=189';
-import { createNavigationRuler, navigationReadout } from './navigation-ruler.mjs?v=189';
-import { placeNearbyWaypoints, viewportPaintDue } from './compact-waypoints.mjs?v=189';
-import { coordinateRows, coordinateWorkbook } from './coordinate-excel.mjs?v=189';
-import { LINE_STYLES, lineStyleOptions, installDoubleLines } from './line-appearance.mjs?v=189';
-import {openWorkspaceStorage} from './workspace-storage.mjs?v=189';
-import {labelDisplaySize,frameTask,memoAreaOffset} from './display-performance.mjs?v=189';
-import {areaSouthwest,limitAreaOffset,areaInteriorOffset} from './area-labels.mjs?v=189';
-import {stableLabelOffset,rememberLabelOffset,validAreaPlacement} from './label-stability.mjs?v=189';
-import {buildTimeline,seekTimeline,formatActionTime} from './history-timeline.mjs?v=189';
-import {pdfTimeName,translatePixels,pointAlongScreenPath,horizontalTurn,rotatePixels,usableMapSize} from './movement.mjs?v=189';
-import {applyLabelRotation,preserveLabelCenter,rotatedLabelEdge,labelBorderSize} from './label-rotation.mjs?v=189';
-import {nearestPoint,attachPoint,releasePoint} from './point-snap.mjs?v=189';
-import {decodeTerrainBlob,bindTouchCursor,setupIOSStorage} from './ios-pwa.mjs?v=189';
-import {actionDescription} from './action-history.mjs?v=189';
-import {setupLicenseSharing} from './license-transfer.mjs?v=189';
-import {setupDeviceTransfer} from './device-transfer.mjs?v=189';
-import {printRaster} from './print-raster.mjs?v=189';
-import {uniqueLabelIds} from './label-visibility.mjs?v=189';
-import {outerVertices,transformPoints,nearestPathFraction} from './map-editing.mjs?v=189';
-import {createPressControls} from './press-controls.mjs?v=189';
-import {applyPointMOMs,validatePointMOMs} from './point-relations.mjs?v=189';
-import {requireAuthorization,currentAuthorization,deleteAuthorization,canPackageWebsite,canShareLicense,getLicenseShareProof,getActiveLicenseFile} from './authorization.mjs?v=189';
-import {startLicensedTool,sanitizeToolIcon} from './licensed-tools.mjs?v=189';
+import {setupLiveVehicles} from './live-vehicles.mjs?v=190';
+import {ObjectSpatialIndex,simplifyDisplay,detailBucket,diffVisible} from './spatial-objects.mjs?v=190';
+import { createNavigationRuler, navigationReadout } from './navigation-ruler.mjs?v=190';
+import { placeNearbyWaypoints, viewportPaintDue } from './compact-waypoints.mjs?v=190';
+import { coordinateRows, coordinateWorkbook } from './coordinate-excel.mjs?v=190';
+import { LINE_STYLES, lineStyleOptions, installDoubleLines } from './line-appearance.mjs?v=190';
+import {openWorkspaceStorage} from './workspace-storage.mjs?v=190';
+import {labelDisplaySize,frameTask,memoAreaOffset} from './display-performance.mjs?v=190';
+import {areaSouthwest,limitAreaOffset,areaInteriorOffset} from './area-labels.mjs?v=190';
+import {stableLabelOffset,rememberLabelOffset,validAreaPlacement} from './label-stability.mjs?v=190';
+import {buildTimeline,seekTimeline,formatActionTime} from './history-timeline.mjs?v=190';
+import {pdfTimeName,translatePixels,pointAlongScreenPath,horizontalTurn,rotatePixels,usableMapSize} from './movement.mjs?v=190';
+import {applyLabelRotation,preserveLabelCenter,rotatedLabelEdge,labelBorderSize} from './label-rotation.mjs?v=190';
+import {nearestPoint,attachPoint,releasePoint} from './point-snap.mjs?v=190';
+import {decodeTerrainBlob,bindTouchCursor,setupIOSStorage} from './ios-pwa.mjs?v=190';
+import {actionDescription} from './action-history.mjs?v=190';
+import {setupLicenseSharing} from './license-transfer.mjs?v=190';
+import {setupDeviceTransfer} from './device-transfer.mjs?v=190';
+import {printRaster} from './print-raster.mjs?v=190';
+import {uniqueLabelIds} from './label-visibility.mjs?v=190';
+import {outerVertices,transformPoints,nearestPathFraction} from './map-editing.mjs?v=190';
+import {createPressControls} from './press-controls.mjs?v=190';
+import {applyPointMOMs,validatePointMOMs} from './point-relations.mjs?v=190';
+import {requireAuthorization,currentAuthorization,deleteAuthorization,canPackageWebsite,canShareLicense,getLicenseShareProof,getActiveLicenseFile} from './authorization.mjs?v=190';
+import {startLicensedTool,sanitizeToolIcon} from './licensed-tools.mjs?v=190';
 await requireAuthorization();
 if(window.MPS_IMPORT_BUNDLE)await window.MPS_IMPORT_BUNDLE();
-import {intervalPlan,placeCursorBox,extensionEndpoint} from './workspace-interactions.mjs?v=189';
-import {planProjectImport,mergeProjectItems} from './project-merge.mjs?v=189';
-import {parseSearchPosition,searchCatalog,placeLabelBoxes,labelRank,calibrationDistance,readPrintTemplate,openBackupHistory} from './workspace-ux.mjs?v=189';
+import {intervalPlan,placeCursorBox,extensionEndpoint} from './workspace-interactions.mjs?v=190';
+import {planProjectImport,mergeProjectItems} from './project-merge.mjs?v=190';
+import {parseSearchPosition,searchCatalog,placeLabelBoxes,labelRank,calibrationDistance,readPrintTemplate,openBackupHistory} from './workspace-ux.mjs?v=190';
 if(window.MPS_BUNDLE_READY)await window.MPS_BUNDLE_READY;
 const workspaceStorage = await openWorkspaceStorage(error => {
   console.warn('MPS workspace storage', error);
   const status = document.getElementById('saved');
   if (status) status.textContent = '儲存失敗';
 });
-import {createBoxPointEditor,orderedPolygon} from './map-inputs.mjs?v=189';
-import {positionFromAnchor,resizeFromAnchor,positionFromRulerEnd,resizeFromRulerEnd,rulerContact,labelLayout,cursorVisibility,snapRulerToPoint} from './instrument-lock.mjs?v=189';
-import {sampleGrid,openElevationStore,terrainCoordinate,sampleTerrainTile} from './elevation-store.mjs?v=189';
+import {createBoxPointEditor,orderedPolygon} from './map-inputs.mjs?v=190';
+import {positionFromAnchor,resizeFromAnchor,positionFromRulerEnd,resizeFromRulerEnd,rulerContact,labelLayout,cursorVisibility,snapRulerToPoint} from './instrument-lock.mjs?v=190';
+import {sampleGrid,openElevationStore,terrainCoordinate,sampleTerrainTile} from './elevation-store.mjs?v=190';
 import {parseCoordinate} from './coordinates.mjs';
-import {createWaypointPicker} from './waypoint-picker.mjs?v=189';
-import {synchronizeCoordinateColors,setPointColor,resolveObjectColor,resolvePointColor,distance,dms as originalDms,factor,rad,snapRulerEndpoints,parseVertices,boundingRectangle,pointOnInstrument,gestureAngle,angleDelta,niceInterval,validateRange,duplicateLayer,validateProject} from './workspace-model.mjs?v=189';
+import {createWaypointPicker} from './waypoint-picker.mjs?v=190';
+import {synchronizeCoordinateColors,setPointColor,resolveObjectColor,resolvePointColor,distance,dms as originalDms,factor,rad,snapRulerEndpoints,parseVertices,boundingRectangle,pointOnInstrument,gestureAngle,angleDelta,niceInterval,validateRange,duplicateLayer,validateProject} from './workspace-model.mjs?v=190';
 const $=id=>document.getElementById(id),uid=()=>crypto.randomUUID(),clone=x=>structuredClone(x),STORE='map-workspace-project-v2';
 const terrainHeightCache=new Map(),terrainHeightJobs=new Map(),terrainHeightBindings=new Set();let terrainHeightQueue=[],terrainHeightActive=0,terrainScanTimer;
 const defaultLayer={id:uid(),name:'標繪圖層 1',visible:true,objects:[]};
@@ -265,7 +265,7 @@ function snapDrawing(p){let best=p,dist=17;for(const n of ['ruler','protractor']
 const airportGroup=L.layerGroup().addTo(map);let airportData=[];
 function renderAirports(){if(!airportData.length)return;airportGroup.clearLayers();$('airport-list').replaceChildren();let count=0;for(const a of airportData){const key=a.category==='military'?'airportsMilitary':'airportsCivil';const airportStyle=state.settings.airportStyles?.[key]||{};const label=document.createElement('label'),check=document.createElement('input');check.type='checkbox';check.checked=state.settings.airportVisibility?.[a.id]??!!state.settings[key];check.onchange=()=>{state.settings.airportVisibility||={};state.settings.airportVisibility[a.id]=check.checked;save();renderAirports()};label.append(check,document.createTextNode(a.name+' '+a.id));const airportRow=document.createElement('div');airportRow.dataset.workspaceKey='airport:'+a.id;airportRow.append(label,makeLocateButton({key:'airport:'+a.id,name:a.id,points:[a.position],panel:'airports-panel'}));$('airport-list').append(airportRow);if(!check.checked)continue;count++;L.circleMarker(a.position,{radius:6*pointSize(a.category==='military'?'軍用':'民用／軍民合用'),weight:0,fillOpacity:0,bubblingMouseEvents:false,className:'airport-hit-point'}).bindPopup(showPointPopup(a.id+' · '+a.name,a.position,a.source)).bindTooltip(a.id,{permanent:airportStyle.names===true,opacity:airportStyle.opacity??1}).addTo(airportGroup).on('click',e=>{if(tool==='tape'){L.DomEvent.stopPropagation(e);map.closePopup();pickTape(a.position,a.id)}}).on('dblclick',e=>{L.DomEvent.stopPropagation(e);if(tool==='pan')revealWorkspaceItem('airport:'+a.id)});for(const r of a.runways||[])L.polyline(r.points,{interactive:false,color:airportStyle.color||'#ffdb8f',weight:4,opacity:airportStyle.opacity??1}).bindTooltip(a.id).bindPopup(showPointPopup(a.id+' · '+a.name,a.position,a.source)).addTo(airportGroup)}$('airport-count').textContent=count+'/'+airportData.length;renderAirportControls();for(const [id,key] of [['airports-civil','airportsCivil'],['airports-military','airportsMilitary']])$(id).checked=!!state.settings[key]}
 for(const [id,key] of [['airports-civil','airportsCivil'],['airports-military','airportsMilitary']])$(id).onchange=()=>{state.settings[key]=$(id).checked;state.settings.airportVisibility||={};for(const a of airportData)if((a.category==='military')===(key==='airportsMilitary'))delete state.settings.airportVisibility[a.id];save();renderAirports()};
-fetch('airports.json?v=189').then(r=>r.json()).then(d=>{airportData=d.airports;renderAirports()}).catch(()=>toast('機場資料尚未載入'));
+fetch('airports.json?v=190').then(r=>r.json()).then(d=>{airportData=d.airports;renderAirports()}).catch(()=>toast('機場資料尚未載入'));
 function altitudeText(m){return state.settings.altitudeUnit==='m'?m.toFixed(precision('m',0))+' m':(m/0.3048).toFixed(precision('ft',0))+' feet'}
 let terrainRegions=[],terrainDB=null,currentHeight=null,heightMode='',lastHeightPosition=null,elevationAbort=null;
 const altitudeLabel=document.createElement('strong');altitudeLabel.id='cursor-altitude';altitudeLabel.textContent='高度 —';const inline=document.createElement('div');inline.className='cursor-inline';$('position').before(inline);inline.append($('position'),altitudeLabel);
@@ -317,7 +317,7 @@ const cursorModeLabel=document.createElement('label');cursorModeLabel.htmlFor='c
 const rulerInfo=document.createElement('div');rulerInfo.id='ruler-contact-info';rulerInfo.className='ruler-contact-info';rulerInfo.hidden=true;$('ruler').parentElement.append(rulerInfo);const rulerList=document.createElement('div');rulerList.id='ruler-contact-list';const rulerDetails=document.createElement('details'),rulerSummary=document.createElement('summary');rulerSummary.textContent='吸附點詳細距離（由直尺 0 點量起）';rulerDetails.append(rulerSummary,rulerList);$('ruler-panel').querySelector('.section-body').prepend(rulerDetails);
 const boxEditor=createBoxPointEditor($('box-point-rows'));boxEditor.load([]);$('box-add-point').onclick=()=>boxEditor.add();
 refreshUI();try{if(workspaceStorage.getItem('map-sidebar-collapsed')==='true')collapseWorkspace(true)}catch{}
-const initialDataReady=Promise.all([fetch('world.json?v=189').then(r=>{if(!r.ok)throw Error('底圖資料');return r.json()}),fetch('routes.json?v=189').then(r=>{if(!r.ok)throw Error('航路資料');return r.json()}),fetch('references.json?v=189').then(r=>{if(!r.ok)throw Error('參考圖層');return r.json()}),fetch('navaids.json?v=189').then(r=>{if(!r.ok)throw Error('航點資料');return r.json()})]).then(([world,data,refs,navaids])=>{L.geoJSON(world,{pane:'basePane',style:{color:'#567687',weight:1,fillColor:'#1b3745',fillOpacity:.9},onEachFeature:(feature,layer)=>layer.bindTooltip(feature.properties.NAME||feature.properties.ADMIN||'')}).addTo(land);routes=data.routes;references=refs.layers;waypointPicker.setSources(routes,navaids);$('source').href=data.source;refreshUI();save();$('notice').textContent=initialWarning||`已載入 ${routes.length} 條航路、8 座 VOR/DME、ADIZ、海峽中線及官方領海基線。${repairedRegionCount?' 已依原始輸入點校正 '+repairedRegionCount+' 個舊外框。':''}`}).catch(e=>toast('部分圖層載入失敗：'+e.message+'；可繼續本機標繪'));
+const initialDataReady=Promise.all([fetch('world.json?v=190').then(r=>{if(!r.ok)throw Error('底圖資料');return r.json()}),fetch('routes.json?v=190').then(r=>{if(!r.ok)throw Error('航路資料');return r.json()}),fetch('references.json?v=190').then(r=>{if(!r.ok)throw Error('參考圖層');return r.json()}),fetch('navaids.json?v=190').then(r=>{if(!r.ok)throw Error('航點資料');return r.json()})]).then(([world,data,refs,navaids])=>{L.geoJSON(world,{pane:'basePane',style:{color:'#567687',weight:1,fillColor:'#1b3745',fillOpacity:.9},onEachFeature:(feature,layer)=>layer.bindTooltip(feature.properties.NAME||feature.properties.ADMIN||'')}).addTo(land);routes=data.routes;references=refs.layers;waypointPicker.setSources(routes,navaids);$('source').href=data.source;refreshUI();save();$('notice').textContent=initialWarning||`已載入 ${routes.length} 條航路、8 座 VOR/DME、ADIZ、海峽中線及官方領海基線。${repairedRegionCount?' 已依原始輸入點校正 '+repairedRegionCount+' 個舊外框。':''}`}).catch(e=>toast('部分圖層載入失敗：'+e.message+'；可繼續本機標繪'));
 
 
 
@@ -455,10 +455,73 @@ function uxButton(id,label,svg){const b=document.createElement('button');b.id=id
 const searchButton=uxButton('global-search-button','統一搜尋（Ctrl+K）','<svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><circle cx="10" cy="10" r="6"/><path d="m15 15 6 6"/></svg>');
 const searchDialog=document.createElement('dialog');searchDialog.id='global-search-dialog';searchDialog.innerHTML='<div class="ux-dialog-heading"><h2>統一搜尋</h2><button id="global-search-close" aria-label="關閉搜尋">關閉</button></div><label for="global-search-input">航點、航路、圖層、物件名稱或座標</label><input id="global-search-input" type="search" placeholder="例如 APU、B591、圖層名稱、25.05, 121.55" autocomplete="off"><p>座標順序：緯度、經度；支援十進位及度分秒，例如 25°03′00″N, 121°33′00″E。</p><p id="global-search-count" role="status"></p><div id="global-search-results" class="ux-result-list"></div>';document.body.append(searchDialog);
 const searchHighlights=L.layerGroup().addTo(map);let searchCircle=null;
-function searchItems(){const items=[];for(const p of waypointPicker.getPoints())items.push({key:'waypoint:'+p.id,kind:'航點',name:p.name,detail:p.category+' · '+p.station,points:[p.position]});for(const r of routes)items.push({key:'route:'+r.name,kind:'航路',name:r.name,detail:r.points.length+' 個航點',points:r.points.map(p=>[p.lat,p.lng,0])});for(const ref of references)items.push({key:'reference:'+ref.id,kind:'圖層',name:ref.name,detail:'參考圖層',points:ref.pathPoints||ref.points});for(const layer of state.layers){items.push({key:'layer:'+layer.id,kind:'圖層',name:layer.name,detail:(layer.visible?'已顯示':'未顯示')+' · '+layer.objects.length+' 物件',points:layer.objects.flatMap(o=>o.points),geometries:layer.objects.map(o=>({type:o.type,points:o.points}))});for(const object of layer.objects){items.push({key:'object:'+object.id,kind:isCompassArc(object)?'弧線':'物件',name:object.name,detail:layer.name+' · '+(object.description||'')+' '+(object.pointProperties||[]).map(p=>p.name||'').join(' '),points:object.points});if(!isCompassArc(object))object.points.forEach((p,i)=>{const n=object.pointProperties?.[i]?.name||object.boxVertices?.[i]?.name;if(n&&n!==object.name)items.push({key:'object:'+object.id,kind:'物件頂點',name:n,detail:layer.name+' / '+object.name,points:[p]})})}}return items}
+function searchItems(){const items=[];for(const p of waypointPicker.getPoints())items.push({key:'waypoint:'+p.id,kind:'航點',name:p.name,detail:p.category+' · '+p.station,points:[p.position]});for(const r of routes)items.push({key:'route:'+r.name,kind:'航路',name:r.name,detail:r.points.length+' 個航點',points:r.points.map(p=>[p.lat,p.lng,0])});for(const ref of references)items.push({key:'reference:'+ref.id,kind:'圖層',name:ref.name,detail:'參考圖層',points:ref.pathPoints||ref.points});for(const layer of state.layers){items.push({key:'layer:'+layer.id,kind:'圖層',layerId:layer.id,name:layer.name,detail:(layer.visible?'已顯示':'未顯示')+' · '+layer.objects.length+' 物件',points:layer.objects.flatMap(o=>o.points),geometries:layer.objects.map(o=>({type:o.type,points:o.points}))});for(const object of layer.objects){items.push({key:'object:'+object.id,kind:isCompassArc(object)?'弧線':'物件',layerId:layer.id,name:object.name,detail:layer.name+' · '+(object.description||'')+' '+(object.pointProperties||[]).map(p=>p.name||'').join(' '),points:object.points});if(!isCompassArc(object))object.points.forEach((p,i)=>{const n=object.pointProperties?.[i]?.name||object.boxVertices?.[i]?.name;if(n&&n!==object.name)items.push({key:'object:'+object.id,kind:'物件頂點',layerId:layer.id,name:n,detail:layer.name+' / '+object.name,points:[p]})})}}return items}
 function locateSearchResult(item){if(!item.points.length){toast('此圖層尚無可定位的物件');return}searchDialog.close();if(item.key){toggleLocate(item);return}setTool('pan');searchHighlights.clearLayers();if(item.points.length===1){const p=item.points[0];map.setView(p,Math.max(map.getZoom(),10));L.circleMarker(p,{radius:13,weight:3,color:state.settings.theme==='bright'?'#9a3b09':'#ffd27c',fillOpacity:0,interactive:false}).addTo(searchHighlights);L.popup().setLatLng(p).setContent(showPointPopup(item.kind+' · '+item.name,p)).openOn(map)}else{map.fitBounds(L.latLngBounds(item.points),{padding:[65,65],maxZoom:12});for(const geometry of item.geometries||[{type:'line',points:item.points}]){const color=state.settings.theme==='bright'?'#ac450f':'#ffd27c';if(geometry.type==='point')L.circleMarker(geometry.points[0],{radius:13,color,fillOpacity:0,weight:3,interactive:false}).addTo(searchHighlights);else L.polyline(geometry.type==='polygon'?[...geometry.points,geometry.points[0]]:geometry.points,{weight:5,color,opacity:.85,dashArray:'6 5',interactive:false}).addTo(searchHighlights)}toast('已定位 '+item.kind+'：'+item.name)}scheduleLabelLayout()}
-function runGlobalSearch(){const query=$('global-search-input').value.trim(),root=$('global-search-results');root.replaceChildren();if(!query){$('global-search-count').textContent='輸入關鍵字或座標開始搜尋；包含未開啟的圖層。';return}let results=searchCatalog(searchItems(),query,60),position=null,coordinateError='';try{position=parseSearchPosition(query)}catch(e){if(/[,，;；]|\d.*[NS].*\d.*[EW]/i.test(query))coordinateError=e.message}if(position)results.unshift({kind:'座標',name:pair(position),detail:'WGS 84',points:[position]});$('global-search-count').textContent=coordinateError||(!results.length?'找不到符合的項目':'顯示 '+results.length+' 筆結果'+(results.length>=60?'，請縮小關鍵字範圍':'')+'；定位不會更動圖層開關。');for(const item of results){const b=document.createElement('button');b.className='ux-result';const name=document.createElement('b'),detail=document.createElement('small');name.textContent=item.kind+' · '+item.name;detail.textContent=item.detail;b.append(name,detail);b.onclick=()=>locateSearchResult(item);root.append(b)}}
+function runGlobalSearch(){const query=$('global-search-input').value.trim(),root=$('global-search-results');root.replaceChildren();if(!query){$('global-search-count').textContent='輸入關鍵字或座標開始搜尋；包含未開啟的圖層。';return}let results=searchCatalog(filteredSearchItems(),query,60),position=null,coordinateError='';try{position=parseSearchPosition(query)}catch(e){if(/[,，;；]|\d.*[NS].*\d.*[EW]/i.test(query))coordinateError=e.message}if(position&&!searchScope.value)results.unshift({kind:'座標',name:pair(position),detail:'WGS 84',points:[position]});$('global-search-count').textContent=coordinateError||(!results.length?'找不到符合的項目':'顯示 '+results.length+' 筆結果'+(results.length>=60?'，請縮小關鍵字範圍':'')+'；定位不會更動圖層開關。');for(const item of results){const b=document.createElement('button');b.className='ux-result';const name=document.createElement('b'),detail=document.createElement('small');name.textContent=item.kind+' · '+item.name;detail.textContent=item.detail;b.append(name,detail);b.onclick=()=>locateSearchResult(item);root.append(b)}}
 searchButton.onclick=()=>{searchDialog.showModal();runGlobalSearch();$('global-search-input').focus()};$('global-search-close').onclick=()=>searchDialog.close();$('global-search-input').oninput=runGlobalSearch;$('global-search-input').onkeydown=e=>{if(e.key==='Enter'){$('global-search-results').querySelector('button')?.click();e.preventDefault()}};document.addEventListener('keydown',e=>{if((e.ctrlKey||e.metaKey)&&e.key.toLowerCase()==='k'){e.preventDefault();if(!document.querySelector('dialog[open]'))searchButton.click()}});
+
+
+const searchFilters=document.createElement('div');
+searchFilters.className='row';
+searchFilters.innerHTML='<label>搜尋圖層<select></select></label><label><input type="checkbox">只比對顯示名稱</label><button type="button">搜尋地名</button><small>地名搜尋需連線，由 Photon / OpenStreetMap 提供。</small>';
+$('global-search-input').after(searchFilters);
+const searchScope=searchFilters.querySelector('select');
+const searchByName=searchFilters.querySelector('input');
+const placeButton=searchFilters.querySelector('button');
+function filteredSearchItems(){
+  const scope=searchScope.value;
+  return searchItems().filter(item=>!scope||(item.layerId?'layer:'+item.layerId:item.key.split(':')[0])===scope)
+    .map(item=>searchByName.checked?{...item,detail:''}:item);
+}
+const openSearch=searchButton.onclick;
+searchButton.onclick=()=>{
+  const previous=searchScope.value;
+  searchScope.replaceChildren();
+  const choices=[['','全部圖層'],['waypoint','航點'],['route','航路'],['reference','參考圖層'],...state.layers.map(layer=>['layer:'+layer.id,layer.name])];
+  for(const [value,name] of choices)searchScope.add(new Option(name,value));
+  if(choices.some(([value])=>value===previous))searchScope.value=previous;
+  openSearch();
+};
+searchScope.onchange=searchByName.onchange=runGlobalSearch;
+let placeRequest;
+$('global-search-input').addEventListener('input',()=>placeRequest?.abort());
+searchDialog.addEventListener('close',()=>placeRequest?.abort());
+placeButton.onclick=async()=>{
+  const query=$('global-search-input').value.trim();
+  if(!query){$('global-search-count').textContent='請先輸入地名';return;}
+  if(!navigator.onLine){$('global-search-count').textContent='地名搜尋需連線';return;}
+  placeRequest?.abort();
+  const controller=new AbortController();
+  placeRequest=controller;
+  const timeout=setTimeout(()=>controller.abort('timeout'),10000);
+  const count=$('global-search-count'),root=$('global-search-results');
+  placeButton.disabled=true;root.replaceChildren();count.textContent='正在搜尋地名…';
+  try{
+    const endpoint=new URL('https://photon.komoot.io/api/');
+    const {lat,lng}=map.getCenter();
+    endpoint.search=new URLSearchParams({q:query,limit:'10',lat:String(lat),lon:String(lng)});
+    const response=await fetch(endpoint,{signal:controller.signal});
+    if(!response.ok)throw Error();
+    const data=await response.json();
+    if(controller.signal.aborted||!searchDialog.open)return;
+    for(const feature of data.features||[]){
+      const [lon,lat]=feature.geometry?.coordinates||[];
+      const p=feature.properties||{};
+      if(feature.geometry?.type!=='Point'||!Number.isFinite(lat)||!Number.isFinite(lon)||Math.abs(lat)>90||Math.abs(lon)>180||!p.name)continue;
+      const row=document.createElement('button');
+      row.className='ux-result';
+      const label=document.createElement('b'),detail=document.createElement('small');
+      label.textContent=p.name;
+      detail.textContent=[...new Set([p.city,p.state,p.country].filter(Boolean))].join(' · ');
+      row.append(label,detail);
+      row.onclick=()=>locateSearchResult({kind:'地名',name:p.name,points:[[lat,lon]]});
+      root.append(row);
+    }
+    count.textContent=root.childElementCount?'找到 '+root.childElementCount+' 個地名，點選可在地圖上標示':'找不到符合的地名';
+  }catch{
+    if(!controller.signal.aborted||controller.signal.reason==='timeout')count.textContent='地名服務暫時無法使用，請稍後重試';
+  }finally{clearTimeout(timeout);if(placeRequest===controller)placeButton.disabled=false;}
+};
 
 const operationGuide=document.createElement('details');operationGuide.id='operation-guide';operationGuide.className='operation-guide';operationGuide.open=state.settings.operationHintsOpen!==false;operationGuide.innerHTML='<summary id="operation-current"></summary><p id="operation-next"></p><button id="operation-pan">回到平移／選取</button>';map.getContainer().parentElement.append(operationGuide);operationGuide.addEventListener('toggle',()=>{state.settings.operationHintsOpen=operationGuide.open;save();scheduleLabelLayout()});$('operation-pan').onclick=()=>setTool('pan');
 function updateOperationGuide(){if(!$('operation-current'))return;const names={pan:'平移／選取',point:'新增標記',line:'繪製線段',polygon:'繪製區域',free:'自由繪圖',erase:'橡皮擦',tape:'鐵捲尺',compass:'圓規'};let next={pan:'拖曳地圖平移。長按物件顯示移動／旋轉／縮放控制。點一下標記查看資料，雙擊標記進入修訂及對應圖層位置；雙擊地圖可輸入區域座標。',point:'點選地圖放置標記；新物件會加入目前編輯圖層。',line:'點選頂點；至少兩點後按上方 ✓ 完成，Esc 取消。',polygon:'點選至少三個頂點，再按上方 ✓ 完成區域，Esc 取消。',free:'按住並拖動繪圖，放開儲存；可沿尺規邊緣畫線。',erase:'點選自己的標記清除；上方復原可還原刪除。',tape:tapeStart?'起點已選：請選第二點，完成後在線上顯示距離。':'請先選第一點，再選第二點建立測距線。',compass:compassState()?.visible?'圓心點一下可解鎖／鎖定。雙擊按住筆端拖動畫弧；直接放開則標點。收起圓規後可連點兩次弧線進入修訂。':'請點選圓心並輸入半徑。'}[tool]||'';if(['line','polygon'].includes(tool))next='已選 '+draftPoints.length+' 點。'+next;$('operation-current').textContent='目前：'+(names[tool]||tool);$('operation-next').textContent=next}
@@ -622,7 +685,7 @@ for(const[id,mode]of [['project-add-new','new'],['project-add-all','all'],['proj
 $('project-add-apply').onclick=async()=>{if(!stagedImport||!importSelection.size)return;const button=$('project-add-apply');button.disabled=true;try{await processing('匯入勾選項目',async report=>{report(10,'檢查合併結果');const merged=await runProjectWorker({mode:'merge',current:stagedImport.current,project:stagedImport.project,selected:[...importSelection]},(p,label)=>report(p*.25,label)),next=validateProject(merged.project);report(30,'建立匯入前保護備份');if(backupHistory)await createBackupVersion('新增匯入前自動保護');else download(JSON.stringify(captureCompleteProject(),null,2),'MPS-before-add.json','application/json');snapshot();report(70,'套用勾選項目');state=next;selected=null;inspected=null;locatedTarget=null;searchHighlights.clearLayers();$('editor-panel').hidden=true;setTool('pan');sanitizePreferences();refreshUI();restoreLayout();restoreCompleteProject();save();await renderBackupVersions();const stats=merged.stats;$('backup-center-status').textContent='已新增 '+stats.layers+' 圖層、'+stats.objects+' 物件（含 '+stats.copies+' 份副本），套用 '+stats.settings+' 項設定及 '+stats.layerSettings+' 組圖層設定；原狀態已備份。';addJsonDialog.close();stagedImport=null;report(100)})}catch(e){$('project-add-status').textContent='匯入未完成：'+e.message}finally{button.disabled=false}};
 
 
-function runProjectWorker(input,report){if(typeof Worker==='undefined'){return Promise.resolve().then(()=>{if(input.mode==='analyze'){const project=validateProject(JSON.parse(input.text));return{project,items:planProjectImport(input.current,project)}}return mergeProjectItems(input.current,input.project,input.selected,uid)})}return new Promise((resolve,reject)=>{const worker=new Worker(new URL('./project-merge-worker.mjs?v=189',import.meta.url),{type:'module'});worker.onmessage=e=>{if(e.data.progress!==undefined){report(e.data.progress,e.data.label);return}worker.terminate();e.data.error?reject(Error(e.data.error)):resolve(e.data.result)};worker.onerror=()=>{worker.terminate();reject(Error('JSON 比較元件無法載入，請重新整理後再試'))};worker.postMessage(input)})}
+function runProjectWorker(input,report){if(typeof Worker==='undefined'){return Promise.resolve().then(()=>{if(input.mode==='analyze'){const project=validateProject(JSON.parse(input.text));return{project,items:planProjectImport(input.current,project)}}return mergeProjectItems(input.current,input.project,input.selected,uid)})}return new Promise((resolve,reject)=>{const worker=new Worker(new URL('./project-merge-worker.mjs?v=190',import.meta.url),{type:'module'});worker.onmessage=e=>{if(e.data.progress!==undefined){report(e.data.progress,e.data.label);return}worker.terminate();e.data.error?reject(Error(e.data.error)):resolve(e.data.result)};worker.onerror=()=>{worker.terminate();reject(Error('JSON 比較元件無法載入，請重新整理後再試'))};worker.postMessage(input)})}
 
 if(window.MPS_BUNDLE)initialDataReady.then(()=>restoreCompleteProject());
 
@@ -822,7 +885,7 @@ opacityButton.onclick=()=>{const levels=[1,.75,.5,.25],value=levels.includes(sta
 $('settings-panel').querySelector('.section-body').append(opacityButton);const refreshBeforeMovementOpacity=refreshUI;refreshUI=function(){refreshBeforeMovementOpacity();paintMovementOpacity()};paintMovementOpacity();
 }
 
-if(typeof document!=='undefined'){const version=document.createElement('p');version.id='app-version';version.textContent='程式版本 v189';$('settings-panel').querySelector('.section-body').append(version)}
+if(typeof document!=='undefined'){const version=document.createElement('p');version.id='app-version';version.textContent='程式版本 v190';$('settings-panel').querySelector('.section-body').append(version)}
 
 // Quick navigation ruler and persistent graduated ruler are independent tools.
 if (typeof document !== 'undefined') {
