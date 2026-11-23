@@ -118,7 +118,7 @@ $('apply-object').onclick=()=>{const found=getObject();if(!found)return;try{
    if(raw&&(!Number.isFinite(metres)||metres<=0||metres>10000000))throw Error('半徑須大於 0，並且不超過 10,000 公里');
    if(raw)o.pointRadiusM=metres;else delete o.pointRadiusM;
  }
- if($('object-line-style')&&o.type!=='point')o.lineStyle=$('object-line-style').value;
+ if($('object-line-style')&&(o.type!=='point'||o.pointRadiusM))o.lineStyle=$('object-line-style').value;
  if(o.compassArc&&$('object-show-radius'))o.showRadius=$('object-show-radius').checked;
  if(o.compassArc&&$('object-show-radius-length'))o.showRadiusLength=$('object-show-radius-length').checked;
  if(o.boxInputMode==='ordered')o.boxVertices=points.map((position,i)=>({name:o.boxVertices?.[i]?.name||'點 '+(i+1),position:[...position]}));
@@ -929,7 +929,7 @@ opacityButton.onclick=()=>{const levels=[1,.75,.5,.25],value=levels.includes(sta
 $('settings-panel').querySelector('.section-body').append(opacityButton);const refreshBeforeMovementOpacity=refreshUI;refreshUI=function(){refreshBeforeMovementOpacity();paintMovementOpacity()};paintMovementOpacity();
 }
 
-if(typeof document!=='undefined'){const version=document.createElement('p');version.id='app-version';version.textContent='程式版本 v193';$('settings-panel').querySelector('.section-body').append(version)}
+if(typeof document!=='undefined'){const version=document.createElement('p');version.id='app-version';version.textContent='程式版本 v194';$('settings-panel').querySelector('.section-body').append(version)}
 
 // Quick navigation ruler and persistent graduated ruler are independent tools.
 if (typeof document !== 'undefined') {
@@ -1176,7 +1176,7 @@ function addPointRadius(target,layer,object,marker){
  if(!Number.isFinite(metres)||metres<=0||metres>10000000)return;
  const color=resolvePointColor(object,layer,0),opacity=(layer.opacity??1)*(object.opacity??1);
  const options={pane:'userPane',color,opacity,weight:2,interactive:false};
- const circle=L.polygon([],{...options,fillOpacity:.06*opacity});
+ const circle=L.polygon([],{...options,...lineStyleOptions(object.lineStyle||layer.lineStyle||'solid'),fillOpacity:.06*opacity});
  const radius=L.polyline([],{...options,dashArray:'5 5'});
  const label=L.tooltip({permanent:true,interactive:false,direction:'top',opacity,className:'mps-label-distance'}).setContent('半徑 '+formatDistance(metres));
  function update({lat,lng}){
@@ -1646,5 +1646,42 @@ if(typeof document!=='undefined'){
    title.textContent='座標點半徑（'+unit.toUpperCase()+'）';
    radius.value=field.hidden||!object.pointRadiusM?'':String(Number((object.pointRadiusM/factor(unit)).toPrecision(12)));
    radius.dataset.initial=radius.value;
+   if(!field.hidden){const style=$('object-line-style');style.closest('label').hidden=false;style.value=object.lineStyle||'';}
+ };
+}
+
+if(typeof document!=='undefined'){
+ const version=$('app-version');
+ const update=document.createElement('button');
+ update.type='button';update.id=version.id;update.textContent=version.textContent;
+ update.title='點擊檢查更新';
+ update.setAttribute('aria-label',version.textContent+'，點擊檢查更新');
+ version.replaceWith(update);
+ update.onclick=async()=>{
+   if(!navigator.onLine||window.MPS_BUNDLE){toast('請連線並開啟線上版檢查更新');return;}
+   update.disabled=true;
+   const label=update.textContent;
+   update.textContent='正在檢查更新…';
+   try{
+     const registration=await navigator.serviceWorker?.getRegistration();
+     if(registration)await registration.update();
+     const worker=registration?.installing||registration?.waiting;
+     if(worker&&worker.state!=='activated'){
+       await new Promise((resolve,reject)=>{
+         const timer=setTimeout(()=>{worker.removeEventListener('statechange',check);reject(Error('等待新版安裝逾時'));},15000);
+         function check(){
+           if(worker.state!=='activated'&&worker.state!=='redundant')return;
+           clearTimeout(timer);worker.removeEventListener('statechange',check);
+           if(worker.state==='activated')resolve();else reject(Error('新版安裝未完成'));
+         }
+         worker.addEventListener('statechange',check);check();
+       });
+     }
+     save();
+     const next=new URL(location.href);
+     next.searchParams.set('update',String(Date.now()));
+     location.replace(next.href);
+   }catch(error){toast('更新未完成：'+error.message);}
+   finally{update.textContent=label;update.disabled=false;}
  };
 }
