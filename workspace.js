@@ -458,7 +458,7 @@ const searchHighlights=L.layerGroup().addTo(map);let searchCircle=null;
 function searchItems(){const items=[];for(const p of waypointPicker.getPoints())items.push({key:'waypoint:'+p.id,kind:'航點',name:p.name,detail:p.category+' · '+p.station,points:[p.position]});for(const r of routes)items.push({key:'route:'+r.name,kind:'航路',name:r.name,detail:r.points.length+' 個航點',points:r.points.map(p=>[p.lat,p.lng,0])});for(const ref of references)items.push({key:'reference:'+ref.id,kind:'圖層',name:ref.name,detail:'參考圖層',points:ref.pathPoints||ref.points});for(const layer of state.layers){items.push({key:'layer:'+layer.id,kind:'圖層',layerId:layer.id,name:layer.name,detail:(layer.visible?'已顯示':'未顯示')+' · '+layer.objects.length+' 物件',points:layer.objects.flatMap(o=>o.points),geometries:layer.objects.map(o=>({type:o.type,points:o.points}))});for(const object of layer.objects){items.push({key:'object:'+object.id,kind:isCompassArc(object)?'弧線':'物件',layerId:layer.id,name:object.name,detail:layer.name+' · '+(object.description||'')+' '+(object.pointProperties||[]).map(p=>p.name||'').join(' '),points:object.points});if(!isCompassArc(object))object.points.forEach((p,i)=>{const n=object.pointProperties?.[i]?.name||object.boxVertices?.[i]?.name;if(n&&n!==object.name)items.push({key:'object:'+object.id,kind:'物件頂點',layerId:layer.id,name:n,detail:layer.name+' / '+object.name,points:[p]})})}}return items}
 function locateSearchResult(item){if(!item.points.length){toast('此圖層尚無可定位的物件');return}searchDialog.close();if(item.key){toggleLocate(item);return}setTool('pan');searchHighlights.clearLayers();if(item.points.length===1){const p=item.points[0];map.setView(p,Math.max(map.getZoom(),10));L.circleMarker(p,{radius:13,weight:3,color:state.settings.theme==='bright'?'#9a3b09':'#ffd27c',fillOpacity:0,interactive:false}).addTo(searchHighlights);L.popup().setLatLng(p).setContent(showPointPopup(item.kind+' · '+item.name,p)).openOn(map)}else{map.fitBounds(L.latLngBounds(item.points),{padding:[65,65],maxZoom:12});for(const geometry of item.geometries||[{type:'line',points:item.points}]){const color=state.settings.theme==='bright'?'#ac450f':'#ffd27c';if(geometry.type==='point')L.circleMarker(geometry.points[0],{radius:13,color,fillOpacity:0,weight:3,interactive:false}).addTo(searchHighlights);else L.polyline(geometry.type==='polygon'?[...geometry.points,geometry.points[0]]:geometry.points,{weight:5,color,opacity:.85,dashArray:'6 5',interactive:false}).addTo(searchHighlights)}toast('已定位 '+item.kind+'：'+item.name)}scheduleLabelLayout()}
 function runGlobalSearch(){const query=$('global-search-input').value.trim(),root=$('global-search-results');root.replaceChildren();if(!query){$('global-search-count').textContent='輸入關鍵字或座標開始搜尋；包含未開啟的圖層。';return}let results=searchCatalog(filteredSearchItems(),query,60),position=null,coordinateError='';try{position=parseSearchPosition(query)}catch(e){if(/[,，;；]|\d.*[NS].*\d.*[EW]/i.test(query))coordinateError=e.message}if(position&&!searchScope.value)results.unshift({kind:'座標',name:pair(position),detail:'WGS 84',points:[position]});$('global-search-count').textContent=coordinateError||(!results.length?'找不到符合的項目':'顯示 '+results.length+' 筆結果'+(results.length>=60?'，請縮小關鍵字範圍':'')+'；定位不會更動圖層開關。');for(const item of results){const b=document.createElement('button');b.className='ux-result';const name=document.createElement('b'),detail=document.createElement('small');name.textContent=item.kind+' · '+item.name;detail.textContent=item.detail;b.append(name,detail);b.onclick=()=>locateSearchResult(item);root.append(b)}}
-searchButton.onclick=()=>{searchDialog.showModal();runGlobalSearch();$('global-search-input').focus()};$('global-search-close').onclick=()=>searchDialog.close();$('global-search-input').oninput=runGlobalSearch;$('global-search-input').onkeydown=e=>{if(e.key==='Enter'&&!e.isComposing){const result=$('global-search-results').querySelector('button');if(result)result.click();else if(!placeButton.disabled)placeButton.click();e.preventDefault()}};document.addEventListener('keydown',e=>{if((e.ctrlKey||e.metaKey)&&e.key.toLowerCase()==='k'){e.preventDefault();if(!document.querySelector('dialog[open]'))searchButton.click()}});
+searchButton.onclick=()=>{searchDialog.showModal();runGlobalSearch();$('global-search-input').focus()};$('global-search-close').onclick=()=>searchDialog.close();$('global-search-input').oninput=runGlobalSearch;$('global-search-input').onkeydown=e=>{if(e.key==='Enter'&&!e.isComposing){const result=$('global-search-results').querySelector('button');if(result)result.click();else if(placeMode){clearTimeout(placeTimer);requestPlaceSuggestions();}else placeButton.click();e.preventDefault()}};document.addEventListener('keydown',e=>{if((e.ctrlKey||e.metaKey)&&e.key.toLowerCase()==='k'){e.preventDefault();if(!document.querySelector('dialog[open]'))searchButton.click()}});
 
 
 const searchFilters=document.createElement('div');
@@ -481,12 +481,37 @@ searchButton.onclick=()=>{
   for(const [value,name] of choices)searchScope.add(new Option(name,value));
   if(choices.some(([value])=>value===previous))searchScope.value=previous;
   openSearch();
+  if(placeMode)schedulePlaceSuggestions();
 };
-searchScope.onchange=searchByName.onchange=runGlobalSearch;
-let placeRequest;
+searchScope.onchange=searchByName.onchange=()=>{if(!placeMode)runGlobalSearch();};
+let placeRequest, placeTimer;
+let placeMode=false;
+const searchInput=$('global-search-input');
+placeButton.setAttribute('aria-pressed','false');
+function schedulePlaceSuggestions(){
+  clearTimeout(placeTimer);
+  placeRequest?.abort();
+  if(!placeMode)return;
+  $('global-search-results').replaceChildren();
+  if(Array.from(searchInput.value.trim()).length<2){
+    $('global-search-count').textContent='輸入至少兩個字以顯示地名建議';
+    return;
+  }
+  placeTimer=setTimeout(requestPlaceSuggestions,650);
+}
 $('global-search-input').addEventListener('input',()=>placeRequest?.abort());
-searchDialog.addEventListener('close',()=>placeRequest?.abort());
-placeButton.onclick=async()=>{
+searchDialog.addEventListener('close',()=>{clearTimeout(placeTimer);placeRequest?.abort();});
+searchInput.addEventListener('input',event=>{if(!event.isComposing)schedulePlaceSuggestions();else if(placeMode)$('global-search-results').replaceChildren();});
+searchInput.addEventListener('compositionend',schedulePlaceSuggestions);
+placeButton.onclick=()=>{
+  placeMode=!placeMode;
+  placeButton.setAttribute('aria-pressed',String(placeMode));
+  placeButton.textContent=placeMode?'地名模式已開啟':'搜尋地名';
+  searchInput.focus();
+  schedulePlaceSuggestions();
+  if(!placeMode)runGlobalSearch();
+};
+async function requestPlaceSuggestions(){
   const query=$('global-search-input').value.trim();
   if(!query){$('global-search-count').textContent='請先輸入地名';return;}
   if(!navigator.onLine){$('global-search-count').textContent='地名搜尋需連線';return;}
@@ -495,7 +520,7 @@ placeButton.onclick=async()=>{
   placeRequest=controller;
   const timeout=setTimeout(()=>controller.abort('timeout'),10000);
   const count=$('global-search-count'),root=$('global-search-results');
-  placeButton.disabled=true;root.replaceChildren();count.textContent='正在搜尋地名…';
+  root.replaceChildren();count.textContent='正在搜尋地名…';
   try{
     const endpoint=new URL('https://photon.komoot.io/api/');
     const {lat,lng}=map.getCenter();
@@ -525,13 +550,13 @@ placeButton.onclick=async()=>{
       suggestion.textContent='可能想找：小岞鎮（福建泉州惠安）';
       suggestion.onclick=()=>{
         $('global-search-input').value='小岞镇';
-        placeButton.click();
+        requestPlaceSuggestions();
       };
       root.prepend(suggestion);
     }
   }catch{
     if(!controller.signal.aborted||controller.signal.reason==='timeout')count.textContent='地名服務暫時無法使用，請稍後重試';
-  }finally{clearTimeout(timeout);if(placeRequest===controller)placeButton.disabled=false;}
+  }finally{clearTimeout(timeout);if(placeRequest===controller)placeRequest=null;}
 };
 
 const operationGuide=document.createElement('details');operationGuide.id='operation-guide';operationGuide.className='operation-guide';operationGuide.open=state.settings.operationHintsOpen!==false;operationGuide.innerHTML='<summary id="operation-current"></summary><p id="operation-next"></p><button id="operation-pan">回到平移／選取</button>';map.getContainer().parentElement.append(operationGuide);operationGuide.addEventListener('toggle',()=>{state.settings.operationHintsOpen=operationGuide.open;save();scheduleLabelLayout()});$('operation-pan').onclick=()=>setTool('pan');
@@ -896,7 +921,7 @@ opacityButton.onclick=()=>{const levels=[1,.75,.5,.25],value=levels.includes(sta
 $('settings-panel').querySelector('.section-body').append(opacityButton);const refreshBeforeMovementOpacity=refreshUI;refreshUI=function(){refreshBeforeMovementOpacity();paintMovementOpacity()};paintMovementOpacity();
 }
 
-if(typeof document!=='undefined'){const version=document.createElement('p');version.id='app-version';version.textContent='程式版本 v191';$('settings-panel').querySelector('.section-body').append(version)}
+if(typeof document!=='undefined'){const version=document.createElement('p');version.id='app-version';version.textContent='程式版本 v192';$('settings-panel').querySelector('.section-body').append(version)}
 
 // Quick navigation ruler and persistent graduated ruler are independent tools.
 if (typeof document !== 'undefined') {
