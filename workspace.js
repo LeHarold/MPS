@@ -534,7 +534,8 @@ async function requestPlaceSuggestions(){
     const {lat,lng}=map.getCenter();
     const cleanedQuery=query.normalize('NFKC').replace(/^(?:中國大陸|中国大陆|大陸|大陆)[\s、，,:：-]*/u,'').trim()||query;
     const xiagong=/^下[宮宫](?:[鎮镇鄉乡])?$/u.test(cleanedQuery);
-    const providerQuery=xiagong?'下宫镇':cleanedQuery;
+    const longtian=/^龍田(?:[鎮镇村])?$/u.test(cleanedQuery);
+    const providerQuery=xiagong?'下宫镇':longtian?cleanedQuery.replace('龍','龙').replace('鎮','镇'):cleanedQuery;
     endpoint.search=new URLSearchParams({q:providerQuery,limit:'10',lat:String(lat),lon:String(lng)});
     const response=await fetch(endpoint,{signal:controller.signal});
     if(!response.ok)throw Error();
@@ -547,7 +548,7 @@ async function requestPlaceSuggestions(){
       const row=document.createElement('button');
       row.className='ux-result';
       const label=document.createElement('b'),detail=document.createElement('small');
-      label.textContent=xiagong&&p.name==='下宫镇'?'下宮鎮':p.name;
+      label.textContent=xiagong&&p.name==='下宫镇'?'下宮鎮':longtian?p.name.replace(/^龙田/u,'龍田').replace(/镇$/u,'鎮'):p.name;
       detail.textContent=[...new Set([p.city,p.state,p.country].filter(Boolean))].join(' · ');
       row.append(label,detail);
       row.onclick=()=>locateSearchResult({kind:'地名',name:label.textContent,points:[[lat,lon]]});
@@ -932,7 +933,7 @@ opacityButton.onclick=()=>{const levels=[1,.75,.5,.25],value=levels.includes(sta
 $('settings-panel').querySelector('.section-body').append(opacityButton);const refreshBeforeMovementOpacity=refreshUI;refreshUI=function(){refreshBeforeMovementOpacity();paintMovementOpacity()};paintMovementOpacity();
 }
 
-if(typeof document!=='undefined'){const version=document.createElement('p');version.id='app-version';version.textContent='程式版本 v195';$('settings-panel').querySelector('.section-body').append(version)}
+if(typeof document!=='undefined'){const version=document.createElement('p');version.id='app-version';version.textContent='程式版本 v196';$('settings-panel').querySelector('.section-body').append(version)}
 
 // Quick navigation ruler and persistent graduated ruler are independent tools.
 if (typeof document !== 'undefined') {
