@@ -77,12 +77,36 @@ export async function downloadBasemapPack(pack, progress) {
   return entry;
 }
 
-export function makeOfflineBasemap(L, pack) {
-  const url = new URL('__offline-basemap/'+pack.source+'.pmtiles',location.href);
-  url.searchParams.set('revision',pack.revision);
+export async function makeOfflineBasemap(L, pack) {
   const attribution=pack.source==='protomaps'?'© OpenStreetMap contributors · Protomaps':pack.imageryYears ? '<a href="https://cloudless.eox.at/">EOX Sentinel-2 cloudless</a> · Copernicus 2016–2017 · <a href="https://creativecommons.org/licenses/by/4.0/">CC BY 4.0</a> · MPS 裁切與轉製' : 'Copernicus Sentinel-2 · 經轉製 · '+pack.date;
-  if (pack.source==='protomaps') return protomapsL.leafletLayer({url:url.href,pane:'basePane',flavor:'light',lang:'zh',attribution});
-  const archive=new pmtiles.PMTiles(url.href);
-  const raster=pmtiles.leafletRasterLayer(archive,{pane:'basePane',attribution,maxNativeZoom:pack.maxZoom,maxZoom:22});
+  if (pack.source==='protomaps') {
+    const url = new URL('__offline-basemap/'+pack.source+'.pmtiles',location.href);
+  url.searchParams.set('revision',pack.revision);
+    return protomapsL.leafletLayer({url:url.href,pane:'basePane',flavor:'light',lang:'zh',attribution});
+  }
+  const archive=new pmtiles.PMTiles(new pmtiles.FileSource(new File([pack.blob], pack.revision+'.pmtiles')));
+  const header=await archive.getHeader();
+  const [west,south,east,north]=pack.bounds;
+  const mime={2:'image/png',3:'image/jpeg',4:'image/webp',5:'image/avif'}[header.tileType];
+  const raster=L.gridLayer({
+    pane:'basePane',attribution,bounds:[[south,west],[north,east]],
+    minNativeZoom:header.minZoom,maxNativeZoom:header.maxZoom,maxZoom:22,noWrap:true
+  });
+  raster.createTile=function(coords,done){
+    const image=document.createElement('img');
+    image.alt='';
+    archive.getZxy(coords.z,coords.x,coords.y).then(tile=>{
+      if(!tile){done(null,image);return;}
+      const objectUrl=URL.createObjectURL(new Blob([tile.data],{type:mime}));
+      const finish=error=>{
+        URL.revokeObjectURL(objectUrl);
+        done(error,image);
+      };
+      image.onload=()=>finish(null);
+      image.onerror=()=>finish(Error('衛星圖磚無法解碼'));
+      image.src=objectUrl;
+    }).catch(error=>done(error,image));
+    return image;
+  };
   return raster;
 }

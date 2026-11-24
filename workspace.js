@@ -1,4 +1,4 @@
-import {normalizePack,readBasemapPack,removeBasemapPack,downloadBasemapPack,makeOfflineBasemap} from './offline-basemaps.mjs?v=205';
+import {normalizePack,readBasemapPack,removeBasemapPack,downloadBasemapPack,makeOfflineBasemap} from './offline-basemaps.mjs?v=206';
 import {setupLiveVehicles} from './live-vehicles.mjs?v=191';
 import {ObjectSpatialIndex,simplifyDisplay,detailBucket,diffVisible} from './spatial-objects.mjs?v=191';
 import { createNavigationRuler, navigationReadout } from './navigation-ruler.mjs?v=191';
@@ -960,7 +960,7 @@ opacityButton.onclick=()=>{const levels=[1,.75,.5,.25],value=levels.includes(sta
 $('settings-panel').querySelector('.section-body').append(opacityButton);const refreshBeforeMovementOpacity=refreshUI;refreshUI=function(){refreshBeforeMovementOpacity();paintMovementOpacity()};paintMovementOpacity();
 }
 
-if(typeof document!=='undefined'){const version=document.createElement('p');version.id='app-version';version.textContent='程式版本 v205';$('settings-panel').querySelector('.section-body').append(version)}
+if(typeof document!=='undefined'){const version=document.createElement('p');version.id='app-version';version.textContent='程式版本 v206';$('settings-panel').querySelector('.section-body').append(version)}
 
 // Quick navigation ruler and persistent graduated ruler are independent tools.
 if (typeof document !== 'undefined') {
@@ -1767,13 +1767,15 @@ if(typeof document!=='undefined'){
  packs.innerHTML='<summary>下載離線底圖</summary><div class="offline-pack-catalog"></div><details><summary>自訂圖包</summary><label>圖包清單網址<input type="url" placeholder="HTTPS JSON 清單網址"></label><button type="button">查看下載資訊</button><div class="offline-pack-preview"></div></details><p role="status"></p>';
  $('basemap-status').after(packs);
  const address=packs.querySelector('input'),check=packs.querySelector('button'),preview=packs.querySelector('.offline-pack-preview'),status=packs.querySelector('[role=status]');
- const registerPack=pack=>{
+ const registerPack=async pack=>{
+   const layer=await makeOfflineBasemap(L,pack);
+   layer.on('tileerror',()=>{if(state.settings.basemap===pack.source)$('basemap-status').textContent='本機圖磚載入失敗';});
    offlineBasemapLayers.get(pack.source)?.remove();
-   offlineBasemapLayers.set(pack.source,makeOfflineBasemap(L,pack));
+   offlineBasemapLayers.set(pack.source,layer);
  };
  Promise.allSettled(['protomaps','sentinel2'].map(async source=>{
    const pack=await readBasemapPack(source);
-   if(pack)registerPack(pack);
+   if(pack)await registerPack(pack);
  })).then(()=>setBasemap());
  const packCards=new Set();
  const busySources=new Set();
@@ -1847,7 +1849,7 @@ if(typeof document!=='undefined'){
        const storage=await navigator.storage?.estimate?.();
        if(storage?.quota&&storage.quota-(storage.usage||0)<pack.bytes)throw Error('裝置可用儲存空間不足');
        const saved=await downloadBasemapPack(pack,n=>{status.textContent='下載 '+Math.floor(n*100)+'%';});
-       registerPack(saved);
+       await registerPack(saved);
        applyPack();await refreshPackCards(pack.source);
        status.textContent='已下載並套用 '+pack.name;
      }catch(error){status.textContent='下載未完成。'+error.message;}
