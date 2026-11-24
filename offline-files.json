@@ -65,5 +65,10 @@
   "coordinate-excel.mjs",
   "compact-waypoints.mjs",
   "spatial-objects.mjs",
-  "live-vehicles.mjs"
+  "live-vehicles.mjs",
+  "offline-basemaps.mjs",
+  "vendor/pmtiles.js",
+  "vendor/protomaps-leaflet.js",
+  "vendor/pmtiles.LICENSE",
+  "vendor/protomaps-leaflet.LICENSE"
 ]
