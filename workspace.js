@@ -1,4 +1,4 @@
-import {normalizePack,readBasemapPack,removeBasemapPack,downloadBasemapPack,makeOfflineBasemap} from './offline-basemaps.mjs?v=206';
+import {normalizePack,readBasemapPack,removeBasemapPack,downloadBasemapPack,makeOfflineBasemap} from './offline-basemaps.mjs?v=207';
 import {setupLiveVehicles} from './live-vehicles.mjs?v=191';
 import {ObjectSpatialIndex,simplifyDisplay,detailBucket,diffVisible} from './spatial-objects.mjs?v=191';
 import { createNavigationRuler, navigationReadout } from './navigation-ruler.mjs?v=191';
@@ -960,7 +960,7 @@ opacityButton.onclick=()=>{const levels=[1,.75,.5,.25],value=levels.includes(sta
 $('settings-panel').querySelector('.section-body').append(opacityButton);const refreshBeforeMovementOpacity=refreshUI;refreshUI=function(){refreshBeforeMovementOpacity();paintMovementOpacity()};paintMovementOpacity();
 }
 
-if(typeof document!=='undefined'){const version=document.createElement('p');version.id='app-version';version.textContent='程式版本 v206';$('settings-panel').querySelector('.section-body').append(version)}
+if(typeof document!=='undefined'){const version=document.createElement('p');version.id='app-version';version.textContent='程式版本 v207';$('settings-panel').querySelector('.section-body').append(version)}
 
 // Quick navigation ruler and persistent graduated ruler are independent tools.
 if (typeof document !== 'undefined') {
@@ -1769,7 +1769,7 @@ if(typeof document!=='undefined'){
  const address=packs.querySelector('input'),check=packs.querySelector('button'),preview=packs.querySelector('.offline-pack-preview'),status=packs.querySelector('[role=status]');
  const registerPack=async pack=>{
    const layer=await makeOfflineBasemap(L,pack);
-   layer.on('tileerror',()=>{if(state.settings.basemap===pack.source)$('basemap-status').textContent='本機圖磚載入失敗';});
+   layer.on('tileerror',()=>{if(state.settings.basemap===pack.source)$('basemap-status').textContent='本機底圖載入失敗';});
    offlineBasemapLayers.get(pack.source)?.remove();
    offlineBasemapLayers.set(pack.source,layer);
  };
