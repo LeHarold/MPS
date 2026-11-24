@@ -1,4 +1,4 @@
-import {normalizePack,readBasemapPack,downloadBasemapPack,makeOfflineBasemap} from './offline-basemaps.mjs?v=201';
+import {normalizePack,readBasemapPack,removeBasemapPack,downloadBasemapPack,makeOfflineBasemap} from './offline-basemaps.mjs?v=205';
 import {setupLiveVehicles} from './live-vehicles.mjs?v=191';
 import {ObjectSpatialIndex,simplifyDisplay,detailBucket,diffVisible} from './spatial-objects.mjs?v=191';
 import { createNavigationRuler, navigationReadout } from './navigation-ruler.mjs?v=191';
@@ -960,7 +960,7 @@ opacityButton.onclick=()=>{const levels=[1,.75,.5,.25],value=levels.includes(sta
 $('settings-panel').querySelector('.section-body').append(opacityButton);const refreshBeforeMovementOpacity=refreshUI;refreshUI=function(){refreshBeforeMovementOpacity();paintMovementOpacity()};paintMovementOpacity();
 }
 
-if(typeof document!=='undefined'){const version=document.createElement('p');version.id='app-version';version.textContent='程式版本 v204';$('settings-panel').querySelector('.section-body').append(version)}
+if(typeof document!=='undefined'){const version=document.createElement('p');version.id='app-version';version.textContent='程式版本 v205';$('settings-panel').querySelector('.section-body').append(version)}
 
 // Quick navigation ruler and persistent graduated ruler are independent tools.
 if (typeof document !== 'undefined') {
@@ -1775,6 +1775,12 @@ if(typeof document!=='undefined'){
    const pack=await readBasemapPack(source);
    if(pack)registerPack(pack);
  })).then(()=>setBasemap());
+ const packCards=new Set();
+ const busySources=new Set();
+ async function refreshPackCards(source){
+   const current=await readBasemapPack(source);
+   for(const update of packCards)update(source,current);
+ }
  const catalog=packs.querySelector('.offline-pack-catalog');
  function showPack(pack,parent){
    const card=document.createElement('section');
@@ -1782,23 +1788,49 @@ if(typeof document!=='undefined'){
    name.textContent=pack.name;
    const details=document.createElement('p');
    const [west,south,east,north]=pack.bounds;
-   details.textContent='範圍 '+south+'° 至 '+north+'° 緯度，'+west+'° 至 '+east+'° 經度 · '+(pack.source==='sentinel2'?'影像拍攝日期 ':'資料日期 ')+pack.date+' · '+(pack.bytes/1e6).toFixed(1)+' MB';
+   details.textContent='範圍 '+south+'° 至 '+north+'° 緯度，'+west+'° 至 '+east+'° 經度 · '+(pack.imageryYears||((pack.source==='sentinel2'?'影像拍攝日期 ':'資料日期 ')+pack.date))+' · '+(pack.bytes/1e6).toFixed(1)+' MB';
    const download=document.createElement('button');
    download.type='button';download.textContent='下載並使用';
-   card.append(name,details,download);parent.append(card);
+   const remove=document.createElement('button');
+   remove.type='button';remove.textContent='刪除本機圖包';remove.hidden=true;
+   card.append(name,details,download,remove);parent.append(card);
    const applyPack=()=>{
      state.settings.basemap=pack.source;select.value=pack.source;save();
      map.fitBounds([[south,west],[north,east]]);
      setBasemap();
    };
    let installed=false;
-   const markInstalled=()=>{installed=true;download.textContent='使用已下載底圖';};
-   readBasemapPack(pack.source).then(current=>{
-     if(current?.url===pack.url&&current.date===pack.date&&current.bytes===pack.bytes)markInstalled();
-   }).catch(()=>{});
+   let localPack;
+   packCards.add((source,current)=>{
+     if(!card.isConnected||source!==pack.source)return;
+     localPack=current;
+     installed=current?.url===pack.url&&current.date===pack.date&&current.bytes===pack.bytes;
+     download.textContent=installed?'使用已下載底圖':'下載並使用';
+     remove.hidden=!current||(parent!==catalog&&!installed);
+     if(current)remove.textContent='刪除本機圖包（'+(current.bytes/1e6).toFixed(1)+' MB）';
+   });
+   refreshPackCards(pack.source).catch(()=>{});
+   remove.onclick=async()=>{
+     if(!localPack||busySources.has(pack.source)||!confirm('刪除此裝置上的「'+localPack.name+'」？之後可重新下載。'))return;
+     busySources.add(pack.source);
+     remove.disabled=true;
+     try{
+       await removeBasemapPack(localPack);
+       offlineBasemapLayers.get(pack.source)?.remove();
+       offlineBasemapLayers.delete(pack.source);
+       if(state.settings.basemap===pack.source){
+         state.settings.basemap='vector';select.value='vector';save();setBasemap();
+       }
+       await refreshPackCards(pack.source);
+       status.textContent='已刪除本機圖包';
+     }catch(error){status.textContent='無法刪除本機圖包。'+error.message;}
+     finally{busySources.delete(pack.source);remove.disabled=false;}
+   };
    download.onclick=async()=>{
+     if(busySources.has(pack.source))return;
      if(installed&&offlineBasemapLayers.has(pack.source)){applyPack();status.textContent='正在使用本機圖包';return;}
      if(!navigator.onLine){status.textContent='請先連線再下載。';return;}
+     busySources.add(pack.source);
      download.disabled=true;
      try{
        if(!navigator.serviceWorker?.controller){
@@ -1816,15 +1848,15 @@ if(typeof document!=='undefined'){
        if(storage?.quota&&storage.quota-(storage.usage||0)<pack.bytes)throw Error('裝置可用儲存空間不足');
        const saved=await downloadBasemapPack(pack,n=>{status.textContent='下載 '+Math.floor(n*100)+'%';});
        registerPack(saved);
-       applyPack();markInstalled();
+       applyPack();await refreshPackCards(pack.source);
        status.textContent='已下載並套用 '+pack.name;
      }catch(error){status.textContent='下載未完成。'+error.message;}
-     finally{download.disabled=false;}
+     finally{busySources.delete(pack.source);download.disabled=false;}
    };
  }
  const streets={source:'protomaps',name:'台灣本島與福建省街道圖 · Protomaps',bounds:[115.75,21.8,122.2,28.5],date:'2026-11-23',bytes:16307978,url:new URL('packs/taiwan-fujian-streets.pmtiles',location.href).href};
  showPack(streets,catalog);
- showPack({source:'sentinel2',name:'台灣中部衛星圖 · Sentinel-2',bounds:[120.45,23.7,120.95,24.24],date:'2026-11-17',bytes:8281136,url:new URL('packs/central-taiwan-sentinel.pmtiles',location.href).href},catalog);
+ showPack({source:'sentinel2',name:'台灣本島與福建省衛星圖 · Sentinel-2',bounds:streets.bounds,date:'2016-01-01',imageryYears:'2016–2017 合成影像',bytes:5278557,url:new URL('packs/taiwan-fujian-sentinel.pmtiles',location.href).href},catalog);
  check.onclick=async()=>{
    check.disabled=true;preview.replaceChildren();status.textContent='正在讀取圖包清單…';
    try{

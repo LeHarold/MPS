@@ -36,8 +36,23 @@ export function readBasemapPack(source) {
   return packTransaction('readonly', store=>store.get(source));
 }
 
+export async function removeBasemapPack(pack) {
+  if (globalThis.caches) {
+    const urls = new Set([pack.url]);
+    const bundled = pack.source === 'protomaps' ? 'taiwan-fujian-streets' : 'central-taiwan-sentinel';
+    urls.add(new URL('packs/'+bundled+'.pmtiles', location.href).href);
+    if (pack.source === 'sentinel2') urls.add(new URL('packs/taiwan-fujian-sentinel.pmtiles', location.href).href);
+    const cacheNames = (await caches.keys()).filter(name=>name.startsWith('map-workspace-'));
+    await Promise.all(cacheNames.map(async name=>{
+      const cache = await caches.open(name);
+      await Promise.all([...urls].filter(Boolean).map(url=>cache.delete(url)));
+    }));
+  }
+  await packTransaction('readwrite', store=>store.delete(pack.source));
+}
+
 export async function downloadBasemapPack(pack, progress) {
-  const response = await fetch(pack.url);
+  const response = await fetch(pack.url,{cache:"no-store"});
   if (!response.ok || !response.body) throw Error('無法下載圖包');
   const reader = response.body.getReader();
   const chunks = [];
@@ -65,7 +80,7 @@ export async function downloadBasemapPack(pack, progress) {
 export function makeOfflineBasemap(L, pack) {
   const url = new URL('__offline-basemap/'+pack.source+'.pmtiles',location.href);
   url.searchParams.set('revision',pack.revision);
-  const attribution=pack.source==='protomaps'?'© OpenStreetMap contributors · Protomaps':'Copernicus Sentinel-2 · 經轉製 · '+pack.date;
+  const attribution=pack.source==='protomaps'?'© OpenStreetMap contributors · Protomaps':pack.imageryYears ? '<a href="https://cloudless.eox.at/">EOX Sentinel-2 cloudless</a> · Copernicus 2016–2017 · <a href="https://creativecommons.org/licenses/by/4.0/">CC BY 4.0</a> · MPS 裁切與轉製' : 'Copernicus Sentinel-2 · 經轉製 · '+pack.date;
   if (pack.source==='protomaps') return protomapsL.leafletLayer({url:url.href,pane:'basePane',flavor:'light',lang:'zh',attribution});
   const archive=new pmtiles.PMTiles(url.href);
   const raster=pmtiles.leafletRasterLayer(archive,{pane:'basePane',attribution,maxNativeZoom:pack.maxZoom,maxZoom:22});
