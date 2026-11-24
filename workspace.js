@@ -960,7 +960,7 @@ opacityButton.onclick=()=>{const levels=[1,.75,.5,.25],value=levels.includes(sta
 $('settings-panel').querySelector('.section-body').append(opacityButton);const refreshBeforeMovementOpacity=refreshUI;refreshUI=function(){refreshBeforeMovementOpacity();paintMovementOpacity()};paintMovementOpacity();
 }
 
-if(typeof document!=='undefined'){const version=document.createElement('p');version.id='app-version';version.textContent='程式版本 v202';$('settings-panel').querySelector('.section-body').append(version)}
+if(typeof document!=='undefined'){const version=document.createElement('p');version.id='app-version';version.textContent='程式版本 v203';$('settings-panel').querySelector('.section-body').append(version)}
 
 // Quick navigation ruler and persistent graduated ruler are independent tools.
 if (typeof document !== 'undefined') {
@@ -1786,18 +1786,37 @@ if(typeof document!=='undefined'){
    const download=document.createElement('button');
    download.type='button';download.textContent='下載並使用';
    card.append(name,details,download);parent.append(card);
+   const applyPack=()=>{
+     state.settings.basemap=pack.source;select.value=pack.source;save();
+     map.fitBounds([[south,west],[north,east]]);
+     setBasemap();
+   };
+   let installed=false;
+   const markInstalled=()=>{installed=true;download.textContent='使用已下載底圖';};
+   readBasemapPack(pack.source).then(current=>{
+     if(current?.url===pack.url&&current.date===pack.date&&current.bytes===pack.bytes)markInstalled();
+   }).catch(()=>{});
    download.onclick=async()=>{
+     if(installed&&offlineBasemapLayers.has(pack.source)){applyPack();status.textContent='正在使用本機圖包';return;}
      if(!navigator.onLine){status.textContent='請先連線再下載。';return;}
      download.disabled=true;
      try{
-       if(!navigator.serviceWorker?.controller)throw Error('離線功能尚未就緒，請重新整理後再試');
+       if(!navigator.serviceWorker?.controller){
+         status.textContent='準備離線儲存…';
+         await new Promise((resolve,reject)=>{
+           const worker=navigator.serviceWorker;
+           if(!worker){reject(Error('此瀏覽器無法使用離線儲存'));return;}
+           const done=()=>{clearTimeout(timer);worker.removeEventListener('controllerchange',done);resolve();};
+           const timer=setTimeout(()=>{worker.removeEventListener('controllerchange',done);reject(Error('離線功能尚未就緒，請重新整理再試'));},15000);
+           worker.addEventListener('controllerchange',done);
+           if(worker.controller)done();
+         });
+       }
        const storage=await navigator.storage?.estimate?.();
        if(storage?.quota&&storage.quota-(storage.usage||0)<pack.bytes)throw Error('裝置可用儲存空間不足');
        const saved=await downloadBasemapPack(pack,n=>{status.textContent='下載 '+Math.floor(n*100)+'%';});
        registerPack(saved);
-       state.settings.basemap=pack.source;select.value=pack.source;save();
-       map.fitBounds([[south,west],[north,east]]);
-       setBasemap();download.textContent='重新下載';
+       applyPack();markInstalled();
        status.textContent='已下載並套用 '+pack.name;
      }catch(error){status.textContent='下載未完成。'+error.message;}
      finally{download.disabled=false;}
@@ -1805,9 +1824,7 @@ if(typeof document!=='undefined'){
  }
  const streets={source:'protomaps',name:'台灣本島周邊街道圖 · Protomaps',bounds:[119.8,21.85,122.1,25.35],date:'2026-11-23',bytes:7545554,url:new URL('packs/taiwan-streets.pmtiles',location.href).href};
  showPack(streets,catalog);
- const imagery=document.createElement('p');
- imagery.textContent='Sentinel-2 區域衛星圖包尚未上架。';
- catalog.append(imagery);
+ showPack({source:'sentinel2',name:'台灣中部衛星圖 · Sentinel-2',bounds:[120.45,23.7,120.95,24.2399999],date:'2026-11-17',bytes:8281136,url:new URL('packs/central-taiwan-sentinel.pmtiles',location.href).href},catalog);
  check.onclick=async()=>{
    check.disabled=true;preview.replaceChildren();status.textContent='正在讀取圖包清單…';
    try{
