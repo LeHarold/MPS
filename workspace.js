@@ -162,7 +162,7 @@ function renderRouteList(){const opened=new Set([...$('route-list').querySelecto
 $('route-search').oninput=renderRouteList;for(const id of ['routes-all','routes-none'])$(id).onclick=()=>{state.settings.selectedRoutes=id==='routes-all'?null:[];save();renderRoutes();renderRouteList()};for(const [id,key] of [['show-routes','routes'],['show-fixes','fixes']])$(id).onchange=()=>{state.settings[key]=$(id).checked;save();renderRoutes()};
 function renderReferences(){referenceGroup.clearLayers();referencePaths.clear();$('reference-list').replaceChildren();for(const ref of references){const entry=document.createElement('div');entry.className='reference-entry';entry.dataset.workspaceKey='reference:'+ref.id;const label=document.createElement('label'),input=document.createElement('input');input.type='checkbox';input.checked=state.settings.referenceVisibility?.[ref.id]!==false;input.setAttribute('aria-label','顯示 '+ref.name);label.append(input,document.createTextNode(ref.name));const details=document.createElement('details'),summary=document.createElement('summary');summary.textContent='各頂點經緯度與來源';const note=document.createElement('p');note.className='reference-note';note.textContent=ref.note+' 資料日期：'+ref.date;const link=document.createElement('a');link.href=ref.source;link.textContent=ref.sourceLabel+' ↗';link.target='_blank';link.rel='noopener';details.append(summary,note,makePointsTable(ref.points,ref.pointNames?i=>ref.pointNames[i]:ref.name),link);if(ref.additionalSource){const a=document.createElement('a');a.href=ref.additionalSource;a.textContent=ref.id==='strait-median'?'立法院公開議事錄佐證 ↗':'官方基點座標表 ↗';a.target='_blank';a.rel='noopener';details.append(document.createElement('br'),a)}const copy=document.createElement('button');copy.textContent='建立可修改副本';copy.onclick=()=>{snapshot();const layer={id:uid(),name:ref.name+' 副本',visible:true,objects:[{id:uid(),name:ref.name,type:ref.type,points:clone(ref.pathPoints||ref.points),color:ref.color,description:ref.note+'\n來源：'+ref.source}]};state.layers.push(layer);state.activeLayerId=layer.id;save('已建立獨立參考圖層副本，原始參考資料不變');renderObjects();renderLayers();openPanel('layers-panel')};details.append(document.createElement('br'),copy,makeLocateButton({key:'reference:'+ref.id,name:ref.name,points:ref.pathPoints||ref.points,panel:'reference-panel'}));entry.append(label,opacityControl(ref.name,state.settings.referenceOpacity?.[ref.id]??1,value=>{state.settings.referenceOpacity||={};state.settings.referenceOpacity[ref.id]=value;applyReferenceOpacity();save()}),details);$('reference-list').append(entry);const drawRef=()=>{if(!input.checked)return;const options={pane:'referencePane',interactive:false,referenceId:ref.id,color:ref.color,weight:2,dashArray:'8 6',fillOpacity:.025,bubblingMouseEvents:false};const line=(ref.type==='polygon'?L.polygon(ref.pathPoints||ref.points,options):L.polyline(ref.pathPoints||ref.points,options)).addTo(referenceGroup).bindTooltip(ref.name);referencePaths.set(ref.id,line);ref.points.forEach((p,i)=>L.circleMarker(p,{pane:'referencePointPane',referenceId:ref.id,radius:5*pointSize(ref.name),color:ref.color,fillOpacity:1,bubblingMouseEvents:false}).addTo(referenceGroup).bindPopup(showPointPopup(ref.pointNames?.[i]||ref.name,p,ref.source)).on('click',e=>{if(tool==='tape'){L.DomEvent.stopPropagation(e);map.closePopup();pickTape(p,ref.pointNames?.[i]||ref.name)}}).on('dblclick',e=>{L.DomEvent.stopPropagation(e);if(tool==='pan')revealWorkspaceItem('reference:'+ref.id)}))};input.onchange=()=>{state.settings.referenceVisibility||={};state.settings.referenceVisibility[ref.id]=input.checked;save();renderReferences()};drawRef()}applyReferenceOpacity();updateOpacityInputs()}
 map.createPane('basePane');map.getPane('basePane').style.zIndex='200';map.getPane('basePane').style.pointerEvents='none';
-function setBasemap(){for(const layer of [land,street,satellite])map.removeLayer(layer);const base=state.settings.basemap;(base==='satellite'?satellite:base==='street'?street:land).addTo(map);$('basemap-status').textContent=base==='vector'?'離線海岸線與國界':base==='satellite'?'Esri 衛星／航照影像，非即時；需網路':'OpenStreetMap 街道圖；需網路';applyBasemapOpacity()}
+function setBasemap(){for(const layer of [land,street,satellite])map.removeLayer(layer);const preferred=state.settings.basemap;const base=navigator.onLine?preferred:'vector';(base==='satellite'?satellite:base==='street'?street:land).addTo(map);$('basemap-status').textContent=base==='vector'?(preferred==='vector'?'離線海岸線與國界':'已切換離線向量；連線後恢復慣用底圖'):base==='satellite'?'Esri 衛星／航照影像，非即時；需網路':'OpenStreetMap 街道圖；需網路';applyBasemapOpacity()}
 $('basemap').onchange=()=>{state.settings.basemap=$('basemap').value;setBasemap();save()};for(const layer of [street,satellite])layer.on('tileerror',()=>$('basemap-status').textContent='部分影像載入失敗，請檢查連線或切換離線向量底圖');
 function renderGrid(){grid.clearLayers();if(!state.settings.grid)return;const b=map.getBounds(),zoom=map.getZoom(),step=zoom<4?10:zoom<6?5:zoom<8?1:zoom<11?.25:.05;for(let x=Math.max(-180,Math.ceil(b.getWest()/step)*step);x<=Math.min(180,b.getEast());x+=step)L.polyline([[-85,x],[85,x]],{color:'#8ea7b5',weight:1,opacity:.15,interactive:false}).addTo(grid);for(let y=Math.max(-85,Math.ceil(b.getSouth()/step)*step);y<=Math.min(85,b.getNorth());y+=step)L.polyline([[y,-180],[y,180]],{color:'#8ea7b5',weight:1,opacity:.15,interactive:false}).addTo(grid)}
 $('grid').onchange=()=>{state.settings.grid=$('grid').checked;renderGrid();save()};$('taiwan').onclick=()=>map.setView([24,121],6);$('asia').onclick=()=>map.fitBounds([[2,67],[52,150]]);
@@ -958,7 +958,7 @@ opacityButton.onclick=()=>{const levels=[1,.75,.5,.25],value=levels.includes(sta
 $('settings-panel').querySelector('.section-body').append(opacityButton);const refreshBeforeMovementOpacity=refreshUI;refreshUI=function(){refreshBeforeMovementOpacity();paintMovementOpacity()};paintMovementOpacity();
 }
 
-if(typeof document!=='undefined'){const version=document.createElement('p');version.id='app-version';version.textContent='程式版本 v199';$('settings-panel').querySelector('.section-body').append(version)}
+if(typeof document!=='undefined'){const version=document.createElement('p');version.id='app-version';version.textContent='程式版本 v200';$('settings-panel').querySelector('.section-body').append(version)}
 
 // Quick navigation ruler and persistent graduated ruler are independent tools.
 if (typeof document !== 'undefined') {
@@ -1712,5 +1712,46 @@ if(typeof document!=='undefined'){
      location.replace(next.href);
    }catch(error){toast('更新未完成：'+error.message);}
    finally{update.textContent=label;update.disabled=false;}
+ };
+}
+
+if(typeof document!=='undefined'){
+ const panel=$('basemap-status');
+ const downloadBase=document.createElement('button');
+ downloadBase.type='button';
+ downloadBase.textContent='下載離線向量底圖';
+ const progress=document.createElement('p');
+ progress.setAttribute('role','status');
+ panel.after(downloadBase,progress);
+ window.addEventListener('offline',setBasemap);
+ window.addEventListener('online',setBasemap);
+ downloadBase.onclick=async()=>{
+   if(window.MPS_BUNDLE){progress.textContent='離線包已包含向量底圖。';return;}
+   if(!navigator.onLine){progress.textContent='請先連線以下載底圖。';return;}
+   downloadBase.disabled=true;
+   try{
+     const registration=await navigator.serviceWorker?.getRegistration();
+     const worker=registration?.active;
+     if(!worker)throw Error('離線服務尚未就緒，請重新整理後再試');
+     const channel=new MessageChannel();
+     const cacheName=await new Promise((resolve,reject)=>{
+       const timer=setTimeout(()=>{channel.port1.close();reject(Error('離線服務回應逾時'));},5000);
+       channel.port1.onmessage=event=>{clearTimeout(timer);channel.port1.close();resolve(event.data?.cache);};
+       worker.postMessage({type:'MPS_CACHE_STATUS'},[channel.port2]);
+     });
+     if(!cacheName)throw Error('找不到離線快取');
+     const cache=await caches.open(cacheName);
+     const asset=new URL('world.json?v=191',location.href);
+     if(!await cache.match(asset)){
+       progress.textContent='正在下載離線向量底圖…';
+       const response=await fetch(asset);
+       if(!response.ok)throw Error('底圖下載失敗');
+       const data=await response.clone().json();
+       if(!data?.type)throw Error('底圖格式無效');
+       await cache.put(asset,response);
+     }
+     progress.textContent='離線向量底圖已備妥。街道及衛星圖需連線。';
+   }catch(error){progress.textContent='無法準備離線底圖：'+error.message;}
+   finally{downloadBase.disabled=false;}
  };
 }
