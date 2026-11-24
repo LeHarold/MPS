@@ -960,7 +960,7 @@ opacityButton.onclick=()=>{const levels=[1,.75,.5,.25],value=levels.includes(sta
 $('settings-panel').querySelector('.section-body').append(opacityButton);const refreshBeforeMovementOpacity=refreshUI;refreshUI=function(){refreshBeforeMovementOpacity();paintMovementOpacity()};paintMovementOpacity();
 }
 
-if(typeof document!=='undefined'){const version=document.createElement('p');version.id='app-version';version.textContent='程式版本 v203';$('settings-panel').querySelector('.section-body').append(version)}
+if(typeof document!=='undefined'){const version=document.createElement('p');version.id='app-version';version.textContent='程式版本 v204';$('settings-panel').querySelector('.section-body').append(version)}
 
 // Quick navigation ruler and persistent graduated ruler are independent tools.
 if (typeof document !== 'undefined') {
@@ -1822,9 +1822,9 @@ if(typeof document!=='undefined'){
      finally{download.disabled=false;}
    };
  }
- const streets={source:'protomaps',name:'台灣本島周邊街道圖 · Protomaps',bounds:[119.8,21.85,122.1,25.35],date:'2026-11-23',bytes:7545554,url:new URL('packs/taiwan-streets.pmtiles',location.href).href};
+ const streets={source:'protomaps',name:'台灣本島與福建省街道圖 · Protomaps',bounds:[115.75,21.8,122.2,28.5],date:'2026-11-23',bytes:16307978,url:new URL('packs/taiwan-fujian-streets.pmtiles',location.href).href};
  showPack(streets,catalog);
- showPack({source:'sentinel2',name:'台灣中部衛星圖 · Sentinel-2',bounds:[120.45,23.7,120.95,24.2399999],date:'2026-11-17',bytes:8281136,url:new URL('packs/central-taiwan-sentinel.pmtiles',location.href).href},catalog);
+ showPack({source:'sentinel2',name:'台灣中部衛星圖 · Sentinel-2',bounds:[120.45,23.7,120.95,24.24],date:'2026-11-17',bytes:8281136,url:new URL('packs/central-taiwan-sentinel.pmtiles',location.href).href},catalog);
  check.onclick=async()=>{
    check.disabled=true;preview.replaceChildren();status.textContent='正在讀取圖包清單…';
    try{
