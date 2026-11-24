@@ -960,7 +960,7 @@ opacityButton.onclick=()=>{const levels=[1,.75,.5,.25],value=levels.includes(sta
 $('settings-panel').querySelector('.section-body').append(opacityButton);const refreshBeforeMovementOpacity=refreshUI;refreshUI=function(){refreshBeforeMovementOpacity();paintMovementOpacity()};paintMovementOpacity();
 }
 
-if(typeof document!=='undefined'){const version=document.createElement('p');version.id='app-version';version.textContent='程式版本 v201';$('settings-panel').querySelector('.section-body').append(version)}
+if(typeof document!=='undefined'){const version=document.createElement('p');version.id='app-version';version.textContent='程式版本 v202';$('settings-panel').querySelector('.section-body').append(version)}
 
 // Quick navigation ruler and persistent graduated ruler are independent tools.
 if (typeof document !== 'undefined') {
@@ -1764,7 +1764,7 @@ if(typeof document!=='undefined'){
  select.add(new Option('離線衛星 · Sentinel-2','sentinel2'));
  select.value=state.settings.basemap;
  const packs=document.createElement('details');
- packs.innerHTML='<summary>離線街道與衛星圖包</summary><p>請輸入已備妥的 Protomaps 或 Sentinel-2 區域 PMTiles 清單網址。</p><label>圖包清單網址<input type="url" placeholder="HTTPS JSON 清單網址"></label><button type="button">查看下載資訊</button><div class="offline-pack-preview"></div><p role="status"></p>';
+ packs.innerHTML='<summary>下載離線底圖</summary><div class="offline-pack-catalog"></div><details><summary>自訂圖包</summary><label>圖包清單網址<input type="url" placeholder="HTTPS JSON 清單網址"></label><button type="button">查看下載資訊</button><div class="offline-pack-preview"></div></details><p role="status"></p>';
  $('basemap-status').after(packs);
  const address=packs.querySelector('input'),check=packs.querySelector('button'),preview=packs.querySelector('.offline-pack-preview'),status=packs.querySelector('[role=status]');
  const registerPack=pack=>{
@@ -1775,6 +1775,39 @@ if(typeof document!=='undefined'){
    const pack=await readBasemapPack(source);
    if(pack)registerPack(pack);
  })).then(()=>setBasemap());
+ const catalog=packs.querySelector('.offline-pack-catalog');
+ function showPack(pack,parent){
+   const card=document.createElement('section');
+   const name=document.createElement('strong');
+   name.textContent=pack.name;
+   const details=document.createElement('p');
+   const [west,south,east,north]=pack.bounds;
+   details.textContent='範圍 '+south+'° 至 '+north+'° 緯度，'+west+'° 至 '+east+'° 經度 · '+(pack.source==='sentinel2'?'影像拍攝日期 ':'資料日期 ')+pack.date+' · '+(pack.bytes/1e6).toFixed(1)+' MB';
+   const download=document.createElement('button');
+   download.type='button';download.textContent='下載並使用';
+   card.append(name,details,download);parent.append(card);
+   download.onclick=async()=>{
+     if(!navigator.onLine){status.textContent='請先連線再下載。';return;}
+     download.disabled=true;
+     try{
+       if(!navigator.serviceWorker?.controller)throw Error('離線功能尚未就緒，請重新整理後再試');
+       const storage=await navigator.storage?.estimate?.();
+       if(storage?.quota&&storage.quota-(storage.usage||0)<pack.bytes)throw Error('裝置可用儲存空間不足');
+       const saved=await downloadBasemapPack(pack,n=>{status.textContent='下載 '+Math.floor(n*100)+'%';});
+       registerPack(saved);
+       state.settings.basemap=pack.source;select.value=pack.source;save();
+       map.fitBounds([[south,west],[north,east]]);
+       setBasemap();download.textContent='重新下載';
+       status.textContent='已下載並套用 '+pack.name;
+     }catch(error){status.textContent='下載未完成。'+error.message;}
+     finally{download.disabled=false;}
+   };
+ }
+ const streets={source:'protomaps',name:'台灣本島周邊街道圖 · Protomaps',bounds:[119.8,21.85,122.1,25.35],date:'2026-11-23',bytes:7545554,url:new URL('packs/taiwan-streets.pmtiles',location.href).href};
+ showPack(streets,catalog);
+ const imagery=document.createElement('p');
+ imagery.textContent='Sentinel-2 區域衛星圖包尚未上架。';
+ catalog.append(imagery);
  check.onclick=async()=>{
    check.disabled=true;preview.replaceChildren();status.textContent='正在讀取圖包清單…';
    try{
@@ -1782,27 +1815,9 @@ if(typeof document!=='undefined'){
      if(url.protocol!=='https:'||url.username||url.password)throw Error('請輸入 HTTPS 圖包清單網址');
      const response=await fetch(url,{signal:AbortSignal.timeout(12000)});
      if(!response.ok)throw Error('圖包清單讀取失敗');
-     const pack=normalizePack(await response.json(),response.url);
-     const details=document.createElement('p');
-     const [west,south,east,north]=pack.bounds;
-     details.textContent=pack.name+' · '+(pack.source==='protomaps'?'Protomaps 資料日期':'Sentinel-2 影像日期')+' '+pack.date+' · '+(pack.bytes/1048576).toLocaleString('zh-TW',{maximumFractionDigits:2})+' MiB（'+pack.bytes.toLocaleString('zh-TW')+' bytes） · 範圍 緯度 '+south+' 至 '+north+'，經度 '+west+' 至 '+east;
-     const download=document.createElement('button');
-     download.type='button';download.textContent='下載此圖包';
-     preview.append(details,download);status.textContent='確認資訊後再下載。';
-     download.onclick=async()=>{
-       if(!navigator.serviceWorker?.controller){status.textContent='請重新整理，等離線服務接管頁面後再下載。';return;}
-       download.disabled=check.disabled=true;
-       try{
-         const storage=await navigator.storage?.estimate?.();
-         if(storage?.quota&&storage.quota-(storage.usage||0)<pack.bytes)throw Error('裝置可用儲存空間不足');
-         const savedPack=await downloadBasemapPack(pack,n=>{status.textContent='下載 '+Math.floor(n*100)+'%';});
-         registerPack(savedPack);
-         state.settings.basemap=pack.source;select.value=pack.source;save();setBasemap();
-         status.textContent='已下載並套用 '+pack.name;
-       }catch(error){status.textContent='下載未完成 '+error.message;}
-       finally{download.disabled=check.disabled=false;}
-     };
-   }catch(error){status.textContent='無法查看下載資訊 '+error.message;}
+     showPack(normalizePack(await response.json(),response.url),preview);
+     status.textContent='請確認涵蓋範圍後下載。';
+   }catch(error){status.textContent='無法查看下載資訊。'+error.message;}
    finally{check.disabled=false;}
  };
 }
