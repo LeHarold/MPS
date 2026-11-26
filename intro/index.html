@@ -1,0 +1,116 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#112a26">
+<meta name="description" content="用 MPS 搜尋座標、測量兩點距離，並將地圖標繪整理成圖層。">
+<title>MPS｜地圖工作空間</title>
+<link rel="icon" href="../icon.svg">
+<link rel="stylesheet" href="../vendor/leaflet.css">
+<style>
+:root{color-scheme:light;--ink:#112a26;--muted:#475e55;--paper:#f4f6ef;--green:#daf579;--line:#cbd7ca;font:16px/1.65 "Noto Sans TC",system-ui,sans-serif}
+*{box-sizing:border-box}body{margin:0;background:var(--paper);color:var(--ink)}a{color:inherit}button{font:inherit;cursor:pointer}a:focus-visible,button:focus-visible{outline:3px solid #1e8973;outline-offset:4px}html{scroll-padding-top:1rem}
+.wrap{width:min(1140px,calc(100% - 40px));margin-inline:auto}
+header{border-bottom:1px solid var(--line)}nav{min-height:72px;display:flex;align-items:center;gap:clamp(12px,3vw,32px);flex-wrap:wrap;padding-block:10px}nav a{text-decoration:none}.brand{font-weight:900;letter-spacing:.09em;font-size:1.4rem;margin-right:auto;display:flex;align-items:center;gap:10px}.brand img{width:32px;height:32px}
+.button{display:inline-flex;align-items:center;justify-content:center;border:1px solid var(--ink);border-radius:9px;padding:.65rem 1rem;text-decoration:none;font-weight:750;background:var(--ink);color:white;min-height:46px}.button:hover{background:#24483f}.button.secondary{background:transparent;color:var(--ink)}.button.secondary:hover{background:#e7ede0}
+.hero{display:grid;grid-template-columns:.82fr 1.18fr;gap:clamp(24px,5vw,76px);align-items:center;padding-block:clamp(36px,8vw,100px)}
+.kicker{display:inline-block;background:var(--green);padding:2px 10px;border-radius:4px;font-size:.88rem;font-weight:800;letter-spacing:.12em}
+h1,h2,h3,p{margin-top:0}h1{font-size:clamp(2.5rem,5.4vw,4.8rem);line-height:1.06;letter-spacing:-.065em;margin:.38em 0 .34em}h2{font-size:clamp(1.7rem,4vw,2.7rem);line-height:1.2;margin-bottom:.65em}h3{font-size:1.2rem;margin-bottom:.4em}p{color:var(--muted)}.lede{max-width:32ch;font-size:1.12rem}.actions{display:flex;flex-wrap:wrap;gap:10px}
+.demo{border:1px solid #36594e;border-radius:17px;overflow:hidden;background:#112a26;color:white;box-shadow:0 18px 40px #17322420;min-width:0}.demo-bar{display:flex;flex-wrap:wrap;align-items:center;gap:8px;padding:12px}.demo-bar strong{margin-right:auto}.demo button{border:1px solid #80958a;border-radius:7px;background:#1d4238;color:white;padding:5px 10px;min-height:40px}.demo button[aria-pressed="true"]{background:var(--green);color:var(--ink);border-color:var(--green)}.demo button:disabled{opacity:.5;cursor:default}#map{height:clamp(290px,41vw,460px);background:#dce9e2}.demo p{color:#edf5ec;margin:0;padding:10px 14px;min-height:72px;font-size:.93rem}.pin{display:grid;place-items:center;background:#0e483c;color:white;border:2px solid white;border-radius:50%;font-weight:800;box-shadow:0 1px 5px #0006}.leaflet-container a{color:#183e34}
+.features{border-top:1px solid var(--line);padding-block:56px}.grid{display:grid;grid-template-columns:repeat(3,1fr);gap:22px}.grid article{padding:20px 0 0;border-top:3px solid #416454}.grid p{margin-bottom:0}.faq{padding-block:38px 70px;max-width:760px}.faq details{border-bottom:1px solid var(--line);padding:14px 0}.faq summary{font-weight:750;cursor:pointer}.faq p{margin:10px 0 0}.footer{background:var(--ink);color:white}.footer .wrap{display:flex;gap:18px;justify-content:space-between;flex-wrap:wrap;padding-block:24px}
+@media(max-width:760px){.hero,.grid{grid-template-columns:1fr}.hero{align-items:start}nav a:not(.brand):not(.button){display:none}.features{padding-block:38px}}
+</style>
+</head>
+<body>
+<header><nav class="wrap" aria-label="主選單"><a class="brand" href="./"><img src="../icon.svg" alt="">MPS</a><a href="#features">功能</a><a href="#demo">互動地圖</a><a href="#faq">常見問題</a><a class="button" href="../">開啟 MPS</a></nav></header>
+<main class="wrap">
+<section class="hero" aria-labelledby="headline">
+<div><span class="kicker">地圖工作空間</span><h1 id="headline">從一個座標，<br>畫出你的地圖</h1><p class="lede">搜尋座標、量測距離，把標記、線段和範圍整理到自己的圖層。從地圖探索到專案管理，都在 MPS 完成。</p><div class="actions"><a class="button" href="../">進入工作空間</a><a class="button secondary" href="#demo">試用地圖</a></div></div>
+<section class="demo" id="demo" aria-label="互動地圖示範">
+<div class="demo-bar"><strong>臺北地圖示範</strong><button id="example" type="button" aria-pressed="true" disabled>範例</button><button id="measure" type="button" aria-pressed="false" disabled>自己測距</button></div>
+<div id="map" aria-label="臺北互動地圖"></div><p id="map-status" role="status">正在載入地圖。也可直接進入 MPS 工作空間。</p>
+<noscript>請啟用 JavaScript 使用互動地圖。</noscript>
+</section>
+</section>
+<section id="features" class="features" aria-labelledby="features-title"><h2 id="features-title">在 MPS 可以做什麼？</h2><div class="grid">
+<article><h3>搜尋與定位</h3><p>從已載入的資料搜尋地點、圖層或物件，也可以直接輸入十進位或度分秒座標。</p></article>
+<article><h3>測距與標繪</h3><p>用尺規量測兩點，或在地圖上加上標記、線段及區域，並編輯名稱、座標與備註。</p></article>
+<article><h3>整理與分享</h3><p>用圖層管理標繪，將專案備份為 JSON，或使用列印與 PDF 功能分享地圖。</p></article>
+</div></section>
+<section id="faq" class="faq"><h2>常見問題</h2>
+<details><summary>可以離線使用嗎？</summary><p>MPS 支援離線使用。請先在連線時開啟正式工作空間並完成離線準備。這個介紹頁的示範底圖需要網路。</p></details>
+<details><summary>怎麼備份我的專案？</summary><p>進入工作空間後，使用上方的備份與還原工具下載專案 JSON。換裝置時可匯入這個檔案。</p></details>
+</section>
+</main>
+<footer class="footer"><div class="wrap"><strong>MPS 地圖工作空間</strong><a href="https://github.com/LeHarold/MPS">GitHub 原始碼</a></div></footer>
+<script src="../vendor/leaflet.js"></script>
+<script>
+const status = document.getElementById('map-status');
+if (window.L) {
+  const example = document.getElementById('example');
+  const measure = document.getElementById('measure');
+  const stations = [[25.0478, 121.5170], [25.0339, 121.5645]];
+  const map = L.map('map', {scrollWheelZoom: false}).setView(stations[0], 13);
+  L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
+    maxZoom: 19,
+    attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+  }).addTo(map);
+  const drawing = L.layerGroup().addTo(map);
+  const number = new Intl.NumberFormat('zh-TW', {maximumFractionDigits: 2});
+  let points = [];
+  let measuring = false;
+  function drawPoint(point, index, name) {
+    L.marker(point, {
+      title: name, alt: name, interactive: false, keyboard: false,
+      icon: L.divIcon({className: 'pin', html: index ? 'B' : 'A', iconSize: [25, 25]})
+    }).addTo(drawing);
+  }
+  function drawDistance(pair) {
+    L.polyline(pair, {color: '#08715b', weight: 5, dashArray: '9 6'}).addTo(drawing);
+    return number.format(map.distance(...pair) / 1000) + ' 公里';
+  }
+  function showExample() {
+    measuring = false;
+    example.setAttribute('aria-pressed', 'true');
+    measure.setAttribute('aria-pressed', 'false');
+    drawing.clearLayers();
+    drawPoint(stations[0], 0, '臺北車站');
+    drawPoint(stations[1], 1, '台北 101');
+    status.textContent = '臺北車站到台北 101，直線距離 ' + drawDistance(stations) + '。';
+    map.fitBounds(stations, {padding: [40, 40], maxZoom: 14});
+  }
+  function takePoint(point) {
+    if (!measuring) return;
+    if (points.length === 2) {
+      points = [];
+      drawing.clearLayers();
+    }
+    drawPoint(point, points.length, points.length ? '終點 B' : '起點 A');
+    points.push(point);
+    status.textContent = points.length === 1 ? '已設定起點 A。請選擇終點 B。' :
+      '直線距離 ' + drawDistance(points) + '。選擇新位置可重新測距。';
+  }
+  example.addEventListener('click', showExample);
+  measure.addEventListener('click', () => {
+    measuring = true;
+    points = [];
+    drawing.clearLayers();
+    example.setAttribute('aria-pressed', 'false');
+    measure.setAttribute('aria-pressed', 'true');
+    status.textContent = '請在地圖上選擇兩點。鍵盤可用方向鍵移動地圖，再按 Enter 選取中心。';
+    map.getContainer().focus();
+  });
+  map.on('click', event => takePoint(event.latlng));
+  map.getContainer().addEventListener('keydown', event => {
+    if (event.key === 'Enter' && event.target === map.getContainer()) {
+      event.preventDefault();
+      takePoint(map.getCenter());
+    }
+  });
+  showExample();
+  example.disabled = measure.disabled = false;
+}
+</script>
+</body>
+</html>
