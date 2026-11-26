@@ -1,10 +1,10 @@
-import {normalizePack,readBasemapPack,removeBasemapPack,downloadBasemapPack,makeOfflineBasemap} from './offline-basemaps.mjs?v=208';
+import {normalizePack,readBasemapPack,removeBasemapPack,downloadBasemapPack,makeOfflineBasemap} from './offline-basemaps.mjs?v=209';
 import {ObjectSpatialIndex,simplifyDisplay,detailBucket,diffVisible} from './spatial-objects.mjs?v=191';
 import { createNavigationRuler, navigationReadout } from './navigation-ruler.mjs?v=191';
 import { placeNearbyWaypoints, viewportPaintDue } from './compact-waypoints.mjs?v=191';
 import { coordinateRows, coordinateWorkbook } from './coordinate-excel.mjs?v=191';
 import { LINE_STYLES, lineStyleOptions, installDoubleLines } from './line-appearance.mjs?v=191';
-import {openWorkspaceStorage} from './workspace-storage.mjs?v=208';
+import {openWorkspaceStorage} from './workspace-storage.mjs?v=209';
 import {labelDisplaySize,frameTask,memoAreaOffset} from './display-performance.mjs?v=191';
 import {areaSouthwest,limitAreaOffset,areaInteriorOffset} from './area-labels.mjs?v=191';
 import {stableLabelOffset,rememberLabelOffset,validAreaPlacement} from './label-stability.mjs?v=191';
@@ -14,12 +14,12 @@ import {applyLabelRotation,preserveLabelCenter,rotatedLabelEdge,labelBorderSize}
 import {nearestPoint,attachPoint,releasePoint} from './point-snap.mjs?v=191';
 import {decodeTerrainBlob,bindTouchCursor,setupIOSStorage} from './ios-pwa.mjs?v=191';
 import {actionDescription} from './action-history.mjs?v=191';
-import {printRaster} from './print-raster.mjs?v=191';
+import {printRaster} from './print-raster.mjs?v=209';
 import {uniqueLabelIds} from './label-visibility.mjs?v=191';
 import {outerVertices,transformPoints,nearestPathFraction} from './map-editing.mjs?v=191';
 import {createPressControls} from './press-controls.mjs?v=191';
 import {applyPointMOMs,validatePointMOMs} from './point-relations.mjs?v=191';
-import {requireAuthorization,currentAuthorization,deleteAuthorization,canPackageWebsite,canShareLicense,getLicenseShareProof,getActiveLicenseFile} from './authorization.mjs?v=208';
+import {requireAuthorization,currentAuthorization,deleteAuthorization,canPackageWebsite,canShareLicense,getLicenseShareProof,getActiveLicenseFile} from './authorization.mjs?v=209';
 import {startLicensedTool,sanitizeToolIcon} from './licensed-tools.mjs?v=191';
 const offlineBundle=window.MPS_BUNDLE?.format===2;
 const [{setupLiveVehicles},{setupLicenseSharing},{setupDeviceTransfer}]=offlineBundle
@@ -29,13 +29,14 @@ await requireAuthorization();
 if(window.MPS_IMPORT_BUNDLE)await window.MPS_IMPORT_BUNDLE();
 import {intervalPlan,placeCursorBox,extensionEndpoint} from './workspace-interactions.mjs?v=191';
 import {planProjectImport,mergeProjectItems} from './project-merge.mjs?v=191';
-import {parseSearchPosition,searchCatalog,placeLabelBoxes,labelRank,calibrationDistance,readPrintTemplate,openBackupHistory} from './workspace-ux.mjs?v=191';
+import {parseSearchPosition,searchCatalog,placeLabelBoxes,labelRank,calibrationDistance,readPrintTemplate,openBackupHistory} from './workspace-ux.mjs?v=209';
 if(window.MPS_BUNDLE_READY)await window.MPS_BUNDLE_READY;
+const bundleNamespace=offlineBundle?'bundle:'+window.MPS_BUNDLE.id+':':'';
 const workspaceStorage = await openWorkspaceStorage(error => {
   console.warn('MPS workspace storage', error);
   const status = document.getElementById('saved');
   if (status) status.textContent = '儲存失敗';
-});
+},bundleNamespace);
 if(offlineBundle&&!workspaceStorage.getItem('map-workspace-project-v2')){
   try{workspaceStorage.setItem('map-workspace-project-v2',JSON.stringify(window.MPS_BUNDLE.state));}catch{}
 }
@@ -60,7 +61,8 @@ const land=L.layerGroup(),routeLines=L.layerGroup().addTo(map),fixes=L.layerGrou
 const street=L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',{maxZoom:19,attribution:'© OpenStreetMap contributors'}),satellite=L.tileLayer('https://services.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}',{maxZoom:19,attribution:'<a href="https://doc.arcgis.com/en/data-appliance/latest/imagery-elevation/world-imagery.htm" target="_blank" rel="noopener">衛星影像</a> © Esri, Maxar, Earthstar Geographics, GIS User Community'});
 const waypointPicker=createWaypointPicker({map,group:fixes,onLocate:p=>toggleLocate({key:'waypoint:'+p.id,name:p.name,points:[p.position],panel:'waypoints-panel'}),onReveal:p=>revealWorkspaceItem('waypoint:'+p.id),isLocated:p=>locatedTarget?.key==='waypoint:'+p.id,onDistance:(line,a,b)=>{state.settings.distanceLabels||={};const key=[a.id,b.id].sort().join("|");const record=state.settings.distanceLabels[key]||={points:[a.position,b.position]};enableDistanceDrag(line,record)},getSettings:()=>state.settings,formatPair:pair,onChange:()=>{save();renderInstruments()},onPick:(p,name)=>{if(tool==='compass'){pickCompass(p);return true}if(tool!=='tape')return false;pickTape(p,name);return true},onCopy:(category,points)=>{if(!points.length)return toast('此類尚未選取航點');snapshot();const layer={id:uid(),name:category+' 航點副本',visible:true,objects:points.map(p=>({id:uid(),type:'point',name:p.name,description:p.station+'\n'+p.frequency+'\n來源：'+p.source,points:[clone(p.position)],color:state.settings.color}))};state.layers.push(layer);state.activeLayerId=layer.id;save('已建立可修改的航點副本圖層');renderLayers();renderObjects();openPanel('layers-panel')}});
 function toast(text){$('toast').textContent=text;$('toast').hidden=false;clearTimeout(toastTimer);toastTimer=setTimeout(()=>$('toast').hidden=true,5500);$('notice').textContent=text}
-function save(message){if(location.search.includes('mps-offline-test=1'))return;renderUndoHistory();try{workspaceStorage.setItem(STORE,JSON.stringify(state));$('saved').textContent='已儲存';if(message)toast(message)}catch{$('saved').textContent='儲存失敗';toast('本機儲存空間不足，請下載專案備份')}}
+let saveRevision=0,lastProjectSave=null;
+function save(message){if(location.search.includes('mps-offline-test=1'))return;renderUndoHistory();try{const revision=++saveRevision;$('saved').textContent='儲存中…';workspaceStorage.setItem(STORE,JSON.stringify(state)).then(ok=>{if(revision!==saveRevision)return;$('saved').textContent=ok?'已儲存':'儲存失敗';if(ok){lastProjectSave=new Date();if(message)toast(message);}});}catch{$('saved').textContent='儲存失敗';toast('本機儲存空間不足，請下載專案備份')}}
 function snapshot(hint){future=[];if($('redo'))$('redo').disabled=true;const before=clone(state);actionTimes.set(before,Date.now());if(typeof hint==='string')actionHints.set(before,hint);history.push(before);if(history.length>35)history.shift();$('undo').disabled=false}
 function activeLayer(){return state.layers.find(l=>l.id===state.activeLayerId)||state.layers[0]}
 function getObject(id=selected){for(const layer of state.layers){const object=layer.objects.find(o=>o.id===id);if(object)return{layer,object}}return null}
@@ -442,7 +444,23 @@ function moveCompassTip(latlng){const c=compassState();if(!c?.visible)return;c.a
 compassEnd.addEventListener('pointerdown',e=>{e.stopPropagation();e.preventDefault();const now=performance.now(),draw=now-compassLastDown<400;compassLastDown=now;compassPointer={id:e.pointerId,draw,pan:map.dragging.enabled()};compassFollowing=false;compassArc=draw?[compassTip()]:[];if(draw)snapshot();map.dragging.disable();compassEnd.setPointerCapture(e.pointerId)});compassEnd.addEventListener('pointermove',e=>{if(!compassPointer)return;const rect=map.getContainer().getBoundingClientRect();moveCompassTip(map.containerPointToLatLng([e.clientX-rect.left,e.clientY-rect.top]))});compassEnd.addEventListener('pointerup',e=>{if(!compassPointer)return;e.stopPropagation();const draw=compassPointer.draw,pan=compassPointer.pan;compassPointer=null;if(pan)map.dragging.enable();if(draw){const points=compassArc.length?compassArc:[compassTip()];const object=addObject(points.length>1?'line':'point',points,points.length>1?'圓規圓弧':'圓規標點');object.compassDrawing=true;if(points.length>1)object.compassArc={center:[...compassState().center],radiusM:compassState().radiusM};renderObjects();renderLayers();compassArc=[];compassFollowing=false}else compassFollowing=!compassFollowing;save()});compassEnd.addEventListener('pointercancel',()=>{if(compassPointer?.pan)map.dragging.enable();compassPointer=null;compassArc=[]});compassEnd.addEventListener('click',e=>e.stopPropagation());map.on('mousemove',e=>{if(compassFollowing)moveCompassTip(e.latlng)});map.on('click',()=>{if(compassFollowing){compassFollowing=false;save()}});map.on('move zoom resize',updateCompassGeometry);renderCompass();
 new ResizeObserver(()=>{document.documentElement.style.setProperty('--toolbar-height',document.querySelector('header').offsetHeight+'px');map.invalidateSize({pan:false})}).observe(document.querySelector('header'));
 
-const packageButton=document.createElement('button');packageButton.className='icon-button';packageButton.id='package-offline';packageButton.textContent='▤';packageButton.setAttribute('aria-label','打包離線網站');packageButton.title='打包目前功能、圖層與離線高度';if(!offlineBundle)document.querySelector('.toolbar').append(packageButton);const packageDialog=document.createElement('dialog');packageDialog.id='package-dialog';packageDialog.innerHTML='<h2>打包離線網站</h2><p>包含網站程式、向量圖資、目前所有圖層、儲存的專案及已下載地形高度。包含已下載的離線街道與衛星圖包。</p><p>Windows：解壓縮後執行 MPS-Offline.exe，會自動啟動本機地圖。工具只監聽 127.0.0.1，不需安裝 Python 或 Node。系統匣圖示可關閉服務。</p><div class="row"><button id="package-create">產生 ZIP 壓縮檔</button><button id="package-close">關閉</button></div><p id="package-status" role="status"></p>';document.body.append(packageDialog);packageButton.onclick=()=>packageDialog.showModal();$('package-close').onclick=()=>packageDialog.close();
+const packageButton=document.createElement('button');packageButton.className='icon-button';packageButton.id='package-offline';packageButton.textContent='▤';packageButton.setAttribute('aria-label','打包離線網站');packageButton.title='打包目前功能、圖層與離線高度';if(!offlineBundle)document.querySelector('.toolbar').append(packageButton);const packageDialog=document.createElement('dialog');packageDialog.id='package-dialog';packageDialog.innerHTML='<h2>打包離線網站</h2><p>包含網站程式、向量圖資、目前所有圖層、儲存的專案及已下載地形高度。包含已下載的離線街道與衛星圖包。</p><p>Windows：解壓縮後執行 MPS-Offline.exe，會自動啟動本機地圖。工具只監聽 127.0.0.1，不需安裝 Python 或 Node。系統匣圖示可關閉服務。</p><div class="row"><button id="package-create">產生 ZIP 壓縮檔</button><button id="package-close">關閉</button></div><p id="package-status" role="status"></p>';document.body.append(packageDialog);packageButton.onclick=async()=>{
+ const info=document.createElement('p');info.id='package-inventory';info.textContent='讀取打包內容…';
+ $('package-inventory')?.remove();packageDialog.querySelector('h2').after(info);
+ packageDialog.showModal();
+ try{
+  const project=captureCompleteProject();
+  const maps=await Promise.all(['protomaps','sentinel2'].map(readBasemapPack));
+  const regions=terrainDB?await terrainDB.all():[];
+  const backups=backupHistory?await backupHistory.list():[];
+  const installed=maps.filter(Boolean);
+  const mapBytes=installed.reduce((total,pack)=>total+pack.bytes,0);
+  const terrainIds=new Set(regions.flatMap(region=>region.tileIds||[]));
+  const projectBytes=new Blob([JSON.stringify({project,backups,tools:currentAuthorization().tools})]).size;
+  const approximateBytes=11610000+mapBytes+projectBytes+terrainIds.size*30000;
+  info.textContent=project.layers.length+' 個圖層 · '+backups.length+' 份備份 · '+currentAuthorization().tools.length+' 個擴充工具 · '+regions.length+' 個地形區。壓縮前約 '+(approximateBytes/1e6).toFixed(1)+' MB（地形以平均圖磚大小估計）。底圖 '+installed.map(pack=>pack.name).join('、')+'（圖包約 '+(mapBytes/1e6).toFixed(1)+' MB）。'+(maps.some(pack=>!pack)?' 尚未下載的街道或衛星圖包不會納入。':'');
+ }catch(error){info.textContent='無法讀取打包清單：'+error.message;}
+};$('package-close').onclick=()=>packageDialog.close();
 $('package-create').onclick=async()=>{if(offlineBundle||!canPackageWebsite())return;const button=$('package-create');button.disabled=true;try{await loadPrintScript('vendor/jszip.min.js','JSZip');const excluded=new Set(['offline-files.json','sw.js','device-transfer.mjs','live-vehicles.mjs']);const files=await fetch('offline-files.json',{cache:'no-store'}).then(r=>{if(!r.ok)throw Error('打包清單載入失敗');return r.json()}).then(files=>files.filter(path=>!excluded.has(path))),zip=new JSZip(),bundleState=captureCompleteProject();if(['street','satellite'].includes(bundleState.settings.basemap))bundleState.settings.basemap='vector';const basemapPacks=[];for(const source of ['protomaps','sentinel2']){const pack=await readBasemapPack(source);if(!pack)continue;const {blob,...metadata}=pack;const path='basemaps/'+source+'.pmtiles';zip.file(path,blob,{compression:'STORE'});basemapPacks.push({...metadata,path});}const regions=terrainDB?await terrainDB.all():[],tileIds=[...new Set(regions.flatMap(r=>r.tileIds||[]))],id=uid();for(let i=0;i<files.length;i++){const path=files[i];$('package-status').textContent='收集網站檔案 '+(i+1)+' / '+files.length;const response=await fetch(path,{cache:'no-store'});if(!response.ok)throw Error(path+' 載入失敗');if(/^(index|workspace)\.html$/.test(path)){const policy="default-src 'self'; script-src 'self' 'unsafe-inline' blob:; style-src 'self' 'unsafe-inline'; connect-src 'self'; img-src 'self' data: blob:; font-src 'self' data:; worker-src 'self' blob:; frame-src 'self' blob:; object-src 'none'; form-action 'self'";
       const html=(await response.text()).replace(/<head>/i,'<head><meta http-equiv="Content-Security-Policy" content="'+policy+'">').replace('<script src="vendor/leaflet.js">','<script src="bundle-config.js?bundle='+id+'"></script><script src="offline-bootstrap.js?bundle='+id+'"></script><script src="vendor/leaflet.js">');zip.file(path,html)}else zip.file(path,await response.blob())}for(let i=0;i<tileIds.length;i++){const tile=await terrainDB.tile(tileIds[i]);if(!tile)throw Error('地形區域不完整：'+tileIds[i]+'，請先完成下載');zip.file('terrain/'+tileIds[i]+'.png',tile.blob,{compression:'STORE'});$('package-status').textContent='收集離線高度 '+(i+1)+' / '+tileIds.length}const config={format:2,id,tools:currentAuthorization().tools,basemapPacks,state:bundleState,regions,tileIds,library:workspaceStorage.getItem('map-project-library'),backupVersions:backupHistory?await backupHistory.list():[]};zip.file('bundle-config.js','window.MPS_BUNDLE='+JSON.stringify(config)+';');zip.file('project.json',JSON.stringify(bundleState,null,2));zip.file('bundle-id.txt',id);zip.file('離線使用說明.txt','MPS 離線包\r\n1. 請完整解壓縮到資料夾，不要直接從 ZIP 執行。\r\n2. Windows 雙擊 MPS-Offline.exe；瀏覽器會自動開啟。啟動後可直接使用打包時的離線工具。\r\n3. 系統匣 MPS 圖示可重新開啟瀏覽器或退出服務。\r\n4. 首次啟動載入包內專案；同來源已存在資料則保留原資料，可在檔案與備份選擇載入打包專案。\r\n5. 已下載的底圖及高度區域可離線使用。\r\n6. 非 Windows 系統可自行以 localhost HTTP 伺服器服務此資料夾；不可直接雙擊 index.html。\r\n7. 使用時新增的資料保存在此瀏覽器，請另行儲存專案備份。');const blob=await zip.generateAsync({type:'blob',compression:'DEFLATE',compressionOptions:{level:6}},p=>$('package-status').textContent='壓縮中 '+Math.round(p.percent)+'%');download(blob,'MPS-offline-'+new Date().toISOString().slice(0,10)+'.zip','application/zip');$('package-status').textContent='壓縮包已下載；請完整解壓縮後執行 MPS-Offline.exe。'}catch(e){$('package-status').textContent='打包未完成：'+e.message}finally{button.disabled=false}};
 if(window.MPS_BUNDLE){for(const option of [...$('basemap').options])if(option.value!=='vector')option.remove();const restore=document.createElement('button');restore.textContent='載入打包專案';restore.onclick=()=>{snapshot();state=validateProject(clone(window.MPS_BUNDLE.state));save();refreshUI();renderCompass();restoreLayout();toast('已載入離線包內的專案')};$('files-panel').querySelector('.section-body').prepend(restore);if(window.MPS_BUNDLE.library&&!workspaceStorage.getItem('map-project-library'))workspaceStorage.setItem('map-project-library',window.MPS_BUNDLE.library)}
@@ -624,13 +642,13 @@ function layoutMapLabels(){
 
 map.on('layeradd moveend zoomend resize',scheduleLabelLayout);map.getContainer().addEventListener('pointerup',scheduleLabelLayout);scheduleLabelLayout();
 
-let backupHistory=null;try{backupHistory=await openBackupHistory()}catch(e){console.warn('Backup history unavailable',e)}
+let backupHistory=null;try{backupHistory=await openBackupHistory(bundleNamespace)}catch(e){console.warn('Backup history unavailable',e)}
 const backupButton=$('save-project');backupButton.title='備份與還原';backupButton.setAttribute('aria-label','備份與還原');
 const backupDialog=document.createElement('dialog');backupDialog.id='backup-center';backupDialog.innerHTML='<div class="ux-dialog-heading"><h2>備份與還原</h2><button id="backup-center-close">關閉</button></div><p id="backup-last-time" role="status"></p><label>備份名稱<input id="backup-version-name" placeholder="可填工作名稱或備註"></label><div class="row"><button id="backup-create-download" class="primary">建立備份並下載 JSON</button><button id="backup-create-local">建立本機版本</button><button id="backup-restore-file">從 JSON 還原</button></div><p>備份包含所有圖層、參考圖層勾選、航路／航點選項、群組、位置、點大小與完整設定。下載 JSON 可帶到其他裝置；還原前自動建立保護版本。</p><p id="backup-center-status" role="status"></p><h3>版本清單</h3><div id="backup-version-list"></div><details id="backup-legacy"><summary>命名專案</summary><div id="backup-legacy-content"></div></details>';document.body.append(backupDialog);
 $('backup-legacy-content').append(projectName,storeProject,$('project-library'));const backupEntry=document.createElement('button');backupEntry.textContent='開啟備份與還原';backupEntry.onclick=()=>backupButton.click();$('files-panel').querySelector('.section-body').append(backupEntry);for(const id of ['project-download','project-open','save-project'])$(id).onclick=()=>backupButton.click();
 async function createBackupVersion(reason='手動備份',downloadFile=false){if(!backupHistory)throw Error('此瀏覽器無法開啟版本儲存空間，請改用匯出 JSON');const now=new Date().toISOString(),data=captureCompleteProject();data.savedAt=now;reportActiveProgress(30,'儲存完整設定');const record={id:uid(),name:reason==='手動備份'?($('backup-version-name').value.trim()||reason):reason,reason,createdAt:now,state:data};await backupHistory.put(record);reportActiveProgress(85,'完成備份版本');state.settings.lastBackupAt=now;save();if(downloadFile)download(JSON.stringify(data,null,2),'MPS-backup-'+now.replace(/[:.]/g,'-')+'.json','application/json');return record}
 function backupDate(value){return new Date(value).toLocaleString('zh-TW',{timeZone:'Asia/Taipei',hour12:false})}
-async function renderBackupVersions(){const root=$('backup-version-list');root.replaceChildren();if(!backupHistory){$('backup-center-status').textContent='版本儲存空間無法使用；仍可下載 JSON。';$('backup-last-time').textContent='無可讀取的版本記錄';return}const versions=await backupHistory.list();$('backup-last-time').textContent=versions.length?'最後備份：'+backupDate(versions[0].createdAt)+'（台北時間）':'尚未建立備份';if(!versions.length){const p=document.createElement('p');p.textContent='尚無版本。建立第一份備份後會顯示於此。';root.append(p)}for(const record of versions){const row=document.createElement('div');row.className='backup-version';const title=document.createElement('b'),detail=document.createElement('small'),actions=document.createElement('div');title.textContent=record.name;detail.textContent=backupDate(record.createdAt)+' · '+record.reason+' · '+record.state.layers.length+' 圖層';actions.className='row';for(const[action,handler]of [['還原',async()=>{const validated=validateProject(clone(record.state));await createBackupVersion('還原前自動保護');snapshot();state=validated;selected=null;$('editor-panel').hidden=true;setTool('pan');sanitizePreferences();refreshUI();restoreLayout();restoreCompleteProject();save();await renderBackupVersions();$('backup-center-status').textContent='已還原 '+record.name+'；還原前狀態已保留。'}],['下載 JSON',()=>download(JSON.stringify(record.state,null,2),'MPS-backup-'+record.createdAt.replace(/[:.]/g,'-')+'.json','application/json')],['刪除版本',async()=>{await backupHistory.remove(record.id);await renderBackupVersions();$('backup-center-status').textContent='已刪除此版本；目前地圖未更動。'}]]){const b=document.createElement('button');b.textContent=action;b.onclick=async()=>{try{await handler()}catch(e){$('backup-center-status').textContent=e.message}};actions.append(b)}row.append(title,detail,actions);root.append(row)}}
+async function renderBackupVersions(){const root=$('backup-version-list');root.replaceChildren();if(lastProjectSave){const saved=document.createElement('p');saved.textContent='最近成功保存工作區 '+backupDate(lastProjectSave);root.append(saved);}if(!backupHistory){$('backup-center-status').textContent='版本儲存空間無法使用；仍可下載 JSON。';$('backup-last-time').textContent='無可讀取的版本記錄';return}const versions=await backupHistory.list();$('backup-last-time').textContent=versions.length?'最後備份：'+backupDate(versions[0].createdAt)+'（台北時間）':'尚未建立備份';if(!versions.length){const p=document.createElement('p');p.textContent='尚無版本。建立第一份備份後會顯示於此。';root.append(p)}for(const record of versions){const row=document.createElement('div');row.className='backup-version';const title=document.createElement('b'),detail=document.createElement('small'),actions=document.createElement('div');title.textContent=record.name;detail.textContent=backupDate(record.createdAt)+' · '+record.reason+' · '+record.state.layers.length+' 圖層';actions.className='row';for(const[action,handler]of [['預覽後還原',async()=>{const info=record.state.layers.map(layer=>layer.name+'（'+layer.objects.length+'）').join('、');if(!confirm('還原「'+record.name+'」？\n'+backupDate(record.createdAt)+'\n圖層：'+info))return;const validated=validateProject(clone(record.state));await createBackupVersion('還原前自動保護');snapshot();state=validated;selected=null;$('editor-panel').hidden=true;setTool('pan');sanitizePreferences();refreshUI();restoreLayout();restoreCompleteProject();save();await renderBackupVersions();$('backup-center-status').textContent='已還原 '+record.name+'；還原前狀態已保留。'}],['下載 JSON',()=>download(JSON.stringify(record.state,null,2),'MPS-backup-'+record.createdAt.replace(/[:.]/g,'-')+'.json','application/json')],['刪除版本',async()=>{await backupHistory.remove(record.id);await renderBackupVersions();$('backup-center-status').textContent='已刪除此版本；目前地圖未更動。'}]]){const b=document.createElement('button');b.textContent=action;b.onclick=async()=>{try{await handler()}catch(e){$('backup-center-status').textContent=e.message}};actions.append(b)}row.append(title,detail,actions);root.append(row)}}
 backupButton.onclick=async()=>{backupDialog.showModal();$('backup-center-status').textContent='';await renderBackupVersions();renderLibrary()};$('backup-center-close').onclick=()=>backupDialog.close();for(const[id,downloadFile]of [['backup-create-download',true],['backup-create-local',false]])$(id).onclick=async()=>{const b=$(id);b.disabled=true;try{if(!backupHistory&&downloadFile){download(JSON.stringify({...captureCompleteProject(),savedAt:new Date().toISOString()},null,2),'MPS-backup.json','application/json');$('backup-center-status').textContent='已送出 JSON 下載；未建立本機版本。'}else{await createBackupVersion('手動備份',downloadFile);await renderBackupVersions();$('backup-center-status').textContent=downloadFile?'備份版本已建立，並送出 JSON 下載。':'本機備份版本已建立。'}}catch(e){$('backup-center-status').textContent='備份未完成：'+e.message}finally{b.disabled=false}};$('backup-restore-file').onclick=()=>$('project-file').click();
 $('project-file').onchange=async e=>{const file=e.target.files[0];if(!file)return;try{if(file.size>20*1024*1024)throw Error('專案檔超過 20 MB');const incoming=validateProject(JSON.parse(await file.text()));if(backupHistory)await createBackupVersion('匯入前自動保護');else download(JSON.stringify(state,null,2),'MPS-before-restore.json','application/json');snapshot();state=incoming;selected=null;$('editor-panel').hidden=true;setTool('pan');sanitizePreferences();refreshUI();restoreLayout();restoreCompleteProject();save();await renderBackupVersions();$('backup-center-status').textContent='已開啟專案；匯入前狀態已保留。'}catch(error){$('backup-center-status').textContent='還原未完成：'+error.message}finally{e.target.value=''}};
 
@@ -768,7 +786,13 @@ $('project-add-apply').onclick=async()=>{if(!stagedImport||!importSelection.size
 
 function runProjectWorker(input,report){if(typeof Worker==='undefined'){return Promise.resolve().then(()=>{if(input.mode==='analyze'){const project=validateProject(JSON.parse(input.text));return{project,items:planProjectImport(input.current,project)}}return mergeProjectItems(input.current,input.project,input.selected,uid)})}return new Promise((resolve,reject)=>{const worker=new Worker(new URL('./project-merge-worker.mjs?v=191',import.meta.url),{type:'module'});worker.onmessage=e=>{if(e.data.progress!==undefined){report(e.data.progress,e.data.label);return}worker.terminate();e.data.error?reject(Error(e.data.error)):resolve(e.data.result)};worker.onerror=()=>{worker.terminate();reject(Error('JSON 比較元件無法載入，請重新整理後再試'))};worker.postMessage(input)})}
 
-initialDataReady.then(()=>{restoreCompleteProject();map.on('moveend',()=>{state.settings.mapView={center:[map.getCenter().lat,map.getCenter().lng],zoom:map.getZoom()};save();});});
+initialDataReady.then(()=>{
+  restoreCompleteProject();
+  try{const view=JSON.parse(workspaceStorage.getItem('mps-map-view'));if(view?.center?.every(Number.isFinite)&&Number.isFinite(view.zoom))map.setView(view.center,view.zoom);}catch{}
+  map.on('moveend',()=>{
+    try{workspaceStorage.setItem('mps-map-view',JSON.stringify({center:[map.getCenter().lat,map.getCenter().lng],zoom:map.getZoom()}));}catch{}
+  });
+});
 
 function objectColorControl(object){const label=document.createElement('label'),input=document.createElement('input');label.textContent=object.type==='point'?'此標記顏色':'此物件顏色';input.type='color';input.setAttribute('aria-label','物件顏色 '+object.name);input.value=object.type==='point'?resolvePointColor(object,getObject(object.id)?.layer,0):resolveObjectColor(object,getObject(object.id)?.layer);input.onchange=()=>{snapshot();object.color=input.value;object.colorOverride=true;if(object.type==='point')synchronizeCoordinateColors(state,[{position:object.points[0],color:input.value}]);save();renderObjects();renderLayers()};label.append(input);return label}
 
@@ -890,7 +914,7 @@ if(typeof document!=='undefined'&&typeof mountPrintPreview==='function'){
 const previousMount=mountPrintPreview;let rasterRevision=0;
 const retryPrint=document.createElement('button');retryPrint.type='button';retryPrint.textContent='重試列印底圖';retryPrint.hidden=true;$('print-status').after(retryPrint);
 mountPrintPreview=function(){const kind=state.settings.basemap,alpha=state.settings.baseOpacity??1;state.settings.basemap='vector';try{previousMount()}finally{state.settings.basemap=kind}const root=livePrintRoot,pm=livePrintMap;if(!root)return;root.dataset.basemapReady='false';let overlay=null,hasBasemap=false;const printTileCache=new Map();
-const reload=async()=>{const revision=++rasterRevision;retryPrint.hidden=true;if(!hasBasemap)root.style.visibility='hidden';lockPrintButton.disabled=true;$('print-download').disabled=true;try{if(kind==='street'||kind==='satellite'){const image=await printRaster(pm,kind,alpha,n=>{$('print-status').textContent='載入列印底圖：'+n+'%';},printTileCache);if(revision!==rasterRevision||root!==livePrintRoot)return;overlay?.remove();overlay=image.addTo(pm);pm.getPane('basePane').querySelectorAll('svg,canvas').forEach(el=>el.style.display='none')}await new Promise(r=>requestAnimationFrame(()=>requestAnimationFrame(r)));if(revision!==rasterRevision||root!==livePrintRoot)return;hasBasemap=true;if(overlay?.mpsMissingTiles){root.style.visibility='visible';root.dataset.basemapReady='false';retryPrint.hidden=false;$('print-status').textContent='橙色條紋標示 '+overlay.mpsMissingTiles+' 塊缺圖。請重試後再下載。';return;}root.style.visibility='visible';root.dataset.basemapReady='true';lockPrintButton.disabled=false;$('print-download').disabled=!printRangeLocked;$('print-status').textContent=printRangeLocked?'範圍已鎖定，可長按標籤調整位置後下載。':'底圖已完整載入，請確認範圍後鎖定。'}catch(error){if(root!==livePrintRoot)return;root.dataset.basemapReady='false';$('print-status').textContent='底圖未完成：'+error.message+'；請重試。';root.style.visibility='visible';retryPrint.hidden=false;throw error}};
+const reload=async()=>{const revision=++rasterRevision;retryPrint.hidden=true;if(!hasBasemap)root.style.visibility='hidden';lockPrintButton.disabled=true;$('print-download').disabled=true;try{const source=offlineBasemapLayers.get(kind)?.mpsPrintSource;if(['protomaps','sentinel2'].includes(kind)&&!source)throw Error('所選離線底圖尚未安裝');if(kind==='street'||kind==='satellite'||source){const image=await printRaster(pm,kind,alpha,n=>{$('print-status').textContent='載入列印底圖：'+n+'%';},printTileCache,source);if(revision!==rasterRevision||root!==livePrintRoot)return;overlay?.remove();overlay=image.addTo(pm);pm.getPane('basePane').querySelectorAll('svg,canvas').forEach(el=>el.style.display='none')}await new Promise(r=>requestAnimationFrame(()=>requestAnimationFrame(r)));if(revision!==rasterRevision||root!==livePrintRoot)return;hasBasemap=true;if(overlay?.mpsMissingTiles){root.style.visibility='visible';root.dataset.basemapReady='false';retryPrint.hidden=false;$('print-status').textContent='橙色條紋為缺圖或超出圖包範圍。請縮小列印範圍、換底圖或重試。';return;}root.style.visibility='visible';root.dataset.basemapReady='true';lockPrintButton.disabled=false;$('print-download').disabled=!printRangeLocked;$('print-status').textContent=printRangeLocked?'範圍已鎖定，可長按標籤調整位置後下載。':'底圖已完整載入，請確認範圍後鎖定。'}catch(error){if(root!==livePrintRoot)return;root.dataset.basemapReady='false';$('print-status').textContent='底圖未完成：'+error.message+'；請重試。';root.style.visibility='visible';retryPrint.hidden=false;throw error}};
 retryPrint.onclick=()=>{root.mpsBasemapReady=reload();root.mpsBasemapReady.catch(()=>{});};retryPrint.onclick();pm.on('dragstart',()=>{root.dataset.basemapReady='false';lockPrintButton.disabled=true;$('print-download').disabled=true});pm.on('moveend',()=>{root.mpsBasemapReady=reload();root.mpsBasemapReady.catch(()=>{})});};
 const previewClick=$('print-preview').onclick;$('print-preview').onclick=async()=>{await previewClick();if(livePrintRoot?.mpsBasemapReady){$('print-preview').disabled=true;try{await livePrintRoot.mpsBasemapReady}catch{}finally{$('print-preview').disabled=false}}};
 const downloadClick=$('print-download').onclick;$('print-download').onclick=async()=>{try{await livePrintRoot?.mpsBasemapReady;if(livePrintRoot?.dataset.basemapReady!=='true')throw Error('請先完成底圖載入');return downloadClick()}catch(e){$('print-status').textContent=e.message}};
@@ -966,7 +990,7 @@ opacityButton.onclick=()=>{const levels=[1,.75,.5,.25],value=levels.includes(sta
 $('settings-panel').querySelector('.section-body').append(opacityButton);const refreshBeforeMovementOpacity=refreshUI;refreshUI=function(){refreshBeforeMovementOpacity();paintMovementOpacity()};paintMovementOpacity();
 }
 
-if(typeof document!=='undefined'){const version=document.createElement('p');version.id='app-version';version.textContent='程式版本 v208';$('settings-panel').querySelector('.section-body').append(version)}
+if(typeof document!=='undefined'){const version=document.createElement('p');version.id='app-version';version.textContent='程式版本 v209';$('settings-panel').querySelector('.section-body').append(version)}
 
 // Quick navigation ruler and persistent graduated ruler are independent tools.
 if (typeof document !== 'undefined') {
@@ -1819,10 +1843,15 @@ if(typeof document!=='undefined'){
    download.type='button';download.textContent='下載並使用';
    const remove=document.createElement('button');
    remove.type='button';remove.textContent='刪除本機圖包';remove.hidden=true;
-   card.append(name,details,download,remove);parent.append(card);
-   const applyPack=()=>{
+   const currentInfo=document.createElement('p');
+   const useCurrent=document.createElement('button');
+   useCurrent.type='button';useCurrent.textContent='使用已安裝版';useCurrent.hidden=true;
+   useCurrent.onclick=()=>{if(localPack)applyPack(localPack);};
+   card.append(name,details,currentInfo,useCurrent,download,remove);parent.append(card);
+   const applyPack=(selectedPack=pack)=>{
+     const [w,s,e,n]=selectedPack.bounds;
      state.settings.basemap=pack.source;select.value=pack.source;save();
-     map.fitBounds([[south,west],[north,east]]);
+     map.fitBounds([[s,w],[n,e]]);
      setBasemap();
    };
    let installed=false;
@@ -1833,7 +1862,10 @@ if(typeof document!=='undefined'){
      installed=current?.url===pack.url&&current.date===pack.date&&current.bytes===pack.bytes;
      download.textContent=installed?'使用已下載底圖':'下載並使用';
      remove.hidden=!current||(parent!==catalog&&!installed);
-     if(current)remove.textContent='刪除本機圖包（'+(current.bytes/1e6).toFixed(1)+' MB）';
+     currentInfo.textContent=current?'已安裝 '+current.name+' · '+(current.imageryYears||current.date)+' · '+(current.bytes/1e6).toFixed(1)+' MB':'此裝置尚未安裝';
+     useCurrent.hidden=!current||installed||parent!==catalog;
+     if(current&&!installed)download.textContent='更新圖包';
+     if(current)remove.textContent='移除已安裝圖包';
    });
    refreshPackCards(pack.source).catch(()=>{});
    remove.onclick=async()=>{
@@ -1896,4 +1928,70 @@ if(typeof document!=='undefined'){
    finally{check.disabled=false;}
  };
 }
+}
+
+if(typeof document!=='undefined'){
+ const toolbar=document.querySelector('.toolbar');
+ const commands=[
+   ['global-search-button','統一搜尋'],['instrument-menu-button','尺規工具'],['print-map','列印／PDF'],
+   ['save-project','備份與還原'],['action-history-button','操作紀錄'],['package-offline','打包離線網站']
+ ].filter(([id])=>$(id));
+ const more=document.createElement('details');
+ more.className='mps-more-tools';
+ more.innerHTML='<summary>更多</summary><div class="mps-more-menu"></div>';
+ toolbar.append(more);
+ const menu=more.lastElementChild;
+ const settings=document.createElement('fieldset');
+ settings.innerHTML='<legend>常用工具列</legend>';
+ $('settings-panel').querySelector('.section-body').append(settings);
+ const style=document.createElement('style');
+ style.textContent='.mps-unpinned{display:none!important}.mps-more-menu{position:absolute;right:6px;top:100%;display:grid;gap:4px;padding:8px;background:var(--panel,#233746);border:1px solid #71848f;z-index:1600}.mps-more-tools{position:relative;align-self:center}';
+ document.head.append(style);
+ const toggles=[];
+ function refreshPins(){
+  const visible=Array.isArray(state.settings.pinnedToolbarTools)?state.settings.pinnedToolbarTools:commands.map(([id])=>id);
+  menu.replaceChildren();
+  for(const [id,label] of commands){
+   const pinned=visible.includes(id);
+   $(id).classList.toggle('mps-unpinned',!pinned);
+   if(!pinned){
+    const shortcut=document.createElement('button');shortcut.type='button';shortcut.textContent=label;
+    shortcut.disabled=$(id).disabled;
+    shortcut.onclick=()=>{more.open=false;$(id).click();};
+    menu.append(shortcut);
+   }
+  }
+  for(const [id,toggle] of toggles)toggle.checked=visible.includes(id);
+  more.hidden=!menu.children.length;
+ }
+ for(const [id,name] of commands){
+  const label=document.createElement('label');
+  const toggle=document.createElement('input');toggle.type='checkbox';toggles.push([id,toggle]);
+  toggle.onchange=()=>{state.settings.pinnedToolbarTools=toggles.filter(([,input])=>input.checked).map(([id])=>id);refreshPins();save();};
+  label.append(toggle,document.createTextNode(name));settings.append(label);
+ }
+ refreshPins();
+ const beforePins=refreshUI;
+ refreshUI=function(...args){const result=beforePins(...args);refreshPins();return result;};
+ const commandResults=document.createElement('div');commandResults.className='row';
+ $('global-search-input').after(commandResults);
+ function renderCommandResults(){
+  const query=$('global-search-input').value.trim().toLocaleLowerCase();
+  commandResults.replaceChildren();
+  if(!query||placeMode)return;
+  const sections=[['settings-panel','設定'],['basemap-panel','底圖與格線'],['files-panel','檔案與備份'],['offline-readiness','離線就緒檢查']];
+  for(const [id,name] of [...commands,...sections]){
+   if(!name.toLocaleLowerCase().includes(query)||!$(id))continue;
+   const shortcut=document.createElement('button');shortcut.type='button';shortcut.textContent=name;
+   shortcut.onclick=()=>{
+    searchDialog.close();
+    const target=$(id);
+    if(target instanceof HTMLDetailsElement){collapseWorkspace(false);target.open=true;target.scrollIntoView({block:'nearest'});}
+    else target.click();
+   };
+   commandResults.append(shortcut);
+  }
+ }
+ $('global-search-input').addEventListener('input',renderCommandResults);
+ searchDialog.addEventListener('close',()=>commandResults.replaceChildren());
 }

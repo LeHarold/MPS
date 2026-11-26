@@ -85,10 +85,17 @@ export async function makeOfflineBasemap(L, pack) {
   const bounds=[[south,west],[north,east]];
   if (pack.source==='protomaps') {
     const levelDiff=1;
-    return protomapsL.leafletLayer({
+    const streets=protomapsL.leafletLayer({
       url:archive,pane:'basePane',flavor:'light',lang:'zh',attribution,bounds,noWrap:true,
       levelDiff,minNativeZoom:header.minZoom+levelDiff,maxDataZoom:header.maxZoom
     });
+    streets.mpsPrintSource={bounds:pack.bounds,min:header.minZoom+levelDiff,max:header.maxZoom+levelDiff,async tile(z,x,y){
+      const canvas=document.createElement('canvas');canvas.width=canvas.height=256;
+      const scale=2**z,center={x:(x+.5)/scale*360-180,y:Math.atan(Math.sinh(Math.PI*(1-2*(y+.5)/scale)))*180/Math.PI};
+      await streets.drawContext(canvas.getContext('2d'),256,256,center,z);
+      return new Promise(resolve=>canvas.toBlob(resolve,'image/png'));
+    }};
+    return streets;
   }
   const mime={2:'image/png',3:'image/jpeg',4:'image/webp',5:'image/avif'}[header.tileType];
   const raster=L.gridLayer({
@@ -111,5 +118,9 @@ export async function makeOfflineBasemap(L, pack) {
     }).catch(error=>done(error,image));
     return image;
   };
+  raster.mpsPrintSource={bounds:pack.bounds,min:header.minZoom,max:header.maxZoom,async tile(z,x,y){
+    const tile=await archive.getZxy(z,x,y);
+    return tile?new Blob([tile.data],{type:mime}):null;
+  }};
   return raster;
 }

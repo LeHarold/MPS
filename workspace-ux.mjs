@@ -14,8 +14,8 @@ export function placeLabelBoxes(items,bounds,obstacles=[],hideOverflow=false){
 export function labelRank(category,preference='user'){const ranks={selected:1000,manual:950,distance:850,user:800,waypoint:650,route:500,reference:450,airport:400};return category===preference?900:(ranks[category]||300)}
 export function calibrationDistance(ratio,unitFactor){if(!(ratio>0&&unitFactor>0))throw Error('Invalid scale');return ratio*.05/unitFactor}
 export function readPrintTemplate(template){const p=structuredClone(template);if(!['a4','a3','letter'].includes(p.paper)||!['landscape','portrait'].includes(p.orientation)||!Number.isFinite(p.ratio)||p.ratio<100||p.ratio>1e8)throw Error('列印版型不正確');return p}
-export async function openBackupHistory(){
- const db=await new Promise((resolve,reject)=>{const r=indexedDB.open('mps-backup-history',1);r.onupgradeneeded=()=>r.result.createObjectStore('versions',{keyPath:'id'});r.onsuccess=()=>resolve(r.result);r.onerror=()=>reject(r.error)});
+export async function openBackupHistory(namespace=""){
+ const db=await new Promise((resolve,reject)=>{const r=indexedDB.open(namespace+'mps-backup-history',1);r.onupgradeneeded=()=>r.result.createObjectStore('versions',{keyPath:'id'});r.onsuccess=()=>resolve(r.result);r.onerror=()=>reject(r.error)});
  const tx=(mode,action)=>new Promise((resolve,reject)=>{const t=db.transaction('versions',mode),r=action(t.objectStore('versions'));t.oncomplete=()=>resolve(r?.result);t.onerror=()=>reject(t.error);t.onabort=()=>reject(t.error||Error('備份交易失敗'))});
  return{put:record=>tx('readwrite',s=>s.put(record)),get:id=>tx('readonly',s=>s.get(id)),list:async()=>((await tx('readonly',s=>s.getAll()))||[]).sort((a,b)=>b.createdAt.localeCompare(a.createdAt)),remove:id=>tx('readwrite',s=>s.delete(id))};
 }
