@@ -27,10 +27,14 @@ function openDatabase() {
 
 export async function openWorkspaceStorage(onSaveError = () => {}) {
   const values = new Map();
+  const timestamps = new Map();
   for (const key of DATA_KEYS) {
     try {
       const value = localStorage.getItem(key);
-      if (value !== null) values.set(key, value);
+      if (value !== null) {
+        values.set(key, value);
+        timestamps.set(key, Number(localStorage.getItem(key+':saved-at')) || 0);
+      }
     } catch {}
   }
   let db;
@@ -38,16 +42,23 @@ export async function openWorkspaceStorage(onSaveError = () => {}) {
   try {
     db = await openDatabase();
     const records = await transaction(db, 'readonly', store => store.getAll());
-    for (const {key, value, recover} of records) {
+    for (const {key, value, recover, savedAt=0} of records) {
       existingBackups.add(key);
-      if (recover || !values.has(key)) values.set(key, value);
+      if (!values.has(key) || (recover && savedAt >= (timestamps.get(key)||0))) {
+        values.set(key, value);
+        timestamps.set(key,savedAt);
+        try {
+          localStorage.setItem(key,value);
+          localStorage.setItem(key+':saved-at',String(savedAt));
+        } catch {}
+      }
     }
   } catch { db = null; }
 
   function writeBackup(key, value, recover) {
-    if (!db) return null;
-    const record = {key, value, recover};
-    return transaction(db, 'readwrite', store => store.put(record))
+    if (!db && !globalThis.indexedDB) return null;
+    const record = {key, value, recover, savedAt:timestamps.get(key)||0};
+    return (db ? Promise.resolve(db) : openDatabase().then(opened => db=opened)).then(connection => transaction(connection, 'readwrite', store => store.put(record)))
       .catch(async () => {
         // Safari can close a database connection after suspending the app.
         db = await openDatabase();
@@ -64,8 +75,10 @@ export async function openWorkspaceStorage(onSaveError = () => {}) {
     getItem(key) { return values.get(key) ?? null; },
     setItem(key, value) {
       values.set(key, value);
+      const savedAt=Math.max(Date.now(),(timestamps.get(key)||0)+1);
+      timestamps.set(key,savedAt);
       let savedLocally = false;
-      try { localStorage.setItem(key, value); savedLocally = true; } catch {}
+      try { localStorage.setItem(key, value); savedLocally = true; localStorage.setItem(key+':saved-at',String(savedAt)); } catch {}
       const backup = writeBackup(key, value, !savedLocally);
       if (!savedLocally && !backup) throw Error('瀏覽器儲存空間無法使用');
       backup?.catch(error => { if (!savedLocally) onSaveError(error); });
