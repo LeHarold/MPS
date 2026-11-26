@@ -1,7 +1,6 @@
 [
   "airports.json",
   "app.js",
-  "authorization.mjs",
   "coordinates.mjs",
   "data-sources.html",
   "elevation-store.mjs",
@@ -11,7 +10,6 @@
   "index.html",
   "instrument-lock.mjs",
   "label-visibility.mjs",
-  "license-public-key.json",
   "licensed-tools.mjs",
   "manifest.webmanifest",
   "map-editing.mjs",
@@ -46,7 +44,6 @@
   "world.json",
   "print-raster.mjs",
   "device-transfer.mjs",
-  "license-transfer.mjs",
   "action-history.mjs",
   "ios-pwa.mjs",
   "point-snap.mjs",
@@ -70,5 +67,6 @@
   "vendor/pmtiles.js",
   "vendor/protomaps-leaflet.js",
   "vendor/pmtiles.LICENSE",
-  "vendor/protomaps-leaflet.LICENSE"
+  "vendor/protomaps-leaflet.LICENSE",
+  "google-workspace.mjs"
 ]
