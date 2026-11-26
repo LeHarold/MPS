@@ -1,10 +1,10 @@
-import {normalizePack,readBasemapPack,removeBasemapPack,downloadBasemapPack,makeOfflineBasemap} from './offline-basemaps.mjs?v=209';
+import {normalizePack,readBasemapPack,removeBasemapPack,downloadBasemapPack,makeOfflineBasemap} from './offline-basemaps.mjs?v=210';
 import {ObjectSpatialIndex,simplifyDisplay,detailBucket,diffVisible} from './spatial-objects.mjs?v=191';
 import { createNavigationRuler, navigationReadout } from './navigation-ruler.mjs?v=191';
 import { placeNearbyWaypoints, viewportPaintDue } from './compact-waypoints.mjs?v=191';
 import { coordinateRows, coordinateWorkbook } from './coordinate-excel.mjs?v=191';
 import { LINE_STYLES, lineStyleOptions, installDoubleLines } from './line-appearance.mjs?v=191';
-import {openWorkspaceStorage} from './workspace-storage.mjs?v=209';
+import {openWorkspaceStorage} from './workspace-storage.mjs?v=210';
 import {labelDisplaySize,frameTask,memoAreaOffset} from './display-performance.mjs?v=191';
 import {areaSouthwest,limitAreaOffset,areaInteriorOffset} from './area-labels.mjs?v=191';
 import {stableLabelOffset,rememberLabelOffset,validAreaPlacement} from './label-stability.mjs?v=191';
@@ -14,12 +14,12 @@ import {applyLabelRotation,preserveLabelCenter,rotatedLabelEdge,labelBorderSize}
 import {nearestPoint,attachPoint,releasePoint} from './point-snap.mjs?v=191';
 import {decodeTerrainBlob,bindTouchCursor,setupIOSStorage} from './ios-pwa.mjs?v=191';
 import {actionDescription} from './action-history.mjs?v=191';
-import {printRaster} from './print-raster.mjs?v=209';
+import {printRaster} from './print-raster.mjs?v=210';
 import {uniqueLabelIds} from './label-visibility.mjs?v=191';
 import {outerVertices,transformPoints,nearestPathFraction} from './map-editing.mjs?v=191';
 import {createPressControls} from './press-controls.mjs?v=191';
 import {applyPointMOMs,validatePointMOMs} from './point-relations.mjs?v=191';
-import {requireAuthorization,currentAuthorization,deleteAuthorization,canPackageWebsite,canShareLicense,getLicenseShareProof,getActiveLicenseFile} from './authorization.mjs?v=209';
+import {requireAuthorization,currentAuthorization,deleteAuthorization,canPackageWebsite,canShareLicense,getLicenseShareProof,getActiveLicenseFile} from './authorization.mjs?v=210';
 import {startLicensedTool,sanitizeToolIcon} from './licensed-tools.mjs?v=191';
 const offlineBundle=window.MPS_BUNDLE?.format===2;
 const [{setupLiveVehicles},{setupLicenseSharing},{setupDeviceTransfer}]=offlineBundle
@@ -29,7 +29,7 @@ await requireAuthorization();
 if(window.MPS_IMPORT_BUNDLE)await window.MPS_IMPORT_BUNDLE();
 import {intervalPlan,placeCursorBox,extensionEndpoint} from './workspace-interactions.mjs?v=191';
 import {planProjectImport,mergeProjectItems} from './project-merge.mjs?v=191';
-import {parseSearchPosition,searchCatalog,placeLabelBoxes,labelRank,calibrationDistance,readPrintTemplate,openBackupHistory} from './workspace-ux.mjs?v=209';
+import {parseSearchPosition,searchCatalog,placeLabelBoxes,labelRank,calibrationDistance,readPrintTemplate,openBackupHistory} from './workspace-ux.mjs?v=210';
 if(window.MPS_BUNDLE_READY)await window.MPS_BUNDLE_READY;
 const bundleNamespace=offlineBundle?'bundle:'+window.MPS_BUNDLE.id+':':'';
 const workspaceStorage = await openWorkspaceStorage(error => {
@@ -990,7 +990,7 @@ opacityButton.onclick=()=>{const levels=[1,.75,.5,.25],value=levels.includes(sta
 $('settings-panel').querySelector('.section-body').append(opacityButton);const refreshBeforeMovementOpacity=refreshUI;refreshUI=function(){refreshBeforeMovementOpacity();paintMovementOpacity()};paintMovementOpacity();
 }
 
-if(typeof document!=='undefined'){const version=document.createElement('p');version.id='app-version';version.textContent='程式版本 v209';$('settings-panel').querySelector('.section-body').append(version)}
+if(typeof document!=='undefined'){const version=document.createElement('p');version.id='app-version';version.textContent='程式版本 v210';$('settings-panel').querySelector('.section-body').append(version)}
 
 // Quick navigation ruler and persistent graduated ruler are independent tools.
 if (typeof document !== 'undefined') {
@@ -1973,7 +1973,7 @@ if(typeof document!=='undefined'){
  refreshPins();
  const beforePins=refreshUI;
  refreshUI=function(...args){const result=beforePins(...args);refreshPins();return result;};
- const commandResults=document.createElement('div');commandResults.className='row';
+ const commandResults=document.createElement('div');commandResults.className='row';commandResults.id='global-command-results';
  $('global-search-input').after(commandResults);
  function renderCommandResults(){
   const query=$('global-search-input').value.trim().toLocaleLowerCase();
@@ -1994,4 +1994,26 @@ if(typeof document!=='undefined'){
  }
  $('global-search-input').addEventListener('input',renderCommandResults);
  searchDialog.addEventListener('close',()=>commandResults.replaceChildren());
+}
+
+if(typeof document!=='undefined'){
+ const field=$('global-search-input');
+ const results=() => [...searchDialog.querySelectorAll('#global-command-results button, #global-search-results button')]
+   .filter(button=>!button.disabled&&!button.hidden);
+ searchDialog.addEventListener('keydown',event=>{
+   if(event.isComposing||event.altKey||event.ctrlKey||event.metaKey||event.shiftKey)return;
+   const buttons=results();
+   const index=buttons.indexOf(event.target);
+   if(!['ArrowDown','ArrowUp'].includes(event.key)||(event.target!==field&&index<0)||!buttons.length)return;
+   event.preventDefault();
+   if(event.key==='ArrowUp'&&index===0){field.focus();return;}
+   const next=index<0?(event.key==='ArrowDown'?0:buttons.length-1):Math.min(buttons.length-1,index+(event.key==='ArrowDown'?1:-1));
+   buttons[next].focus();
+ });
+ const saved=$('saved');
+ if(saved){
+   const update=()=>{saved.dataset.state=saved.textContent.includes('失敗')?'error':saved.textContent.includes('儲存中')?'pending':'saved';};
+   update();
+   new MutationObserver(update).observe(saved,{childList:true,characterData:true,subtree:true});
+ }
 }
