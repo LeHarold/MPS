@@ -1,5 +1,5 @@
 // Public OAuth client ID. Codes only control UI visibility in this static build.
-const CONFIG = {clientId: '', userCodes: []};
+const CONFIG = {clientId: '453678468119-o464ltbg6l8d5ofk1vgjiao6p7t1ofe6.apps.googleusercontent.com', userCodes: []};
 const SCOPE = 'https://www.googleapis.com/auth/drive.appdata';
 const FILE = 'mps-google-workspace.json';
 
@@ -102,3 +102,4 @@ export function connectGoogleWorkspace({mount, capture, restore}) {
 export function validUserCode(code) {
   return CONFIG.userCodes.includes(code.trim());
 }
+
