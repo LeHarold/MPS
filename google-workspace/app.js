@@ -1,0 +1,144 @@
+import {parseCoordinate} from './coordinates.mjs';
+const $=id=>document.getElementById(id),map=L.map('map',{zoomControl:false,doubleClickZoom:false,minZoom:2,maxZoom:13}).setView([24,121],6);L.control.zoom({position:'bottomright'}).addTo(map);map.attributionControl.addAttribution('Natural Earth · CAA eAIP');
+const land=L.layerGroup().addTo(map),routeLayer=L.layerGroup().addTo(map),fixLayer=L.layerGroup().addTo(map),gridLayer=L.layerGroup().addTo(map),drawLayer=L.layerGroup().addTo(map),handles=L.layerGroup().addTo(map),draft=L.layerGroup().addTo(map);const tiles=L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',{attribution:'© OpenStreetMap contributors',maxZoom:19});
+let objects=[],selected=null,tool='pan',points=[],freeDown=false,history=[],routeData=[],installPrompt;
+function notice(s){$('notice').textContent=s}try{objects=JSON.parse(localStorage.getItem('atlas-objects')||'[]')}catch{notice('本機資料無法讀取，請重新匯入 KML')}
+function snapshot(){history.push(JSON.stringify(objects));if(history.length>30)history.shift()}
+function save(){try{localStorage.setItem('atlas-objects',JSON.stringify(objects));$('saved').textContent='● 已儲存於本機'}catch{$('saved').textContent='儲存失敗，請匯出 KML'}}
+try{const preference=localStorage.getItem('atlas-unit');if(['nm','km','m'].includes(preference))$('unit').value=preference}catch{}
+const settings=document.createElement('section');settings.innerHTML='<div class="section-title">設定 <span>SETTINGS</span></div><label for="unit">地圖單位</label><p class="muted">套用於地圖比例尺、直尺與距離顯示。預設 NM（海里）。</p>';
+settings.insertBefore($('unit'),settings.lastChild);document.querySelector('aside footer').before(settings);document.querySelector('.bottom > div:nth-child(2)').remove();
+$('unit').addEventListener('change',()=>{try{localStorage.setItem('atlas-unit',$('unit').value)}catch{} });
+const rad=x=>x*Math.PI/180;
+const colorControl=document.createElement('label');colorControl.className='drawing-color-control';colorControl.innerHTML='標繪顏色 <input type="color" id="drawing-color" value="#f3ba68" aria-label="標繪顏色">';
+document.querySelector('header').append(colorControl);
+try{const c=localStorage.getItem('map-drawing-color');if(/^#[0-9a-f]{6}$/i.test(c))$('drawing-color').value=c}catch{}
+$('drawing-color').onchange=()=>{try{localStorage.setItem('map-drawing-color',$('drawing-color').value)}catch{}};
+const protractor=document.createElement('div');protractor.id='protractor';protractor.hidden=true;protractor.setAttribute('aria-label','可拖曳的 360 度圓形量角器');
+let dial='<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 340 340" role="img" aria-label="圓形量角器，正上方為 0 度，順時針至 360 度"><circle cx="170" cy="170" r="166" fill="#0c18222b" stroke="#f8e3a6" stroke-width="1.5"/><circle cx="170" cy="170" r="119" fill="none" stroke="#f8e3a6" stroke-opacity=".4"/>';
+for(let degree=0;degree<360;degree++){
+ const a=rad(degree),outer=163,inner=degree%10===0?147:degree%5===0?153:158;
+ dial+=`<line x1="${170+inner*Math.sin(a)}" y1="${170-inner*Math.cos(a)}" x2="${170+outer*Math.sin(a)}" y2="${170-outer*Math.cos(a)}" stroke="#fff1c8" stroke-width="${degree%10===0?1.5:.7}"/>`;
+ if(degree%10===0)dial+=`<text x="${170+134*Math.sin(a)}" y="${170-134*Math.cos(a)}" text-anchor="middle" dominant-baseline="central" font-family="monospace" font-size="11" fill="#fff1c8">${degree}°</text>`;
+}
+dial+='<path d="M170 12V328 M12 170H328" stroke="#fff1c8" stroke-width=".8" stroke-dasharray="4 5"/><circle cx="170" cy="170" r="5" fill="none" stroke="#fff1c8"/><path d="M158 170h24m-12-12v24" stroke="#fff1c8"/><text x="170" y="199" text-anchor="middle" font-size="10" fill="#fff1c8">拖曳移動</text></svg>';
+protractor.innerHTML=dial;document.querySelector('.map-wrap').append(protractor);
+let dialDrag=null;
+protractor.addEventListener('pointerdown',e=>{if(e.button!==0)return;e.preventDefault();const box=protractor.getBoundingClientRect(),parent=protractor.parentElement.getBoundingClientRect();dialDrag={x:e.clientX,y:e.clientY,left:box.left-parent.left,top:box.top-parent.top};protractor.setPointerCapture(e.pointerId)});
+protractor.addEventListener('pointermove',e=>{if(!dialDrag)return;const parent=protractor.parentElement;protractor.style.transform='none';protractor.style.left=Math.max(0,Math.min(parent.clientWidth-protractor.offsetWidth,dialDrag.left+e.clientX-dialDrag.x))+'px';protractor.style.top=Math.max(0,Math.min(parent.clientHeight-protractor.offsetHeight-80,dialDrag.top+e.clientY-dialDrag.y))+'px'});
+protractor.addEventListener('pointerup',()=>dialDrag=null);protractor.addEventListener('pointercancel',()=>dialDrag=null);
+const ruler=document.createElement('div');ruler.id='map-ruler';ruler.hidden=true;ruler.setAttribute('aria-label','可拖曳的地圖比例直尺');document.querySelector('.map-wrap').append(ruler);
+function updateRuler(){
+ if(ruler.hidden)return;
+ const rect=ruler.getBoundingClientRect(),parent=map.getContainer().getBoundingClientRect(),width=rect.width,pad=18,length=Math.max(20,width-2*pad),y=rect.top-parent.top+12,x=rect.left-parent.left+pad;
+ const start=map.containerPointToLatLng([x,y]);
+ const metresAt=px=>{const p=map.containerPointToLatLng([x+px,y]);return distance([start.lat,start.lng],[p.lat,p.lng])};
+ const factor=$('unit').value==='nm'?1852:$('unit').value==='km'?1000:1,unit=$('unit').value.toUpperCase(),range=metresAt(length)/factor;
+ const rough=range/6,power=10**Math.floor(Math.log10(rough)),interval=([1,2,5,10].find(n=>n*power>=rough)||10)*power;
+ const decimals=Math.max(0,-Math.floor(Math.log10(interval)));
+ let svg=`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${width} 90" role="img" aria-label="地圖直尺，單位 ${unit}"><rect x="1" y="1" width="${width-2}" height="88" rx="5" fill="#10212cc9" stroke="#fff1c8"/><line x1="${pad}" y1="12" x2="${width-pad}" y2="12" stroke="#fff1c8"/>`;
+ for(let i=0;i*interval/5<=range&&i<100;i++){
+   const value=i*interval/5,target=value*factor;let lo=0,hi=length;
+   for(let j=0;j<22;j++){const mid=(lo+hi)/2;if(metresAt(mid)<target)lo=mid;else hi=mid}
+   const px=pad+(lo+hi)/2,major=i%5===0;
+   svg+=`<line x1="${px}" y1="12" x2="${px}" y2="${major?35:24}" stroke="#fff1c8"/>`;
+   if(major)svg+=`<text x="${px}" y="50" text-anchor="middle" fill="#fff1c8" font-size="12" font-family="monospace">${value.toFixed(Math.min(decimals,6))}</text>`;
+ }
+ ruler.innerHTML=svg+`<text x="${width/2}" y="74" text-anchor="middle" fill="#fff1c8" font-size="11">${unit} · 拖曳移動 · 刻度隨地圖縮放</text></svg>`;
+}
+let rulerDrag=null;
+ruler.addEventListener('pointerdown',e=>{if(e.button!==0)return;e.preventDefault();const box=ruler.getBoundingClientRect(),parent=ruler.parentElement.getBoundingClientRect();rulerDrag={x:e.clientX,y:e.clientY,left:box.left-parent.left,top:box.top-parent.top};ruler.setPointerCapture(e.pointerId)});
+ruler.addEventListener('pointermove',e=>{if(!rulerDrag)return;const parent=ruler.parentElement;ruler.style.transform='none';ruler.style.left=Math.max(0,Math.min(parent.clientWidth-ruler.offsetWidth,rulerDrag.left+e.clientX-rulerDrag.x))+'px';ruler.style.top=Math.max(0,Math.min(parent.clientHeight-ruler.offsetHeight-80,rulerDrag.top+e.clientY-rulerDrag.y))+'px';updateRuler()});
+ruler.addEventListener('pointerup',()=>rulerDrag=null);ruler.addEventListener('pointercancel',()=>rulerDrag=null);
+map.on('move zoom resize',updateRuler);window.addEventListener('resize',()=>requestAnimationFrame(updateRuler));$('unit').addEventListener('change',updateRuler);
+const mapScale=L.control({position:'bottomleft'}),mapScaleElement=document.createElement('div');mapScaleElement.id='map-scale';mapScaleElement.className='unified-map-scale';mapScale.onAdd=()=>mapScaleElement;mapScale.addTo(map);
+function updateMapScale(){
+ const size=map.getSize(),y=Math.max(0,size.y-100),start=map.containerPointToLatLng([15,y]),end=map.containerPointToLatLng([115,y]);
+ const factor=$('unit').value==='nm'?1852:$('unit').value==='km'?1000:1,range=distance([start.lat,start.lng],[end.lat,end.lng])/factor;
+ if(!(range>0))return;
+ const power=10**Math.floor(Math.log10(range)),value=([5,2,1].find(n=>n*power<=range)||1)*power;
+ mapScaleElement.style.width=Math.max(20,100*value/range)+'px';
+ mapScaleElement.textContent=Number(value.toPrecision(6))+' '+$('unit').value.toUpperCase();
+ mapScaleElement.setAttribute('aria-label','地圖比例尺 '+mapScaleElement.textContent);
+}
+map.on('move zoom resize',updateMapScale);$('unit').addEventListener('change',updateMapScale);updateMapScale();
+const workspace=document.querySelector('aside');workspace.id='workspace';
+const workspaceToggle=document.createElement('button');workspaceToggle.id='workspace-toggle';workspaceToggle.type='button';workspaceToggle.setAttribute('aria-controls','workspace');
+document.querySelector('.headmeta').before(workspaceToggle);
+function collapseWorkspace(collapsed){
+  document.body.classList.toggle('workspace-collapsed',collapsed);
+  workspaceToggle.textContent=collapsed?'☰ 展開工作空間':'‹ 收合工作空間';
+  workspaceToggle.setAttribute('aria-expanded',String(!collapsed));
+  workspace.inert=collapsed;map.invalidateSize({pan:false});
+  try{localStorage.setItem('atlas-workspace-collapsed',String(collapsed))}catch{}
+}
+workspaceToggle.onclick=()=>collapseWorkspace(!document.body.classList.contains('workspace-collapsed'));
+let workspaceCollapsed=false;try{workspaceCollapsed=localStorage.getItem('atlas-workspace-collapsed')==='true'}catch{}
+collapseWorkspace(workspaceCollapsed);
+const satellite=L.tileLayer('https://services.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}',{maxZoom:19,attribution:'<a href="https://doc.arcgis.com/en/data-appliance/latest/imagery-elevation/world-imagery.htm" target="_blank" rel="noopener">衛星影像</a> © Esri, Maxar, Earthstar Geographics, GIS User Community'});
+const basemapLabel=$('tiles').parentElement;
+const basemapControls=document.createElement('div');
+basemapControls.innerHTML='<label for="basemap">底圖選擇</label><select id="basemap" aria-label="底圖選擇"><option value="vector">離線向量底圖</option><option value="street">街道底圖 · 需連線</option><option value="satellite">衛星影像 · 需連線</option></select><p id="basemap-status" class="muted" aria-live="polite">離線海岸線與國界</p><label><input type="checkbox" id="drawings" checked> 我的標繪 / KML <em>USER</em></label>';
+basemapLabel.replaceWith(basemapControls);
+let basemapErrors=0;
+function setBasemap(value){
+  map.removeLayer(tiles);map.removeLayer(satellite);basemapErrors=0;
+  if(value==='vector'){land.addTo(map);$('basemap-status').textContent='離線海岸線與國界'}
+  else{map.removeLayer(land);(value==='satellite'?satellite:tiles).addTo(map);$('basemap-status').textContent=navigator.onLine?(value==='satellite'?'Esri 衛星／航照影像，非即時影像':'OpenStreetMap 街道底圖'):'目前離線，請切換離線向量底圖';}
+  try{localStorage.setItem('atlas-basemap',value)}catch{}
+}
+$('basemap').onchange=()=>setBasemap($('basemap').value);
+for(const layer of [tiles,satellite]){
+  layer.on('tileerror',()=>{basemapErrors++;$('basemap-status').textContent='部分底圖載入失敗，請檢查連線或切換離線向量底圖'});
+  layer.on('loading',()=>{basemapErrors=0});
+}
+$('drawings').onchange=()=>{if($('drawings').checked)drawLayer.addTo(map);else{map.removeLayer(drawLayer);handles.clearLayers()}};
+try{const base=localStorage.getItem('atlas-basemap');if(['vector','street','satellite'].includes(base))$('basemap').value=base}catch{}
+setBasemap($('basemap').value);
+const coordinatePanel=document.createElement('section');
+coordinatePanel.innerHTML='<div class="section-title">座標標點 <span>GO TO COORDINATE</span></div><form id="coordinate-form"><label for="latitude">緯度 Latitude</label><input id="latitude" placeholder="25.033 或 25°01′58.8″N" autocomplete="off" required><label for="longitude">經度 Longitude</label><input id="longitude" placeholder="121.5654 或 121°33′55.44″E" autocomplete="off" required><label for="point-name">標記名稱（選填）</label><input id="point-name" placeholder="例如：參考點 A" maxlength="100"><p class="muted">十進位或度分秒皆可；亦可用空格分隔度、分、秒。無方向字母時，正值代表北緯／東經。</p><div class="row"><button type="button" id="locate-coordinate">僅定位</button><button type="submit" class="accent">＋ 新增標記</button></div><p id="coordinate-feedback" aria-live="polite"></p></form>';
+document.querySelector('aside section').before(coordinatePanel);
+function coordinateAction(mark){
+  try{
+    const lat=parseCoordinate($('latitude').value,true),lng=parseCoordinate($('longitude').value,false);
+    setTool('pan');map.setView([lat,lng],9);
+    if(mark)addObject('point',[[lat,lng,0]],$('point-name').value.trim()||'座標標記 '+(objects.length+1));
+    else{draft.clearLayers();L.circleMarker([lat,lng],{radius:9,color:'#f3ba68',fillOpacity:.2}).addTo(draft);}
+    $('position').textContent=dms(lat,true)+'　'+dms(lng,false);
+    $('coordinate-feedback').textContent=(mark?'已新增標記：':'已定位：')+dms(lat,true)+' '+dms(lng,false);
+    notice(mark?'座標標記已儲存，可編輯或匯出 KML':'已定位，按「新增標記」可儲存此點');
+  }catch(err){$('coordinate-feedback').textContent=err.message;}
+}
+$('coordinate-form').onsubmit=e=>{e.preventDefault();coordinateAction(true)};
+$('locate-coordinate').onclick=()=>coordinateAction(false);
+function bearing(a,b){let y=Math.sin(rad(b[1]-a[1]))*Math.cos(rad(b[0])),x=Math.cos(rad(a[0]))*Math.sin(rad(b[0]))-Math.sin(rad(a[0]))*Math.cos(rad(b[0]))*Math.cos(rad(b[1]-a[1]));return(Math.atan2(y,x)*180/Math.PI+360)%360}
+function distance(a,b){const dlat=rad(b[0]-a[0]),dlon=rad(b[1]-a[1]),v=Math.sin(dlat/2)**2+Math.cos(rad(a[0]))*Math.cos(rad(b[0]))*Math.sin(dlon/2)**2;return 6371008.8*2*Math.atan2(Math.sqrt(v),Math.sqrt(1-Math.min(1,v)))}
+function dms(v,lat){let t=Math.round(Math.abs(v)*36000),d=Math.floor(t/36000),m=Math.floor(t%36000/600),s=(t%600/10).toFixed(1);return`${String(d).padStart(lat?2:3,'0')}°${String(m).padStart(2,'0')}′${s.padStart(4,'0')}″${lat?(v<0?'S':'N'):(v<0?'W':'E')}`}
+function fmt(m){const u=$('unit').value;return(m/(u==='nm'?1852:u==='km'?1000:1)).toFixed(2)+' '+u.toUpperCase()}
+function updateMeasure(){if(!points.length)return;let total=points.reduce((s,p,i)=>i?s+distance(points[i-1],p):0,0);$('measurement').hidden=false;if(tool==='angle'){if(points.length<3){$('measurement').textContent=`量角器 ${points.length}/3 點（中點為頂點）`;return}let a=bearing(points[1],points[0]),b=bearing(points[1],points[2]);let angle=Math.abs(a-b);angle=Math.min(angle,360-angle);$('measurement').textContent=`夾角 ${angle.toFixed(2)}° · 真北參考`}else $('measurement').textContent=`總距離 ${fmt(total)}${points.length>1?' · 真方位 '+bearing(points[points.length-2],points.at(-1)).toFixed(2)+'°':''}`}
+function redrawDraft(){draft.clearLayers();if(points.length)L.polyline(points,{color:'#f3ba68',weight:2,dashArray:'6 5'}).addTo(draft);points.forEach(p=>L.circleMarker(p,{radius:4,color:'#f3ba68',fillOpacity:1}).addTo(draft));if(tool==='ruler'||tool==='angle')updateMeasure()}
+const hints={pan:'拖曳平移地圖，滾輪縮放；點選航路查看資料',point:'點一下地圖放置標記',line:'依序點選航線頂點，按「完成」儲存',polygon:'依序點選區域頂點，按「完成」閉合區域',free:'按住滑鼠或手指拖曳繪畫，放開即儲存',ruler:'拖曳直尺對齊目標；刻度依目前地圖比例及設定單位更新',angle:'拖曳圓形量角器對齊目標；0° 在上方，順時針讀取刻度'};
+function setTool(t){if((t==='angle'||t==='ruler')&&tool===t)t='pan';protractor.hidden=t!=='angle';ruler.hidden=t!=='ruler';if(t==='ruler')requestAnimationFrame(updateRuler);tool=t;points=[];draft.clearLayers();$('measurement').hidden=true;document.querySelectorAll('[data-tool]').forEach(b=>b.classList.toggle('active',b.dataset.tool===t));$('hint').textContent=hints[t];$('finish').hidden=['pan','point','free','angle','ruler'].includes(t);map.dragging[t==='free'?'disable':'enable']();map.getContainer().style.cursor=t==='pan'?'grab':'crosshair';if(t!=='pan')handles.clearLayers()}
+document.querySelectorAll('[data-tool]').forEach(b=>b.onclick=()=>setTool(b.dataset.tool));
+function addObject(type,pts,name){snapshot();const o={id:crypto.randomUUID(),type,points:pts.map(p=>[p[0],p[1],p[2]||0]),name:name||({point:'標記',polygon:'區域',line:'航線'}[type]||'標繪')+' '+(objects.length+1),color:$('drawing-color').value};objects.push(o);save();render();selectObject(o.id)}
+function finish(){if(tool==='angle'){if(points.length!==3)return notice('量角器需要 3 點');let a=Math.abs(bearing(points[1],points[0])-bearing(points[1],points[2]));addObject('line',points,'夾角 '+Math.min(a,360-a).toFixed(2)+'°')}else{const min=tool==='polygon'?3:2;if(points.length<min)return notice('頂點數不足');addObject(tool==='polygon'?'polygon':'line',points,tool==='ruler'?'測距 '+fmt(points.reduce((s,p,i)=>i?s+distance(points[i-1],p):0,0)):null)}setTool('pan');notice('已儲存標繪')}
+$('finish').onclick=finish;$('cancel').onclick=()=>setTool('pan');$('undo').onclick=()=>{if(points.length){points.pop();redrawDraft()}else if(history.length){objects=JSON.parse(history.pop());selected=null;save();render();$('editor').hidden=true}};document.addEventListener('keydown',e=>{if(/INPUT|TEXTAREA/.test(e.target.tagName))return;if(e.key==='Escape')setTool('pan');if(e.key==='Enter'&&!$('finish').hidden)finish()});
+map.on('click',e=>{const p=[e.latlng.lat,e.latlng.lng];if(tool==='point'){addObject('point',[p]);return}if(['line','polygon'].includes(tool)){if(tool==='angle'&&points.length===3)points=[];points.push(p);redrawDraft()}});map.on('mousemove',e=>$('position').textContent=dms(e.latlng.lat,true)+'　'+dms(e.latlng.lng,false));
+// Pointer capture keeps freehand strokes intact when crossing the map boundary.
+map.getContainer().addEventListener('pointerdown',e=>{if(tool!=='free'||e.target.closest('button,a,input,select'))return;e.preventDefault();freeDown=true;points=[];map.getContainer().setPointerCapture(e.pointerId);let p=map.mouseEventToLatLng(e);points.push([p.lat,p.lng])});map.getContainer().addEventListener('pointermove',e=>{if(!freeDown)return;let p=map.mouseEventToLatLng(e);if(distance(points.at(-1),[p.lat,p.lng])>map.getZoom()*2){points.push([p.lat,p.lng]);redrawDraft()}});map.getContainer().addEventListener('pointerup',()=>{if(!freeDown)return;freeDown=false;if(points.length>1)addObject('line',points,'自由繪圖 '+(objects.length+1));points=[];draft.clearLayers()});map.getContainer().addEventListener('pointercancel',()=>{freeDown=false;points=[];draft.clearLayers()});
+function render(){drawLayer.clearLayers();handles.clearLayers();$('objects').replaceChildren();objects.forEach(o=>{let layer=o.type==='point'?L.circleMarker(o.points[0],{radius:6,color:o.color,fillOpacity:.8}):o.type==='polygon'?L.polygon(o.points,{color:o.color,weight:o.id===selected?4:2,fillOpacity:.12}):L.polyline(o.points,{color:o.color,weight:o.id===selected?4:2});layer.addTo(drawLayer).bindTooltip(o.name);layer.on('click',e=>{L.DomEvent.stopPropagation(e);if(tool==='pan')selectObject(o.id)});const row=document.createElement('div');row.className='object'+(o.id===selected?' selected':'');const b=document.createElement('button');b.textContent=(o.type==='point'?'⌖ ':o.type==='polygon'?'⬡ ':'╱ ')+o.name;b.onclick=()=>{setTool('pan');selectObject(o.id);map.fitBounds(L.latLngBounds(o.points),{maxZoom:9,padding:[50,50]})};row.append(b);$('objects').append(row)});if(!objects.length)$('objects').textContent='尚無標繪 · 使用左側工具開始'}
+function selectObject(id){if(!$('drawings').checked){$('drawings').checked=true;drawLayer.addTo(map)}selected=id;render();let o=objects.find(x=>x.id===id);if(!o)return;$('editor').hidden=false;$('objname').value=o.name;$('color').value=o.color;$('coords').value=o.points.map(p=>p.join(', ')).join('\n');o.points.forEach((p,i)=>{const h=L.marker(p,{draggable:true,icon:L.divIcon({className:'vertex',iconSize:[12,12]})}).addTo(handles);h.on('dragstart',snapshot);h.on('drag',()=>{const q=h.getLatLng();o.points[i]=[q.lat,q.lng,o.points[i][2]||0];$('coords').value=o.points.map(p=>p.join(', ')).join('\n')});h.on('dragend',()=>{save();selectObject(id)})})}
+$('apply').onclick=()=>{let o=objects.find(x=>x.id===selected);if(!o)return;try{const p=$('coords').value.trim().split('\n').map(l=>l.split(',').map(Number));if(p.length<(o.type==='polygon'?3:o.type==='point'?1:2)||p.some(a=>a.length<2||a.length>3||a.some(v=>!Number.isFinite(v))||Math.abs(a[0])>90||Math.abs(a[1])>180)||o.type==='point'&&p.length!==1)throw Error();snapshot();o.points=p.map(a=>[a[0],a[1],a[2]||0]);o.name=$('objname').value.trim()||'未命名';o.color=$('color').value;save();selectObject(o.id);notice('物件已更新')}catch{notice('座標格式錯誤：每行 緯度,經度,高度，緯度 ±90、經度 ±180')}};$('delete').onclick=()=>{snapshot();objects=objects.filter(o=>o.id!==selected);selected=null;$('editor').hidden=true;save();render()};
+$('import').onclick=()=>$('file').click();$('file').onchange=async e=>{let file=e.target.files[0];if(!file)return;try{if(file.size>10*1024*1024)throw Error('檔案超過 10 MB');let xml=new DOMParser().parseFromString(await file.text(),'application/xml');if(xml.querySelector('parsererror'))throw Error('XML 格式不正確');const tags=(node,t)=>[...node.getElementsByTagNameNS('*',t)];const imported=[];let skipped=0;for(const mark of tags(xml,'Placemark')){const name=tags(mark,'name')[0]?.textContent||'匯入物件';for(const geom of [...mark.getElementsByTagName('*')].filter(n=>['Point','LineString','Polygon'].includes(n.localName))){const rings=geom.localName==='Polygon'?tags(geom,'innerBoundaryIs'):[];if(rings.length)throw Error('含孔洞的多邊形尚不支援，請先轉為單環');const coord=tags(geom,'coordinates')[0]?.textContent?.trim();if(!coord){skipped++;continue}let p=coord.split(/\s+/).map(s=>{const a=s.split(',').map(Number);return[a[1],a[0],a[2]||0]});const type=geom.localName==='Point'?'point':geom.localName==='Polygon'?'polygon':'line';if(type==='polygon'&&p.length>1&&p[0][0]===p.at(-1)[0]&&p[0][1]===p.at(-1)[1])p.pop();if(p.some(a=>a.some(v=>!Number.isFinite(v))||Math.abs(a[0])>90||Math.abs(a[1])>180)||p.length<(type==='polygon'?3:type==='point'?1:2))throw Error('包含無效座標');imported.push({id:crypto.randomUUID(),name,type,points:p,color:'#f3ba68'})}}if(!imported.length)throw Error('沒有可匯入的 Point、LineString 或 Polygon');snapshot();objects.push(...imported);save();render();map.fitBounds(L.latLngBounds(imported.flatMap(o=>o.points)),{maxZoom:10,padding:[40,40]});notice(`已匯入 ${imported.length} 個幾何物件${skipped?'；略過 '+skipped+' 個無座標物件':''}。支援幾何與名稱，高度保留；原始樣式及其他中繼資料不保留。`)}catch(err){notice('匯入失敗：'+err.message)}e.target.value=''};
+function escapeXML(s){return s.replace(/[<>&"']/g,c=>({'<':'&lt;','>':'&gt;','&':'&amp;','"':'&quot;',"'":'&apos;'}[c]))}
+function kml(){return '<?xml version="1.0" encoding="UTF-8"?><kml xmlns="http://www.opengis.net/kml/2.2"><Document>'+objects.map(o=>{let pts=o.points.map(p=>`${p[1]},${p[0]},${p[2]||0}`);if(o.type==='polygon')pts.push(pts[0]);const coords='<coordinates>'+pts.join(' ')+'</coordinates>';let geom=o.type==='point'?'<Point>'+coords+'</Point>':o.type==='polygon'?'<Polygon><outerBoundaryIs><LinearRing>'+coords+'</LinearRing></outerBoundaryIs></Polygon>':'<LineString>'+coords+'</LineString>';const c=o.color.slice(1);return '<Placemark><name>'+escapeXML(o.name)+'</name><Style><LineStyle><color>ff'+c.slice(4)+c.slice(2,4)+c.slice(0,2)+'</color><width>2</width></LineStyle></Style>'+geom+'</Placemark>'}).join('')+'</Document></kml>'}
+$('export').onclick=()=>{const url=URL.createObjectURL(new Blob([kml()],{type:'application/vnd.google-earth.kml+xml'})),a=document.createElement('a');a.href=url;a.download='map-workspace-'+new Date().toISOString().slice(0,10)+'.kml';a.click();setTimeout(()=>URL.revokeObjectURL(url),1000);notice(`已匯出 ${objects.length} 個物件`)};
+function grid(){gridLayer.clearLayers();if(!$('grid').checked)return;let b=map.getBounds(),step=map.getZoom()<4?10:map.getZoom()<6?5:map.getZoom()<8?1:.25;for(let x=Math.max(-180,Math.ceil(b.getWest()/step)*step);x<=Math.min(180,b.getEast());x+=step)L.polyline([[-80,x],[80,x]],{color:'#7997a6',weight:1,opacity:.17,interactive:false}).addTo(gridLayer);for(let y=Math.max(-80,Math.ceil(b.getSouth()/step)*step);y<=Math.min(80,b.getNorth());y+=step)L.polyline([[y,-180],[y,180]],{color:'#7997a6',weight:1,opacity:.17,interactive:false}).addTo(gridLayer)}map.on('moveend',grid);$('grid').onchange=grid;for(const [id,layer] of [['routes',routeLayer],['fixes',fixLayer]])$(id).onchange=()=>$(id).checked?layer.addTo(map):map.removeLayer(layer);
+$('taiwan').onclick=()=>{map.setView([24,121],6);document.querySelector('h1').textContent='台灣周邊'};$('asia').onclick=()=>{map.fitBounds([[2,67],[52,150]]);document.querySelector('h1').textContent='亞洲全域'};$('unit').onchange=updateMeasure;
+Promise.all([fetch('world.json').then(r=>r.json()),fetch('routes.json').then(r=>r.json())]).then(([world,data])=>{L.geoJSON(world,{style:{color:'#496575',weight:1,fillColor:'#1a3340',fillOpacity:.9},onEachFeature:(f,l)=>l.bindTooltip(f.properties.NAME||f.properties.ADMIN)}).addTo(land);routeData=data.routes;$('routeCount').textContent=data.routes.length+' ROUTES';$('source').href=data.source;const seen=new Set();for(const r of data.routes){const coords=r.points.map(p=>[p.lat,p.lng]);const route=L.polyline(coords,{color:r.name.includes('TRANSITION')?'#6290b1':'#69c3b2',weight:1.5,opacity:.65}).addTo(routeLayer);const box=document.createElement('div');let title=document.createElement('b');title.textContent=r.name;const a=document.createElement('a');a.textContent='官方航路資料 ↗';a.href=r.source;a.target='_blank';a.rel='noopener';box.append(title,document.createElement('br'),document.createTextNode('eAIP '+data.effective+' · '+r.points.length+' 航點'),document.createElement('br'),a);route.bindPopup(box);L.marker(coords[Math.floor(coords.length/2)],{interactive:false,icon:L.divIcon({className:'route-label',html:'',iconSize:[0,0]})}).bindTooltip(r.name,{permanent:true,direction:'center',className:'leaflet-tooltip route-label'}).addTo(routeLayer);for(const p of r.points){const key=p.name+p.lat+p.lng;if(seen.has(key))continue;seen.add(key);L.circleMarker([p.lat,p.lng],{radius:3,color:'#83dfce',weight:1,fillColor:'#142b37',fillOpacity:1}).bindTooltip(p.name,{permanent:true,direction:'right',offset:[5,0]}).bindPopup(document.createTextNode(p.name+' · '+dms(p.lat,true)+' '+dms(p.lng,false))).addTo(fixLayer)}}notice(`已載入 ${data.routes.length} 條民航參考航路。版本 ${data.effective}；完整性與現行有效性請以官方 eAIP 為準。`);grid()}).catch(()=>notice('地圖資料載入失敗，請連線後重新整理'));$('search').oninput=()=>{const q=$('search').value.trim().toUpperCase();$('results').replaceChildren();if(!q)return;let list=[];for(const r of routeData){if(r.name.includes(q))list.push({name:r.name,pts:r.points});for(const p of r.points)if(p.name.includes(q)&&!list.some(x=>x.name===p.name))list.push({name:p.name,pts:[p]})}for(const r of list.slice(0,8)){let b=document.createElement('button');b.textContent=r.name;b.onclick=()=>map.fitBounds(r.pts.map(p=>[p.lat,p.lng]),{maxZoom:9,padding:[40,40]});$('results').append(b)}if(!list.length)$('results').textContent='找不到符合的航路或航點'};
+window.addEventListener('beforeinstallprompt',e=>{e.preventDefault();installPrompt=e;$('install').hidden=false});$('install').onclick=async()=>{if(installPrompt){await installPrompt.prompt();installPrompt=null;$('install').hidden=true}};function network(){$('network').textContent=navigator.onLine?'● 連線模式':'● 離線模式';}window.addEventListener('online',network);window.addEventListener('offline',network);network();if('serviceWorker'in navigator)navigator.serviceWorker.register('sw.js').catch(()=>notice('離線快取未啟用，請使用 HTTPS 或 localhost'));render();grid();
+
+
+
+
+
