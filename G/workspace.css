@@ -293,3 +293,15 @@ body.history-modal-open{overflow:hidden;overscroll-behavior:none}
 }
 
 .workspace-sort-hint{margin:0;padding:0 12px 8px;color:var(--muted);font-size:11px}
+
+.map-sources-toggle{position:absolute;top:7px;left:8px;z-index:851;width:36px;height:36px;padding:0;border-color:var(--line);background:var(--panel);color:var(--text);font-size:20px;line-height:1}
+.source-footer{left:50px;right:45px;top:10px}
+.source-footer .leaflet-control-attribution:empty{display:none}
+.source-footer .leaflet-control-attribution:not(:empty){padding:2px 5px;background:var(--panel)!important;border-radius:3px;color:var(--text)!important}
+.source-footer .leaflet-control-attribution a{color:inherit!important;text-decoration:underline}
+#sources-dialog{width:min(420px,92vw)}
+#sources-dialog form{float:right;margin-left:12px}
+#sources-dialog h2{margin-top:0;font-size:17px}
+#sources-content h3{font-size:14px}
+#sources-dialog a{font-size:inherit}
+#workspace-visits{margin:8px 0 0;font-size:10px;color:var(--muted)}

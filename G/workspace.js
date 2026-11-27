@@ -1,11 +1,11 @@
-import {mountRegionalAirways} from './regional-airways.mjs?v=219';
-import {normalizePack,readBasemapPack,removeBasemapPack,downloadBasemapPack,makeOfflineBasemap} from './offline-basemaps.mjs?v=219';
+import {mountRegionalAirways} from './regional-airways.mjs?v=220';
+import {normalizePack,readBasemapPack,removeBasemapPack,downloadBasemapPack,makeOfflineBasemap} from './offline-basemaps.mjs?v=220';
 import {ObjectSpatialIndex,simplifyDisplay,detailBucket,diffVisible} from './spatial-objects.mjs?v=191';
 import { createNavigationRuler, navigationReadout } from './navigation-ruler.mjs?v=191';
 import { placeNearbyWaypoints, viewportPaintDue } from './compact-waypoints.mjs?v=191';
 import { coordinateRows, coordinateWorkbook } from './coordinate-excel.mjs?v=191';
 import { LINE_STYLES, lineStyleOptions, installDoubleLines } from './line-appearance.mjs?v=191';
-import {openWorkspaceStorage} from './workspace-storage.mjs?v=219';
+import {openWorkspaceStorage} from './workspace-storage.mjs?v=220';
 import {labelDisplaySize,frameTask,memoAreaOffset} from './display-performance.mjs?v=191';
 import {areaSouthwest,limitAreaOffset,areaInteriorOffset} from './area-labels.mjs?v=191';
 import {stableLabelOffset,rememberLabelOffset,validAreaPlacement} from './label-stability.mjs?v=191';
@@ -15,7 +15,7 @@ import {applyLabelRotation,preserveLabelCenter,rotatedLabelEdge,labelBorderSize}
 import {nearestPoint,attachPoint,releasePoint} from './point-snap.mjs?v=191';
 import {decodeTerrainBlob,bindTouchCursor,setupIOSStorage} from './ios-pwa.mjs?v=191';
 import {actionDescription} from './action-history.mjs?v=191';
-import {printRaster} from './print-raster.mjs?v=219';
+import {printRaster} from './print-raster.mjs?v=220';
 import {uniqueLabelIds} from './label-visibility.mjs?v=191';
 import {outerVertices,transformPoints,nearestPathFraction} from './map-editing.mjs?v=191';
 import {createPressControls} from './press-controls.mjs?v=191';
@@ -34,7 +34,7 @@ const canPackageWebsite=()=>!offlineBundle&&featuresUnlocked;
 if(window.MPS_IMPORT_BUNDLE)await window.MPS_IMPORT_BUNDLE();
 import {intervalPlan,placeCursorBox,extensionEndpoint} from './workspace-interactions.mjs?v=191';
 import {planProjectImport,mergeProjectItems} from './project-merge.mjs?v=191';
-import {parseSearchPosition,searchCatalog,placeLabelBoxes,labelRank,calibrationDistance,readPrintTemplate,openBackupHistory} from './workspace-ux.mjs?v=219';
+import {parseSearchPosition,searchCatalog,placeLabelBoxes,labelRank,calibrationDistance,readPrintTemplate,openBackupHistory} from './workspace-ux.mjs?v=220';
 if(window.MPS_BUNDLE_READY)await window.MPS_BUNDLE_READY;
 const bundleNamespace=offlineBundle?'bundle:'+window.MPS_BUNDLE.id+':':/(?:^|\/)(?:G|google-workspace)(?:\/|$)/.test(location.pathname)?'google-workspace:':'';
 const workspaceStorage = await openWorkspaceStorage(error => {
@@ -60,10 +60,10 @@ try{const stored=workspaceStorage.getItem(STORE);if(stored){state=validateProjec
 let pointColorEditSequence=0;let locatedTarget=null;let extensionSession=null,extensionPick=null,extensionDialog=null;let layoutEditing=false,layoutScope=null;let tapeStart=null;let repairedRegionCount=0;let cursorReady=false;let future=[],inspected=null;const actionHints=new WeakMap(),actionTimes=new WeakMap();let history=[],selected=null,tool='pan',draftPoints=[],routes=[],references=[],lastCursor=[24,121],routePaths=new Map(),referencePaths=new Map(),objectPaths=new Map(),toastTimer,installPrompt,freePointer=null,clickTimer;
 const moveLabels=new WeakMap(),distanceRecords=new WeakMap();
 const map=L.map('map',{zoomControl:false,doubleClickZoom:false,minZoom:2,maxZoom:15}).setView([24,121],6);
-map.attributionControl.addAttribution('Natural Earth · <a href="https://github.com/dkaoster/taiwan-atlas" target="_blank" rel="noopener">Taiwan Atlas / 內政部</a> · CAA eAIP');
+map.attributionControl.setPrefix(false);
 for(const [name,z] of [['referencePane',300],['routePane',350],['userPane',450],['userPointPane',470],['referencePointPane',480]]){map.createPane(name);map.getPane(name).style.zIndex=String(z)}
 const land=L.layerGroup(),routeLines=L.layerGroup().addTo(map),fixes=L.layerGroup().addTo(map),referenceGroup=L.layerGroup().addTo(map),grid=L.layerGroup().addTo(map),draw=L.layerGroup().addTo(map),handles=L.layerGroup().addTo(map),draft=L.layerGroup().addTo(map),segmentMarkGroup=L.layerGroup().addTo(map);
-const street=L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',{maxZoom:19,attribution:'© OpenStreetMap contributors'}),satellite=L.tileLayer('https://services.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}',{maxZoom:19,attribution:'<a href="https://doc.arcgis.com/en/data-appliance/latest/imagery-elevation/world-imagery.htm" target="_blank" rel="noopener">衛星影像</a> © Esri, Maxar, Earthstar Geographics, GIS User Community'});
+const street=L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',{maxZoom:19,attribution:'© <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener">OpenStreetMap contributors</a>'}),satellite=L.tileLayer('https://services.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}',{maxZoom:19,attribution:'<a href="https://doc.arcgis.com/en/data-appliance/latest/imagery-elevation/world-imagery.htm" target="_blank" rel="noopener">衛星影像</a> © Esri, Maxar, Earthstar Geographics, GIS User Community'});
 const waypointPicker=createWaypointPicker({map,group:fixes,onLocate:p=>toggleLocate({key:'waypoint:'+p.id,name:p.name,points:[p.position],panel:'waypoints-panel'}),onReveal:p=>revealWorkspaceItem('waypoint:'+p.id),isLocated:p=>locatedTarget?.key==='waypoint:'+p.id,onDistance:(line,a,b)=>{state.settings.distanceLabels||={};const key=[a.id,b.id].sort().join("|");const record=state.settings.distanceLabels[key]||={points:[a.position,b.position]};enableDistanceDrag(line,record)},getSettings:()=>state.settings,formatPair:pair,onChange:()=>{save();renderInstruments()},onPick:(p,name)=>{if(tool==='compass'){pickCompass(p);return true}if(tool!=='tape')return false;pickTape(p,name);return true},onCopy:(category,points)=>{if(!points.length)return toast('此類尚未選取航點');snapshot();const layer={id:uid(),name:category+' 航點副本',visible:true,objects:points.map(p=>({id:uid(),type:'point',name:p.name,description:p.station+'\n'+p.frequency+'\n來源：'+p.source,points:[clone(p.position)],color:state.settings.color}))};state.layers.push(layer);state.activeLayerId=layer.id;save('已建立可修改的航點副本圖層');renderLayers();renderObjects();openPanel('layers-panel')}});
 function toast(text){$('toast').textContent=text;$('toast').hidden=false;clearTimeout(toastTimer);toastTimer=setTimeout(()=>$('toast').hidden=true,5500);$('notice').textContent=text}
 let saveRevision=0,lastProjectSave=null;
@@ -379,7 +379,48 @@ let detailRows=[];
 function loadDetailPoints(object){detailPointRoot.replaceChildren();detailRows=[];if(isCompassArc(object)){const note=document.createElement('p');note.textContent='單一弧線物件；可修改名稱、備註、顏色及所屬圖層，不建立獨立取樣標記。';detailPointRoot.append(note);distancePanel.hidden=true;return}object.points.forEach((p,i)=>{const card=document.createElement('fieldset'),root=document.createElement('div');card.append(root);detailPointRoot.append(card);const editor=createBoxPointEditor(root);const props=object.pointProperties?.[i]||{},row=editor.add(p,props.name||objectVertexName(object,i));root.querySelector('button')?.remove();if(root.querySelector('legend'))root.querySelector('legend').textContent='座標點 '+(i+1);const inputs={};for(const [key,label,type,value]of [['kind','用途','select',props.kind||'normal'],['altitude','地表高度（圖資自動更新）','number',p[2]||0],['color','點顏色','color',resolvePointColor(object,getObject(object.id)?.layer,i)],['description','點備註','text',props.description||'']]){const wrap=document.createElement('label');wrap.textContent=label;const input=document.createElement(type==='select'?'select':'input');input.setAttribute('aria-label','點 '+(i+1)+' '+label);if(type==='select'){for(const [v,t]of [['normal','一般'],['route','航路'],['flight','飛行']]){const o=document.createElement('option');o.value=v;o.textContent=t;input.append(o)}}else{input.type=type;if(type==='number')input.step='any'}input.value=value;if(key==='altitude'){input.type='text';input.readOnly=true;input.dataset.terrainReadonly='true';bindTerrainHeight(input,p,true);}if(key==='color'){input.dataset.initialColor=value;input.oninput=input.onchange=()=>{delete input.dataset.inheritColor;input.dataset.editOrder=String(++pointColorEditSequence)};input.title='修改此點時，我的圖層內相同經緯度的點會同步顏色'}wrap.append(input);card.append(wrap);inputs[key]=input}for(const field of root.querySelectorAll('input[type=number],select'))field.addEventListener('change',()=>{try{const next=editor.read()[0].position;bindTerrainHeight(inputs.altitude,next,true);}catch{}});detailRows.push({editor,inputs,originalProperties:clone(props)})});distancePanel.hidden=!object.tapeMeasure;if(object.tapeMeasure){distanceInput.value=(distance(object.points[0],object.points[1])/factor(state.settings.unit)).toFixed(precision(state.settings.unit,3));distanceLock.checked=object.distanceLocked===true;distanceUnit.textContent=state.settings.unit.toUpperCase()}}
 function readDetailPoints(){const current=getObject()?.object;if(isCompassArc(current))return current.points.map((p,i)=>({position:[...p],properties:current.pointProperties?.[i]||{}}));return detailRows.map(({editor,inputs,originalProperties={}})=>{const vertex=editor.read()[0];vertex.properties={...clone(originalProperties),name:vertex.name,kind:inputs.kind.value,description:inputs.description.value};if(inputs.color.dataset.inheritColor==='true')delete vertex.properties.color;else if(inputs.color.value!==inputs.color.dataset.initialColor||inputs.color.dataset.editOrder){vertex.properties.color=inputs.color.value;vertex.colorChanged=true;vertex.colorChangeOrder=Number(inputs.color.dataset.editOrder)||0}return vertex})}
 const distancePanel=document.createElement('fieldset');distancePanel.hidden=true;distancePanel.innerHTML='<legend>鐵捲尺距離</legend>';const distanceLock=document.createElement('input');distanceLock.type='checkbox';const lockLabel=document.createElement('label');lockLabel.append(distanceLock,document.createTextNode('鎖定距離'));const distanceInput=document.createElement('input');distanceInput.type='number';distanceInput.min='.000001';distanceInput.step='any';distanceInput.setAttribute('aria-label','鐵捲尺距離');const distanceUnit=document.createElement('span'),distanceApply=document.createElement('button');distanceApply.textContent='套用距離';distanceApply.onclick=()=>{const f=getObject();if(!f?.object.tapeMeasure)return;const m=Number(distanceInput.value)*factor(state.settings.unit);if(!(m>0&&m<20000000))return toast('請輸入大於 0 且小於地球半周長的距離');snapshot();const o=f.object;o.points[1]=destination(o.points[0],bearing(o.points[0],o.points[1]),m,o.points[1][2]);o.lockedDistanceM=m;o.distanceLocked=distanceLock.checked;save();selectObject(o.id)};distanceLock.onchange=()=>{const f=getObject();if(!f)return;snapshot();f.object.distanceLocked=distanceLock.checked;f.object.lockedDistanceM=distance(f.object.points[0],f.object.points[1]);save()};distancePanel.append(lockLabel,distanceInput,distanceUnit,distanceApply);detailPointRoot.before(distancePanel);
-const sourceDialog=document.createElement('dialog');sourceDialog.id='sources-dialog';sourceDialog.innerHTML='<form method="dialog"><button>關閉</button></form><div id="sources-content">載入中…</div>';document.body.append(sourceDialog);document.querySelector('a[href="data-sources.html"]').onclick=async e=>{e.preventDefault();sourceDialog.showModal();try{const response=await fetch('data-sources.html');if(!response.ok)throw Error();const doc=new DOMParser().parseFromString(await response.text(),'text/html');const content=$('sources-content');content.replaceChildren(...[...doc.body.children].filter(n=>!['STYLE','SCRIPT'].includes(n.tagName)).map(n=>document.importNode(n,true)))}catch{$('sources-content').textContent='資料來源：Natural Earth、Taiwan Atlas／內政部、CAA eAIP、OpenStreetMap、Esri、AWS Terrain Tiles。完整授權資料隨離線套件保存在 data-sources.html。'}};
+const sourceDialog=document.createElement('dialog');
+sourceDialog.id='sources-dialog';
+sourceDialog.setAttribute('aria-labelledby','sources-title');
+sourceDialog.innerHTML='<form method="dialog"><button aria-label="關閉圖資來源">×</button></form><h2 id="sources-title">圖資來源與授權</h2><div id="sources-content"></div><p><a href="data-sources.html" target="_blank" rel="noopener">完整來源與授權</a></p>';
+document.body.append(sourceDialog);
+const sourcesButton=document.createElement('button');
+sourcesButton.type='button';
+sourcesButton.className='map-sources-toggle';
+sourcesButton.textContent='ⓘ';
+sourcesButton.title='圖資來源與授權';
+sourcesButton.setAttribute('aria-label',sourcesButton.title);
+sourcesButton.setAttribute('aria-haspopup','dialog');
+document.querySelector('.map-wrap').append(sourcesButton);
+function renderBasemapSources(){
+ const osm='<a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener">OpenStreetMap contributors</a>（ODbL）';
+ const sources=[
+  [street,'街道圖',osm],
+  [satellite,'衛星圖','<a href="https://doc.arcgis.com/en/data-appliance/latest/imagery-elevation/world-imagery.htm" target="_blank" rel="noopener">Esri World Imagery</a>。影像歸屬 Esri 與影像供應商，依 <a href="https://www.esri.com/en-us/legal/terms/data-attributions" target="_blank" rel="noopener">Esri 圖資條款與署名</a>使用。'],
+  [offlineBasemapLayers.get('protomaps'),'離線街道圖','<a href="https://protomaps.com/" target="_blank" rel="noopener">Protomaps</a>，底圖資料由 '+osm+' 提供。'],
+  [offlineBasemapLayers.get('sentinel2'),'離線衛星圖','Copernicus Sentinel-2。影像處理與授權依本機圖包，見下方署名。']
+ ];
+ const selected=sources.find(([layer])=>layer&&map.hasLayer(layer));
+ $('sources-content').innerHTML=selected
+  ?'<h3>'+selected[1]+'</h3><p>'+selected[2]+'</p>'+(selected[0]===offlineBasemapLayers.get('sentinel2')?'<p>'+selected[0].getAttribution()+'</p>':'')
+  :'<h3>離線向量圖</h3><p><a href="https://www.naturalearthdata.com/about/terms-of-use/" target="_blank" rel="noopener">Natural Earth</a>（公有領域）及 <a href="https://github.com/dkaoster/taiwan-atlas" target="_blank" rel="noopener">Taiwan Atlas</a>（MIT），台灣輪廓原始資料來自內政部。</p>';
+}
+sourcesButton.onclick=()=>{renderBasemapSources();sourceDialog.showModal()};
+map.on('layeradd layerremove',event=>{
+ if(sourceDialog.open&&(event.layer===land||event.layer===street||event.layer===satellite||[...offlineBasemapLayers.values()].includes(event.layer)))renderBasemapSources();
+});
+const visitCounter=$('workspace-visits');
+if(visitCounter){
+ try{
+  const key='mps-workspace-visit-count';
+  const stored=Number(localStorage.getItem(key));
+  const count=(Number.isSafeInteger(stored)&&stored>=0&&stored<Number.MAX_SAFE_INTEGER?stored:0)+1;
+  localStorage.setItem(key,String(count));
+  visitCounter.textContent='此裝置瀏覽 '+count.toLocaleString('zh-TW')+' 次';
+  visitCounter.hidden=false;
+ }catch{}
+}
+
 
 
 function layoutId(node){if(node.id)return node.id;if(node.dataset.layoutId)return node.dataset.layoutId;const id=node.dataset.tool?'tool-'+node.dataset.tool:'action-'+(node.getAttribute('aria-label')||node.title||node.textContent).trim();node.dataset.layoutId=id;return id}
@@ -1035,7 +1076,7 @@ opacityButton.onclick=()=>{const levels=[1,.75,.5,.25],value=levels.includes(sta
 $('settings-panel').querySelector('.section-body').append(opacityButton);const refreshBeforeMovementOpacity=refreshUI;refreshUI=function(){refreshBeforeMovementOpacity();paintMovementOpacity()};paintMovementOpacity();
 }
 
-if(typeof document!=='undefined'){const version=document.createElement('p');version.id='app-version';version.textContent='程式版本 v219（Google 分支）';$('settings-panel').querySelector('.section-body').append(version)}
+if(typeof document!=='undefined'){const version=document.createElement('p');version.id='app-version';version.textContent='程式版本 v220（Google 分支）';$('settings-panel').querySelector('.section-body').append(version)}
 
 // Quick navigation ruler and persistent graduated ruler are independent tools.
 if (typeof document !== 'undefined') {
