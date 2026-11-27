@@ -26,44 +26,44 @@ html{scroll-behavior:smooth}.guide{position:relative;isolation:isolate;padding-b
 
 .wrap{width:auto;max-width:1140px;margin-inline:auto;margin-left:max(20px,env(safe-area-inset-left));margin-right:max(20px,env(safe-area-inset-right))}@media(min-width:1180px){.wrap{margin-inline:auto}}.tool-entry{display:grid;gap:4px;padding:10px 12px;background:#e5eddf;border-radius:7px;color:var(--ink);width:100%;overflow-wrap:anywhere}.tool-entry strong{font-size:.9rem}.tool-steps{margin:4px 0 0;padding-inline-start:1.35rem;color:var(--muted)}.tool-steps li+li{margin-top:10px}.tool-steps li::marker{color:#27604c;font-weight:750}.live iframe{display:block;max-width:100%;min-width:0;width:100%}.grid article{min-width:0}.lesson-copy{min-width:0}.footer{padding-bottom:env(safe-area-inset-bottom)}
 @media(max-width:760px){nav{gap:8px 12px}nav a:not(.brand):not(.button){display:inline-flex;align-items:center;min-height:44px}nav .brand{flex-basis:100%}.wrap{margin-left:max(12px,env(safe-area-inset-left));margin-right:max(12px,env(safe-area-inset-right))}.live iframe{height:500px;height:clamp(440px,72svh,620px)}.index a{min-height:44px;display:flex;align-items:center}.grid article{padding-inline:8px}}
-</style>
+.media-guide{padding-block:16px 46px}.media-topic{padding:20px 0;border-bottom:1px solid var(--line)}.media-heading{display:flex;align-items:baseline;justify-content:space-between;flex-wrap:wrap;gap:8px}.media-topic video{display:block;width:min(100%,690px);max-height:67svh;margin:6px 0 14px;background:#102521;border-radius:9px;object-fit:contain}.media-shots{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px}.media-shots figure{margin:0;min-width:0}.media-shots a{display:block}.media-shots img{display:block;width:100%;height:auto;aspect-ratio:978/909;object-fit:contain;background:#e1e9dd;border:1px solid var(--line);border-radius:8px}.media-shots figcaption{font-weight:650;font-size:.95rem;margin-top:5px}@media(max-width:760px){.media-shots{grid-template-columns:repeat(2,minmax(0,1fr));gap:9px}.media-topic video{max-height:none}}</style>
 </head>
 <body>
 <header><nav class="wrap" aria-label="主選單"><a class="brand" href="./"><img src="../icon.svg" alt="">MPS</a><a href="#features">功能</a><a href="#tutorial">操作教學</a><a href="#demo">互動地圖</a><a href="#faq">常見問題</a><a class="button" href="../">開啟 MPS</a></nav></header>
 <main class="wrap">
 <section class="hero guide" aria-labelledby="headline">
-<div><span class="kicker">MPS 操作指南</span><h1 id="headline">從座標定位到<br>完成一張地圖</h1><p class="lede">找到你要用的工具，按步驟操作，再在 MPS 工作空間實際練習。</p><div class="actions"><a class="button" href="#demo">操作實際工具</a><a class="button secondary" href="#tutorial">跟著動畫操作</a></div></div>
+<div><span class="kicker">MPS 操作指南</span><h1 id="headline">從座標定位到<br>完成一張地圖</h1><p class="lede">找到你要用的工具，按步驟操作，再在 MPS 工作空間實際練習。</p><div class="actions"><a class="button" href="#demo">操作實際工具</a><a class="button secondary" href="#tutorial">看實際操作</a></div></div>
 </section>
 <section class="demo live" id="demo" aria-labelledby="live-title">
 <div class="demo-bar"><strong id="live-title">MPS 正式工作空間</strong><a class="button" href="../" target="_blank" rel="noopener">全螢幕開啟 MPS</a></div>
 <p>下方是正式 MPS。手機可用「全螢幕開啟 MPS」取得較大的操作空間。首次使用請依畫面提示解鎖。這裡的操作會使用同一瀏覽器的專案資料，練習前可先在「檔案與備份」建立空白專案。</p>
 <iframe id="workspace-frame" src="../" title="MPS 正式工作空間"></iframe>
 </section>
-<section id="tutorial" class="tutorial" aria-labelledby="tutorial-title">
+<section id="tutorial" class="media-guide" aria-labelledby="tutorial-title">
 <h2 id="tutorial-title">跟著操作</h2>
-<div class="lesson-nav" aria-label="選擇教學">
-<button type="button" data-lesson="0" aria-pressed="true">兩點測距</button>
-<button type="button" data-lesson="1" aria-pressed="false">繪製區域</button>
-<button type="button" data-lesson="2" aria-pressed="false">圖層與備份</button>
-</div>
-<div class="lesson-layout">
-<div class="illustration" aria-hidden="true">
-<div class="illustration-bar"><span>MPS</span><strong id="scene-tool">鐵捲尺</strong></div>
-<div class="scene">
-<div class="river"></div><div class="park"></div><div class="road road-a"></div><div class="road road-b"></div><div class="road road-c"></div>
-<div id="shape" class="scene-shape"></div>
-<i class="dot a">A</i><i class="dot b">B</i><i class="dot c">C</i>
-<div id="scene-result" class="scene-result"></div>
-</div>
-</div>
-<div class="lesson-copy">
-<p id="lesson-count" class="lesson-count">步驟 1 / 4</p>
-<div id="lesson-step" aria-live="polite" aria-atomic="true"><h3 id="step-title">選取鐵捲尺</h3><p id="step-detail">在正式工作空間的上方工具列選鐵捲尺，地圖會等待你指定起點。</p></div>
-<div class="lesson-controls"><button type="button" id="step-back" disabled>上一步</button><button type="button" id="step-next">下一步</button><button type="button" id="step-play">播放動畫</button></div>
-<a class="practice" href="#demo">回到正式工作空間練習</a>
-</div>
-</div>
-<p class="lesson-note">教學動畫使用示意地圖。上方正式工作空間可實際操作。</p>
+<article class="media-topic"><div class="media-heading"><h3>兩點測距</h3><a href="#measure">查看工具入口</a></div>
+<video controls playsinline preload="none" poster="media/04-tape-distance.jpg" aria-label="兩點測距操作短片"><source src="media/tape.mp4" type="video/mp4"><a href="media/tape.mp4">下載操作短片</a></video>
+<div class="media-shots"><figure><a href="media/02-tape-tool.jpg" target="_blank" rel="noopener" aria-label="放大：選擇鐵捲尺"><img src="media/02-tape-tool.jpg" alt="選擇鐵捲尺" loading="lazy" decoding="async"></a><figcaption>選擇鐵捲尺</figcaption></figure>
+<figure><a href="media/03-tape-start.jpg" target="_blank" rel="noopener" aria-label="放大：點起點"><img src="media/03-tape-start.jpg" alt="點起點" loading="lazy" decoding="async"></a><figcaption>點起點</figcaption></figure>
+<figure><a href="media/04-tape-distance.jpg" target="_blank" rel="noopener" aria-label="放大：點終點，讀取線上的距離"><img src="media/04-tape-distance.jpg" alt="點終點，讀取線上的距離" loading="lazy" decoding="async"></a><figcaption>點終點，讀取線上的距離</figcaption></figure></div></article>
+<article class="media-topic"><div class="media-heading"><h3>刻度直尺與標色</h3><a href="#instruments">查看工具入口</a></div>
+<video controls playsinline preload="none" poster="media/08-ruler-color.jpg" aria-label="刻度直尺與標色操作短片"><source src="media/ruler.mp4" type="video/mp4"><a href="media/ruler.mp4">下載操作短片</a></video>
+<div class="media-shots"><figure><a href="media/05-ruler-menu.jpg" target="_blank" rel="noopener" aria-label="放大：開啟尺規選單"><img src="media/05-ruler-menu.jpg" alt="開啟尺規選單" loading="lazy" decoding="async"></a><figcaption>開啟尺規選單</figcaption></figure>
+<figure><a href="media/06-ruler-open.jpg" target="_blank" rel="noopener" aria-label="放大：選擇刻度直尺"><img src="media/06-ruler-open.jpg" alt="選擇刻度直尺" loading="lazy" decoding="async"></a><figcaption>選擇刻度直尺</figcaption></figure>
+<figure><a href="media/07-ruler-range.jpg" target="_blank" rel="noopener" aria-label="放大：在尺規設定輸入標色起訖"><img src="media/07-ruler-range.jpg" alt="在尺規設定輸入標色起訖" loading="lazy" decoding="async"></a><figcaption>在尺規設定輸入標色起訖</figcaption></figure>
+<figure><a href="media/08-ruler-color.jpg" target="_blank" rel="noopener" aria-label="放大：套用範圍，查看尺面標色"><img src="media/08-ruler-color.jpg" alt="套用範圍，查看尺面標色" loading="lazy" decoding="async"></a><figcaption>套用範圍，查看尺面標色</figcaption></figure></div></article>
+<article class="media-topic"><div class="media-heading"><h3>繪製區域</h3><a href="#draw">查看工具入口</a></div>
+<video controls playsinline preload="none" poster="media/13-area-complete.jpg" aria-label="繪製區域操作短片"><source src="media/area.mp4" type="video/mp4"><a href="media/area.mp4">下載操作短片</a></video>
+<div class="media-shots"><figure><a href="media/10-drawing-tools.jpg" target="_blank" rel="noopener" aria-label="放大：打開繪圖選單"><img src="media/10-drawing-tools.jpg" alt="打開繪圖選單" loading="lazy" decoding="async"></a><figcaption>打開繪圖選單</figcaption></figure>
+<figure><a href="media/11-area-tool.jpg" target="_blank" rel="noopener" aria-label="放大：選擇繪製區域"><img src="media/11-area-tool.jpg" alt="選擇繪製區域" loading="lazy" decoding="async"></a><figcaption>選擇繪製區域</figcaption></figure>
+<figure><a href="media/12-area-vertices.jpg" target="_blank" rel="noopener" aria-label="放大：依序點三個頂點"><img src="media/12-area-vertices.jpg" alt="依序點三個頂點" loading="lazy" decoding="async"></a><figcaption>依序點三個頂點</figcaption></figure>
+<figure><a href="media/13-area-complete.jpg" target="_blank" rel="noopener" aria-label="放大：按 ✓ 完成區域"><img src="media/13-area-complete.jpg" alt="按 ✓ 完成區域" loading="lazy" decoding="async"></a><figcaption>按 ✓ 完成區域</figcaption></figure></div></article>
+<article class="media-topic"><div class="media-heading"><h3>搜尋、圖層與列印</h3><a href="#search">查看工具入口</a></div>
+
+<div class="media-shots"><figure><a href="media/01-workspace.jpg" target="_blank" rel="noopener" aria-label="放大：正式 MPS 工作空間"><img src="media/01-workspace.jpg" alt="正式 MPS 工作空間" loading="lazy" decoding="async"></a><figcaption>正式 MPS 工作空間</figcaption></figure>
+<figure><a href="media/09-coordinate-search.jpg" target="_blank" rel="noopener" aria-label="放大：輸入座標並查看結果"><img src="media/09-coordinate-search.jpg" alt="輸入座標並查看結果" loading="lazy" decoding="async"></a><figcaption>輸入座標並查看結果</figcaption></figure>
+<figure><a href="media/14-layers.jpg" target="_blank" rel="noopener" aria-label="放大：在我的圖層查看標繪"><img src="media/14-layers.jpg" alt="在我的圖層查看標繪" loading="lazy" decoding="async"></a><figcaption>在我的圖層查看標繪</figcaption></figure>
+<figure><a href="media/15-print.jpg" target="_blank" rel="noopener" aria-label="放大：開啟列印／PDF 設定"><img src="media/15-print.jpg" alt="開啟列印／PDF 設定" loading="lazy" decoding="async"></a><figcaption>開啟列印／PDF 設定</figcaption></figure></div></article>
 </section>
 <section id="features" class="features" aria-labelledby="features-title"><h2 id="features-title">功能與操作步驟</h2><p>上方 ☰ 可展開側欄。若工具列沒看到統一搜尋、尺規、列印、備份或操作紀錄，請點「更多」找對應工具。</p>
 <ul class="index"><li><a href="#view">平移、縮放與選取</a></li><li><a href="#search">搜尋與座標定位</a></li><li><a href="#measure">鐵捲尺與距離鎖定</a></li><li><a href="#instruments">直尺、量角器與圓規</a></li><li><a href="#draw">標記、線段、區域與自由繪圖</a></li><li><a href="#edit">物件修訂與精確座標</a></li><li><a href="#layers">新增、顯示與定位圖層</a></li><li><a href="#references">航路、航點與參考圖層</a></li><li><a href="#basemap">底圖、格線與標籤</a></li><li><a href="#history">復原、重做與取消</a></li><li><a href="#backup">KML 與專案備份</a></li><li><a href="#print">列印與 PDF</a></li><li><a href="#offline">安裝與離線底圖</a></li></ul>
@@ -88,64 +88,6 @@ html{scroll-behavior:smooth}.guide{position:relative;isolation:isolate;padding-b
 </section>
 </main>
 <footer class="footer"><div class="wrap"><strong>MPS 地圖工作空間</strong><a href="https://github.com/LeHarold/MPS">GitHub 原始碼</a></div></footer>
-<script>
-const lessons = [[["選取鐵捲尺","在正式工作空間的上方工具列選鐵捲尺，地圖會等待你指定起點。",0,"",""],["放下起點 A","點一下地圖上的起點。需要精準對齊時，可將游標移到已顯示的標記附近。",1,"","已選擇起點 A"],["選取終點 B","點第二個位置，MPS 會在兩點之間畫出測距線，並標示直線距離。",2,"line","A 至 B · 直線距離"],["修訂或鎖定距離","點地圖上的距離標籤，輸入需要的長度後啟用鎖定。起點保持固定，終點沿原方位調整。",2,"line","距離標籤 · 開啟詳細修訂"]],[["選取繪製區域","先在「我的圖層」指定目前編輯圖層，再選上方的「繪製區域」。",0,"",""],["依序放下頂點","沿外框依序點 A、B、C。若點錯，可先復原上一步，再補上正確頂點。",3,"","已選擇三個頂點"],["完成並命名","點完成或按 Enter 封閉區域。切回平移／選取，點區域並在詳細資料修改名稱、顏色與備註。",3,"area","區域已建立 · 可修改名稱與顏色"]],[["建立練習圖層","展開「我的圖層」，按「新圖層」並命名，例如「測距練習」。指定它為目前編輯圖層，再新增標繪。",0,"layers","我的圖層 / 測距練習"],["檢查顯示範圍","勾選圖層可切換可見性。選取該層後點「定位圖層」，地圖會移到它涵蓋的範圍。",2,"layers","定位圖層 · 查看全部標繪"],["下載完整專案","點工具列的磁碟圖示，開啟「備份與還原」並下載專案 JSON。只需交換目前圖層時，可從側欄匯出 KML。",2,"layers","備份與還原 · 專案 JSON"]]];
-const byId = id => document.getElementById(id);
-const choices = [...document.querySelectorAll('[data-lesson]')];
-const scene = document.querySelector('.scene');
-const back = byId('step-back');
-const next = byId('step-next');
-const play = byId('step-play');
-let activeLesson = 0;
-let step = 0;
-let timer = null;
 
-function render() {
-  const [title, detail, points, shape, result] = lessons[activeLesson][step];
-  byId('step-title').textContent = title;
-  byId('step-detail').textContent = detail;
-  byId('lesson-count').textContent = '步驟 ' + (step + 1) + ' / ' + lessons[activeLesson].length;
-  byId('scene-tool').textContent = choices[activeLesson].textContent;
-  byId('scene-result').textContent = result;
-  scene.dataset.points = points;
-  scene.dataset.shape = shape;
-  back.disabled = step === 0;
-  next.disabled = step === lessons[activeLesson].length - 1;
-}
-function stop() {
-  clearInterval(timer);
-  timer = null;
-  play.textContent = '播放動畫';
-}
-function move(direction) {
-  stop();
-  step += direction;
-  render();
-}
-choices.forEach((button, index) => button.addEventListener('click', () => {
-  stop();
-  activeLesson = index;
-  step = 0;
-  for (const choice of choices) choice.setAttribute('aria-pressed', String(choice === button));
-  render();
-}));
-back.addEventListener('click', () => move(-1));
-next.addEventListener('click', () => move(1));
-play.addEventListener('click', () => {
-  if (timer !== null) {
-    stop();
-    return;
-  }
-  step = 0;
-  render();
-  play.textContent = '暫停播放';
-  timer = setInterval(() => {
-    step++;
-    render();
-    if (next.disabled) stop();
-  }, 3500);
-});
-render();
-</script>
 </body>
 </html>
