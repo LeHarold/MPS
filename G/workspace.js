@@ -1,11 +1,11 @@
-import {mountRegionalAirways} from './regional-airways.mjs?v=216';
-import {normalizePack,readBasemapPack,removeBasemapPack,downloadBasemapPack,makeOfflineBasemap} from './offline-basemaps.mjs?v=216';
+import {mountRegionalAirways} from './regional-airways.mjs?v=217';
+import {normalizePack,readBasemapPack,removeBasemapPack,downloadBasemapPack,makeOfflineBasemap} from './offline-basemaps.mjs?v=217';
 import {ObjectSpatialIndex,simplifyDisplay,detailBucket,diffVisible} from './spatial-objects.mjs?v=191';
 import { createNavigationRuler, navigationReadout } from './navigation-ruler.mjs?v=191';
 import { placeNearbyWaypoints, viewportPaintDue } from './compact-waypoints.mjs?v=191';
 import { coordinateRows, coordinateWorkbook } from './coordinate-excel.mjs?v=191';
 import { LINE_STYLES, lineStyleOptions, installDoubleLines } from './line-appearance.mjs?v=191';
-import {openWorkspaceStorage} from './workspace-storage.mjs?v=216';
+import {openWorkspaceStorage} from './workspace-storage.mjs?v=217';
 import {labelDisplaySize,frameTask,memoAreaOffset} from './display-performance.mjs?v=191';
 import {areaSouthwest,limitAreaOffset,areaInteriorOffset} from './area-labels.mjs?v=191';
 import {stableLabelOffset,rememberLabelOffset,validAreaPlacement} from './label-stability.mjs?v=191';
@@ -15,7 +15,7 @@ import {applyLabelRotation,preserveLabelCenter,rotatedLabelEdge,labelBorderSize}
 import {nearestPoint,attachPoint,releasePoint} from './point-snap.mjs?v=191';
 import {decodeTerrainBlob,bindTouchCursor,setupIOSStorage} from './ios-pwa.mjs?v=191';
 import {actionDescription} from './action-history.mjs?v=191';
-import {printRaster} from './print-raster.mjs?v=216';
+import {printRaster} from './print-raster.mjs?v=217';
 import {uniqueLabelIds} from './label-visibility.mjs?v=191';
 import {outerVertices,transformPoints,nearestPathFraction} from './map-editing.mjs?v=191';
 import {createPressControls} from './press-controls.mjs?v=191';
@@ -34,7 +34,7 @@ const canPackageWebsite=()=>!offlineBundle&&featuresUnlocked;
 if(window.MPS_IMPORT_BUNDLE)await window.MPS_IMPORT_BUNDLE();
 import {intervalPlan,placeCursorBox,extensionEndpoint} from './workspace-interactions.mjs?v=191';
 import {planProjectImport,mergeProjectItems} from './project-merge.mjs?v=191';
-import {parseSearchPosition,searchCatalog,placeLabelBoxes,labelRank,calibrationDistance,readPrintTemplate,openBackupHistory} from './workspace-ux.mjs?v=216';
+import {parseSearchPosition,searchCatalog,placeLabelBoxes,labelRank,calibrationDistance,readPrintTemplate,openBackupHistory} from './workspace-ux.mjs?v=217';
 if(window.MPS_BUNDLE_READY)await window.MPS_BUNDLE_READY;
 const bundleNamespace=offlineBundle?'bundle:'+window.MPS_BUNDLE.id+':':/(?:^|\/)(?:G|google-workspace)(?:\/|$)/.test(location.pathname)?'google-workspace:':'';
 const workspaceStorage = await openWorkspaceStorage(error => {
@@ -1035,7 +1035,7 @@ opacityButton.onclick=()=>{const levels=[1,.75,.5,.25],value=levels.includes(sta
 $('settings-panel').querySelector('.section-body').append(opacityButton);const refreshBeforeMovementOpacity=refreshUI;refreshUI=function(){refreshBeforeMovementOpacity();paintMovementOpacity()};paintMovementOpacity();
 }
 
-if(typeof document!=='undefined'){const version=document.createElement('p');version.id='app-version';version.textContent='程式版本 v216（Google 分支）';$('settings-panel').querySelector('.section-body').append(version)}
+if(typeof document!=='undefined'){const version=document.createElement('p');version.id='app-version';version.textContent='程式版本 v217（Google 分支）';$('settings-panel').querySelector('.section-body').append(version)}
 
 // Quick navigation ruler and persistent graduated ruler are independent tools.
 if (typeof document !== 'undefined') {
@@ -2119,17 +2119,23 @@ if(typeof document!=='undefined'&&bundleNamespace==='google-workspace:'){
   status.textContent='尋找本機舊版資料…';
   source.replaceChildren();list.replaceChildren();apply.disabled=true;records=[];
   const legacy=await openWorkspaceStorage(()=>{},'',{readOnly:true});
+  const rejected=[];
+  const read=(storage,key)=>{try{return JSON.parse(storage.getItem(key));}catch{return null;}};
   const add=(name,data)=>{
-   try{const project=validateProject(data);records.push({name,project});}catch{}
+   try{const project=validateProject(clone(data));records.push({name,project,objects:project.layers.reduce((total,layer)=>total+layer.objects.length,0)});}catch{rejected.push(name);}
   };
   try{const data=JSON.parse(legacy.getItem('map-workspace-project-v2'));if(data){
    data.settings||={};
-   const view=JSON.parse(legacy.getItem('mps-map-view'));
+   const view=read(legacy,'mps-map-view');
    if(view?.center?.length===2&&view.center.every(Number.isFinite)&&Number.isFinite(view.zoom))data.settings.mapView=view;
    const collapsed=legacy.getItem('map-sidebar-collapsed');
    if(collapsed==='true'||collapsed==='false')data.settings.workspacePresentation={openPanels:[...$('workspace').querySelectorAll(':scope>details[id][open]')].map(panel=>panel.id),...data.settings.workspacePresentation,collapsed:collapsed==='true'};
    add('舊版 MPS 最後儲存的工作區',data);
   }}catch{}
+  for(const [label,storage] of [['舊版命名專案',legacy],['Google 版命名專案',workspaceStorage]]){
+   const library=read(storage,'map-project-library');
+   if(Array.isArray(library))for(const entry of library){if(entry?.state)add(label+' · '+entry.name,entry.state);}
+  }
   for(const namespace of ['',bundleNamespace]){
    try{
     const store=namespace?backupHistory:await openBackupHistory('');
@@ -2138,7 +2144,8 @@ if(typeof document!=='undefined'&&bundleNamespace==='google-workspace:'){
     }
    }catch{}
   }
-  for(const [index,record] of records.entries())source.add(new Option(record.name,String(index)));
+  for(const [index,record] of records.entries())source.add(new Option(record.name+'（'+record.project.layers.length+' 圖層／'+record.objects+' 物件）',String(index)));
+  if(records[0]?.objects===0){const useful=records.findIndex(record=>record.objects>0);if(useful>=0)source.value=String(useful);}
   status.textContent=records.length?'選取要還原的圖層與設定。':'此瀏覽器找不到舊版工作區或本機備份。可從「從 JSON 還原」載入外部備份。';
   showLayers();
  }
@@ -2161,7 +2168,12 @@ if(typeof document!=='undefined'&&bundleNamespace==='google-workspace:'){
    if(state!==base)throw Error('目前工作區已變更，請重新選擇資料來源。');
    const result=mergeProjectItems(state,incoming,keys,uid);
    snapshot();state=validateProject(result.project);sanitizePreferences();refreshUI();restoreLayout();
-   if(restoreSettings){restoreCompleteProject();const prefs=state.settings.workspacePresentation;if(prefs)collapseWorkspace(!!prefs.collapsed);renderCompass();}
+   if(restoreSettings){
+    restoreCompleteProject();
+    const prefs=state.settings.workspacePresentation;if(prefs)collapseWorkspace(!!prefs.collapsed);
+    if(state.settings.mapView)workspaceStorage.setItem('mps-map-view',JSON.stringify(state.settings.mapView));
+    renderCompass();
+   }
    save();
    status.textContent='已找回 '+result.stats.layers+' 個新圖層、'+result.stats.objects+' 個物件'+(restoreSettings?'，並套用所選版本的使用者設定。':'。')+'原有物件已保留。';
    await renderBackupVersions();
