@@ -1,11 +1,11 @@
-import {mountRegionalAirways} from './regional-airways.mjs?v=215';
-import {normalizePack,readBasemapPack,removeBasemapPack,downloadBasemapPack,makeOfflineBasemap} from './offline-basemaps.mjs?v=215';
+import {mountRegionalAirways} from './regional-airways.mjs?v=216';
+import {normalizePack,readBasemapPack,removeBasemapPack,downloadBasemapPack,makeOfflineBasemap} from './offline-basemaps.mjs?v=216';
 import {ObjectSpatialIndex,simplifyDisplay,detailBucket,diffVisible} from './spatial-objects.mjs?v=191';
 import { createNavigationRuler, navigationReadout } from './navigation-ruler.mjs?v=191';
 import { placeNearbyWaypoints, viewportPaintDue } from './compact-waypoints.mjs?v=191';
 import { coordinateRows, coordinateWorkbook } from './coordinate-excel.mjs?v=191';
 import { LINE_STYLES, lineStyleOptions, installDoubleLines } from './line-appearance.mjs?v=191';
-import {openWorkspaceStorage} from './workspace-storage.mjs?v=215';
+import {openWorkspaceStorage} from './workspace-storage.mjs?v=216';
 import {labelDisplaySize,frameTask,memoAreaOffset} from './display-performance.mjs?v=191';
 import {areaSouthwest,limitAreaOffset,areaInteriorOffset} from './area-labels.mjs?v=191';
 import {stableLabelOffset,rememberLabelOffset,validAreaPlacement} from './label-stability.mjs?v=191';
@@ -15,7 +15,7 @@ import {applyLabelRotation,preserveLabelCenter,rotatedLabelEdge,labelBorderSize}
 import {nearestPoint,attachPoint,releasePoint} from './point-snap.mjs?v=191';
 import {decodeTerrainBlob,bindTouchCursor,setupIOSStorage} from './ios-pwa.mjs?v=191';
 import {actionDescription} from './action-history.mjs?v=191';
-import {printRaster} from './print-raster.mjs?v=215';
+import {printRaster} from './print-raster.mjs?v=216';
 import {uniqueLabelIds} from './label-visibility.mjs?v=191';
 import {outerVertices,transformPoints,nearestPathFraction} from './map-editing.mjs?v=191';
 import {createPressControls} from './press-controls.mjs?v=191';
@@ -34,7 +34,7 @@ const canPackageWebsite=()=>!offlineBundle&&featuresUnlocked;
 if(window.MPS_IMPORT_BUNDLE)await window.MPS_IMPORT_BUNDLE();
 import {intervalPlan,placeCursorBox,extensionEndpoint} from './workspace-interactions.mjs?v=191';
 import {planProjectImport,mergeProjectItems} from './project-merge.mjs?v=191';
-import {parseSearchPosition,searchCatalog,placeLabelBoxes,labelRank,calibrationDistance,readPrintTemplate,openBackupHistory} from './workspace-ux.mjs?v=215';
+import {parseSearchPosition,searchCatalog,placeLabelBoxes,labelRank,calibrationDistance,readPrintTemplate,openBackupHistory} from './workspace-ux.mjs?v=216';
 if(window.MPS_BUNDLE_READY)await window.MPS_BUNDLE_READY;
 const bundleNamespace=offlineBundle?'bundle:'+window.MPS_BUNDLE.id+':':/(?:^|\/)(?:G|google-workspace)(?:\/|$)/.test(location.pathname)?'google-workspace:':'';
 const workspaceStorage = await openWorkspaceStorage(error => {
@@ -391,7 +391,42 @@ let groupNames=$('workspace-group-names');
 if(!groupNames){groupNames=document.createElement('datalist');groupNames.id='workspace-group-names';document.body.append(groupNames);}
 const existingGroups=new Set([...Object.values(state.settings.layout?.[layoutScope==='tool'?'tool':'panel']?.groups||{}),...state.layers.map(layer=>layer.uiGroup)].filter(Boolean));
 groupNames.replaceChildren(...[...existingGroups].map(value=>new Option(value,value)));
-const toolbar=document.querySelector('.toolbar');const panels=layoutScope==='workspace'?[...$('workspace').children].filter(n=>n.tagName==='DETAILS'):[];const tools=layoutScope==='tool'?[...toolbar.querySelectorAll(':scope > button,:scope > .tool-dropdown,:scope > label')].filter(n=>n.id!=='edit-layout'):[];const add=(node,type)=>{const controls=document.createElement('span');controls.className='layout-handles';controls.addEventListener('click',e=>e.stopPropagation());for(const [label,d]of [['⇈',-Infinity],['↑',-1],['↓',1],['⇊',Infinity]]){const b=document.createElement('button');b.type='button';b.textContent=label;b.title='移動位置';b.onclick=()=>{if(type==='layer'){moveLayer(node.dataset.layerId,d);return}const siblings=[...node.parentElement.children].filter(n=>type==='panel'?n.tagName==='DETAILS':n.matches('button,.tool-dropdown,label,details.layout-group'));const i=siblings.indexOf(node),other=siblings[Math.max(0,Math.min(siblings.length-1,i+d))];if(other&&other!==node){if(d<0)other.before(node);else other.after(node);persistLayout(type);decorateLayout()}};controls.append(b)}if(type==='layer'){const input=document.createElement('input');input.placeholder='圖層群組';input.setAttribute('aria-label','圖層群組 '+node.dataset.layerId);input.value=state.layers.find(l=>l.id===node.dataset.layerId)?.uiGroup||'';input.setAttribute('list','workspace-group-names');input.onchange=()=>{const l=state.layers.find(l=>l.id===node.dataset.layerId);if(l){l.uiGroup=input.value.trim();save()}};controls.append(input);if(input.value){const clear=document.createElement('button');clear.type='button';clear.textContent='移出群組';clear.onclick=()=>{input.value='';input.onchange();decorateLayout();};controls.append(clear);}}if(type!=='layer'){const group=document.createElement('input');group.placeholder='下拉群組';group.setAttribute('aria-label','下拉群組 '+layoutId(node));group.value=state.settings.layout?.[type]?.groups?.[layoutId(node)]||'';group.setAttribute('list','workspace-group-names');group.onchange=()=>{state.settings.layout||={};state.settings.layout[type]||={order:[],groups:{}};state.settings.layout[type].groups[layoutId(node)]=group.value.trim();persistLayout(type)};controls.append(group);if(group.value){const clear=document.createElement('button');clear.type='button';clear.textContent='移出群組';clear.onclick=()=>{group.value='';group.onchange();decorateLayout();};controls.append(clear);}}if(type==='panel')node.querySelector('summary').append(controls);else node.append(controls)};for(const n of panels)add(n,'panel');for(const n of tools)add(n,'tool');for(const row of layoutScope==='workspace'?$('layer-list').querySelectorAll('.layer-entry'):[]){row.dataset.layerId=row.querySelector('details')?.dataset.id;add(row,'layer')}}
+const toolbar=document.querySelector('.toolbar');const panels=layoutScope==='workspace'?[...$('workspace').children].filter(n=>n.tagName==='DETAILS'):[];const tools=layoutScope==='tool'?[...toolbar.querySelectorAll(':scope > button,:scope > .tool-dropdown,:scope > label')].filter(n=>n.id!=='edit-layout'):[];const add=(node,type)=>{const controls=document.createElement('span');controls.className='layout-handles';controls.addEventListener('click',e=>e.stopPropagation());for(const [label,d]of [['⇈',-Infinity],['↑',-1],['↓',1],['⇊',Infinity]]){const b=document.createElement('button');b.type='button';b.textContent=label;b.title='移動位置';b.onclick=()=>{if(type==='layer'){moveLayer(node.dataset.layerId,d);return}const siblings=[...node.parentElement.children].filter(n=>type==='panel'?n.tagName==='DETAILS':n.matches('button,.tool-dropdown,label,details.layout-group'));const i=siblings.indexOf(node),other=siblings[Math.max(0,Math.min(siblings.length-1,i+d))];if(other&&other!==node){if(d<0)other.before(node);else other.after(node);persistLayout(type);decorateLayout()}};controls.append(b)}if(type==='layer'){const input=document.createElement('input');input.placeholder='圖層群組';input.setAttribute('aria-label','圖層群組 '+node.dataset.layerId);input.value=state.layers.find(l=>l.id===node.dataset.layerId)?.uiGroup||'';input.setAttribute('list','workspace-group-names');input.onchange=()=>{const l=state.layers.find(l=>l.id===node.dataset.layerId);if(l){l.uiGroup=input.value.trim();save()}};controls.append(input);if(input.value){const clear=document.createElement('button');clear.type='button';clear.textContent='移出群組';clear.onclick=()=>{input.value='';input.onchange();decorateLayout();};controls.append(clear);}}if(type!=='layer'){const group=document.createElement('input');group.placeholder='下拉群組';group.setAttribute('aria-label','下拉群組 '+layoutId(node));group.value=state.settings.layout?.[type]?.groups?.[layoutId(node)]||'';group.setAttribute('list','workspace-group-names');group.onchange=()=>{state.settings.layout||={};state.settings.layout[type]||={order:[],groups:{}};state.settings.layout[type].groups[layoutId(node)]=group.value.trim();persistLayout(type)};controls.append(group);if(group.value){const clear=document.createElement('button');clear.type='button';clear.textContent='移出群組';clear.onclick=()=>{group.value='';group.onchange();decorateLayout();};controls.append(clear);}}if(type==='panel'){
+ const title=node.querySelector(':scope > summary');
+ const move=document.createElement('select');
+ move.setAttribute('aria-label','移動 '+title.textContent.trim()+' 到');
+ move.add(new Option('移動到…',''));
+ for(const sibling of panels){
+  if(sibling===node)continue;
+  const siblingTitle=sibling.querySelector(':scope > summary').cloneNode(true);
+  siblingTitle.querySelectorAll('.layout-handles').forEach(child=>child.remove());
+  move.add(new Option('移至 '+siblingTitle.textContent.trim()+' 前',layoutId(sibling)));
+ }
+ move.add(new Option('移至最下方','__last'));
+ move.onchange=()=>{
+  if(!move.value)return;
+  const destination=panels.find(sibling=>layoutId(sibling)===move.value);
+  if(destination)destination.before(node);else panels.at(-1)?.after(node);
+  persistLayout('panel');decorateLayout();
+ };
+ move.addEventListener('keydown',event=>event.stopPropagation());
+ controls.append(move);
+ const grip=document.createElement('span');
+ grip.textContent='⠿';grip.title='拖曳排序';grip.draggable=true;grip.className='workspace-layout-grip';
+ grip.ondragstart=event=>{event.dataTransfer.setData('text/plain',layoutId(node));event.dataTransfer.effectAllowed='move';};
+ title.ondragover=event=>{if(layoutEditing&&layoutScope==='workspace'){event.preventDefault();event.dataTransfer.dropEffect='move';}};
+ title.ondrop=event=>{
+  if(!layoutEditing||layoutScope!=='workspace')return;
+  const moved=panels.find(item=>layoutId(item)===event.dataTransfer.getData('text/plain'));
+  if(!moved||moved===node)return;
+  event.preventDefault();
+  const bounds=title.getBoundingClientRect();
+  if(event.clientY<bounds.top+bounds.height/2)node.before(moved);else node.after(moved);
+  persistLayout('panel');decorateLayout();
+ };
+ controls.prepend(grip);
+ title.append(controls);
+}else node.append(controls)};for(const n of panels)add(n,'panel');for(const n of tools)add(n,'tool');for(const row of layoutScope==='workspace'?$('layer-list').querySelectorAll('.layer-entry'):[]){row.dataset.layerId=row.querySelector('details')?.dataset.id;add(row,'layer')}}
 function persistLayout(type){state.settings.layout||={};state.settings.layout[type]||={groups:{}};const root=type==='panel'?$('workspace'):document.querySelector('.toolbar');state.settings.layout[type].order=[...root.children].filter(n=>type==='panel'?n.tagName==='DETAILS':n.matches('button,.tool-dropdown,label')).map(layoutId);save()}
 function restoreLayout(){for(const kind of ['panel','tool']){const root=kind==='panel'?$('workspace'):document.querySelector('.toolbar');for(const group of root.querySelectorAll(':scope > details.layout-group')){const menu=group.querySelector(':scope > .layout-group-menu');for(const child of [...(menu||group).children].filter(n=>n.tagName!=='SUMMARY'))group.before(child);group.remove()}const nodes=[...root.children].filter(n=>kind==='panel'?n.tagName==='DETAILS':n.matches('button,.tool-dropdown,label')),prefs=state.settings.layout?.[kind];if(!prefs)continue;const ordered=[...nodes].sort((a,b)=>{const index=n=>{const i=prefs.order?.indexOf(layoutId(n))??-1;return i<0?10000:i};return index(a)-index(b)});const groups=new Map();for(const n of ordered){const name=prefs.groups?.[layoutId(n)];if(name&&!(layoutEditing&&(layoutScope==='tool'?kind==='tool':kind==='panel'))){let g=groups.get(name);if(!g){g=document.createElement('details');g.className='layout-group';const summary=document.createElement('summary');summary.textContent=name;g.append(summary);if(kind==='tool'){summary.className='icon-button';summary.setAttribute('role','button');summary.setAttribute('aria-expanded','false');summary.title=name;summary.setAttribute('aria-label',name);const cover=document.createElement('span');cover.className='toolbar-group-name';cover.textContent=name;const caret=document.createElement('span');caret.className='caret';caret.setAttribute('aria-hidden','true');caret.textContent='▾';summary.replaceChildren(cover,caret);const menu=document.createElement('div');menu.className='layout-group-menu';menu.setAttribute('aria-label',name+'工具');g.append(menu);g.addEventListener('toggle',()=>{summary.setAttribute('aria-expanded',String(g.open));if(!g.open)return;for(const other of root.querySelectorAll(':scope > details.layout-group[open]'))if(other!==g)other.open=false;const r=summary.getBoundingClientRect();menu.style.left=Math.max(8,Math.min(r.left,innerWidth-menu.offsetWidth-8))+'px';menu.style.top=(r.bottom+7)+'px';menu.style.maxHeight=Math.max(100,innerHeight-r.bottom-16)+'px'})}root.append(g);groups.set(name,g)}(g.querySelector(':scope > .layout-group-menu')||g).append(n)}else root.append(n)}if(kind==='panel'){const footer=root.querySelector(':scope > footer');if(footer)root.append(footer)}}}
 new MutationObserver(()=>{if(layoutEditing&&!$('layer-list').querySelector('.layout-handles'))decorateLayout()}).observe($('layer-list'),{childList:true});
@@ -1000,7 +1035,7 @@ opacityButton.onclick=()=>{const levels=[1,.75,.5,.25],value=levels.includes(sta
 $('settings-panel').querySelector('.section-body').append(opacityButton);const refreshBeforeMovementOpacity=refreshUI;refreshUI=function(){refreshBeforeMovementOpacity();paintMovementOpacity()};paintMovementOpacity();
 }
 
-if(typeof document!=='undefined'){const version=document.createElement('p');version.id='app-version';version.textContent='程式版本 v215（Google 分支）';$('settings-panel').querySelector('.section-body').append(version)}
+if(typeof document!=='undefined'){const version=document.createElement('p');version.id='app-version';version.textContent='程式版本 v216（Google 分支）';$('settings-panel').querySelector('.section-body').append(version)}
 
 // Quick navigation ruler and persistent graduated ruler are independent tools.
 if (typeof document !== 'undefined') {
@@ -2059,10 +2094,13 @@ if(typeof document!=='undefined')mountRegionalAirways({L,map,mount:$('routes-pan
 
 if(typeof document!=='undefined'&&bundleNamespace==='google-workspace:'){
  const recovery=document.createElement('details');
- recovery.innerHTML='<summary>找回舊版圖層</summary><p>從此瀏覽器的舊版 MPS 或本機備份選擇圖層。找回的圖層會加入目前工作區。</p><label>資料來源<select></select></label><div class="recovery-layers"></div><button type="button" disabled>找回選取圖層</button><p role="status"></p>';
+ recovery.innerHTML='<summary>找回舊版圖層與設定</summary><p>從舊版 MPS 或本機備份選擇圖層。勾選還原設定會套用該版本的設定，並先備份目前工作區。</p><label>資料來源<select></select></label><label><input type="checkbox" class="recovery-settings" checked> 還原使用者設定（含工作空間排列、群組、地圖與工具偏好）</label><div class="recovery-layers"></div><button type="button" disabled>還原選取項目</button><p role="status"></p>';
  $('backup-version-list').before(recovery);
  const source=recovery.querySelector('select'),list=recovery.querySelector('.recovery-layers');
  const apply=recovery.querySelector('button'),status=recovery.querySelector('[role=status]');
+ const settingsCheck=recovery.querySelector('.recovery-settings');
+ const updateButton=()=>{apply.disabled=!records[Number(source.value)]||(!settingsCheck.checked&&!list.querySelector(':checked'));};
+ settingsCheck.onchange=updateButton;
  let records=[];
  function showLayers(){
   list.replaceChildren();
@@ -2071,20 +2109,27 @@ if(typeof document!=='undefined'&&bundleNamespace==='google-workspace:'){
   for(const layer of selected.project.layers){
    const label=document.createElement('label'),check=document.createElement('input');
    check.type='checkbox';check.value=layer.id;check.checked=layer.objects.length>0;
-   check.onchange=()=>{apply.disabled=!list.querySelector(':checked');};
+   check.onchange=updateButton;
    label.append(check,document.createTextNode(layer.name+'（'+layer.objects.length+' 個物件）'));
    list.append(label);
   }
-  apply.disabled=!list.querySelector(':checked');
+  updateButton();
  }
  async function load(){
   status.textContent='尋找本機舊版資料…';
   source.replaceChildren();list.replaceChildren();apply.disabled=true;records=[];
   const legacy=await openWorkspaceStorage(()=>{},'',{readOnly:true});
   const add=(name,data)=>{
-   try{const project=validateProject(data);if(project.layers.length)records.push({name,project});}catch{}
+   try{const project=validateProject(data);records.push({name,project});}catch{}
   };
-  try{const data=JSON.parse(legacy.getItem('map-workspace-project-v2'));if(data)add('舊版 MPS 最後儲存的工作區',data);}catch{}
+  try{const data=JSON.parse(legacy.getItem('map-workspace-project-v2'));if(data){
+   data.settings||={};
+   const view=JSON.parse(legacy.getItem('mps-map-view'));
+   if(view?.center?.length===2&&view.center.every(Number.isFinite)&&Number.isFinite(view.zoom))data.settings.mapView=view;
+   const collapsed=legacy.getItem('map-sidebar-collapsed');
+   if(collapsed==='true'||collapsed==='false')data.settings.workspacePresentation={openPanels:[...$('workspace').querySelectorAll(':scope>details[id][open]')].map(panel=>panel.id),...data.settings.workspacePresentation,collapsed:collapsed==='true'};
+   add('舊版 MPS 最後儲存的工作區',data);
+  }}catch{}
   for(const namespace of ['',bundleNamespace]){
    try{
     const store=namespace?backupHistory:await openBackupHistory('');
@@ -2094,7 +2139,7 @@ if(typeof document!=='undefined'&&bundleNamespace==='google-workspace:'){
    }catch{}
   }
   for(const [index,record] of records.entries())source.add(new Option(record.name,String(index)));
-  status.textContent=records.length?'選取要找回的圖層。':'此瀏覽器找不到舊版工作區或本機備份。可從「從 JSON 還原」載入外部備份。';
+  status.textContent=records.length?'選取要還原的圖層與設定。':'此瀏覽器找不到舊版工作區或本機備份。可從「從 JSON 還原」載入外部備份。';
   showLayers();
  }
  recovery.addEventListener('toggle',()=>{if(recovery.open)load().catch(e=>{status.textContent=e.message;});});
@@ -2106,18 +2151,21 @@ if(typeof document!=='undefined'&&bundleNamespace==='google-workspace:'){
   apply.disabled=true;
   try{
    const base=state;
-   const incoming={...selected.project,layers:selected.project.layers.filter(layer=>chosen.has(layer.id)),settings:{},instruments:{}};
+   const restoreSettings=settingsCheck.checked;
+   const incoming={...selected.project,layers:selected.project.layers.filter(layer=>chosen.has(layer.id)),settings:restoreSettings?selected.project.settings:{},instruments:restoreSettings?selected.project.instruments:{}};
    const plan=planProjectImport(base,incoming);
-   const keys=plan.filter(item=>item.status!=='same'&&(item.kind==='object'||item.kind==='layer'&&item.status==='new')).map(item=>item.id);
-   if(!keys.length){status.textContent='選取的圖層和物件已存在於目前工作區。';return;}
+   const keys=plan.filter(item=>item.status!=='same'&&(item.kind==='object'||item.kind==='setting'||item.kind==='layer'&&(item.status==='new'||restoreSettings))).map(item=>item.id);
+   if(!keys.length&&!restoreSettings){status.textContent='選取的圖層與設定和目前工作區相同。';return;}
    if(!backupHistory)throw Error('本機備份空間無法使用，請先匯出 JSON。');
-   await createBackupVersion('找回圖層前自動保護');
+   await createBackupVersion('還原圖層與設定前自動保護');
    if(state!==base)throw Error('目前工作區已變更，請重新選擇資料來源。');
    const result=mergeProjectItems(state,incoming,keys,uid);
-   snapshot();state=validateProject(result.project);refreshUI();restoreLayout();save();
-   status.textContent='已找回 '+result.stats.layers+' 個新圖層、'+result.stats.objects+' 個物件。原有物件已保留。';
+   snapshot();state=validateProject(result.project);sanitizePreferences();refreshUI();restoreLayout();
+   if(restoreSettings){restoreCompleteProject();const prefs=state.settings.workspacePresentation;if(prefs)collapseWorkspace(!!prefs.collapsed);renderCompass();}
+   save();
+   status.textContent='已找回 '+result.stats.layers+' 個新圖層、'+result.stats.objects+' 個物件'+(restoreSettings?'，並套用所選版本的使用者設定。':'。')+'原有物件已保留。';
    await renderBackupVersions();
   }catch(error){status.textContent='找回未完成。'+error.message;}
-  finally{apply.disabled=!list.querySelector(':checked');}
+  finally{updateButton();}
  };
 }

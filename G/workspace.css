@@ -269,3 +269,5 @@ body.history-modal-open{overflow:hidden;overscroll-behavior:none}
 @media (prefers-reduced-motion: reduce) {
   :root { --ui-fast: 0ms; --ui-enter: 0ms; }
 }
+
+.workspace-layout-editing .layout-handles{flex-wrap:wrap;max-width:100%}.workspace-layout-editing .layout-handles select{max-width:100%}.workspace-layout-grip{cursor:grab;padding:0 .35em;touch-action:auto}.workspace-layout-grip:active{cursor:grabbing}
