@@ -29,6 +29,7 @@ html{scroll-behavior:smooth}.guide{position:relative;isolation:isolate;padding-b
 .media-guide{padding-block:16px 46px}.media-topic{padding:20px 0;border-bottom:1px solid var(--line)}.media-heading{display:flex;align-items:baseline;justify-content:space-between;flex-wrap:wrap;gap:8px}.media-topic video{display:block;width:min(100%,690px);max-height:67svh;margin:6px 0 14px;background:#102521;border-radius:9px;object-fit:contain}.media-shots{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px}.media-shots figure{margin:0;min-width:0}.media-shots a{display:block}.media-shots img{display:block;width:100%;height:auto;aspect-ratio:978/909;object-fit:contain;background:#e1e9dd;border:1px solid var(--line);border-radius:8px}.media-shots figcaption{font-weight:650;font-size:.95rem;margin-top:5px}@media(max-width:760px){.media-shots{grid-template-columns:repeat(2,minmax(0,1fr));gap:9px}.media-topic video{max-height:none}}.feature-media{width:100%;margin-top:8px}.feature-video{display:block;width:100%;height:auto;max-height:57vh;aspect-ratio:978/909;object-fit:contain;background:#102521;border-radius:9px;margin-bottom:10px}.feature-media .media-shots{grid-template-columns:repeat(2,minmax(0,1fr))}
 .features{padding-block:44px 64px}.features>p:not(.sources){max-width:64ch}.demo-features{display:grid;gap:24px;margin-bottom:36px}.demo-feature,.guide-cards article{border:1px solid var(--line);border-radius:14px;background:#fff;padding:clamp(16px,2.5vw,28px);min-width:0}.demo-feature>h3{font-size:clamp(1.45rem,2.4vw,2rem);line-height:1.24;margin-bottom:18px}.demo-feature-layout{display:grid;grid-template-columns:minmax(0,2.15fr) minmax(250px,1fr);gap:clamp(16px,2.7vw,32px);align-items:start}.demo-screen,.demo-instructions{min-width:0}.demo-screen .feature-video{width:100%;max-height:none;aspect-ratio:978/909;margin:0;background:#102521}.screen-link{display:inline-flex;align-items:center;min-height:44px;font-weight:750;text-underline-offset:3px}.demo-instructions .tool-steps{margin-top:14px}.tool-steps li{line-height:1.7}.demo-stills{border-top:1px solid var(--line);margin-top:8px;padding-top:4px}.demo-stills summary{cursor:pointer;padding:9px 0;min-height:44px;font-weight:750}.demo-stills .media-shots{grid-template-columns:repeat(4,minmax(0,1fr))}.guide-cards{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:18px}.guide-cards article h3{font-size:1.3rem;line-height:1.35}.guide-cards .media-shots{grid-template-columns:minmax(0,1fr);max-width:380px}.demo-feature:target,.guide-cards article:target{border-color:#477840;box-shadow:0 0 0 2px #47784055}.hero.guide{padding-block:clamp(30px,6vw,65px)}.guide .lede{max-width:42ch}@media(max-width:850px){.demo-feature-layout{grid-template-columns:1fr}.demo-stills .media-shots{grid-template-columns:repeat(2,minmax(0,1fr))}}@media(max-width:600px){.guide-cards{grid-template-columns:1fr}.demo-feature{padding:14px}.demo-screen{margin-inline:-7px}.demo-screen .screen-link{margin-inline:7px}.index{gap:6px}.index a{font-size:.9rem}}
 .guide-jumps{display:flex;flex-wrap:wrap;gap:8px;margin:0 0 16px}.guide-jumps a{display:inline-flex;align-items:center;min-height:44px;padding:6px 12px;border-radius:8px;background:var(--ink);color:#fff;font-weight:750;text-decoration:none}.guide-jumps a:hover{background:#2b5347}.recent-tools{padding-top:34px}.recent-tools>h3{font-size:clamp(1.4rem,3vw,1.85rem)}.recent-tools article>p:last-child{margin:10px 0 0}.demo-screen .feature-video{max-height:none}.demo-instructions .tool-steps li{line-height:1.65}@media(min-width:851px){.demo-feature-layout{grid-template-columns:minmax(0,2.5fr) minmax(240px,1fr)}}
+.chapter-stage{position:relative}.chapter-stage .feature-video{aspect-ratio:978/908}.chapter-still{position:absolute;inset:0;width:100%;height:100%;object-fit:contain;border-radius:inherit;pointer-events:none}.chapter-pointer{position:absolute;left:var(--pointer-x,17%);top:var(--pointer-y,3.3%);width:26px;height:26px;transform:translate(-50%,-50%);border:2px solid #162618;border-radius:50%;background:#e2fa85;box-shadow:0 0 0 3px #fff,0 3px 12px #071a11aa;pointer-events:none;z-index:1}.chapter-pointer::after{content:"";position:absolute;top:7px;left:8px;width:10px;height:13px;background:#172b22;clip-path:polygon(0 0,100% 63%,56% 66%,43% 100%)}.chapter-list{list-style:none;margin:14px 0;padding:0;display:grid;gap:8px}.chapter-button{width:100%;display:flex;gap:10px;align-items:flex-start;text-align:left;padding:10px;border:1px solid var(--line);border-radius:8px;background:#fff;color:var(--ink);min-height:48px}.chapter-button[aria-current="step"]{background:#e9f3d8;border-color:#466347}.chapter-number{display:grid;place-items:center;flex:0 0 26px;height:26px;border-radius:50%;background:#173a31;color:white;font-weight:750}.chapter-button small{display:block;font-size:.875rem;line-height:1.45;color:var(--muted)}.chapter-notes summary{cursor:pointer;font-weight:750;padding-block:6px}.chapter-replay{min-height:44px;padding:6px 10px;margin:4px 10px 0 0;background:#173a31;color:white;border:0;border-radius:7px}.feature-filter{margin:14px 0}.feature-filter label{display:block;font-weight:750}.feature-filter input{font:inherit;width:min(100%,420px);min-height:44px;padding:6px 10px;border:1px solid #5b766a;border-radius:7px}.feature-filter p{margin:5px 0}.feature-filter p:empty{display:none}[hidden]{display:none!important}@media(max-width:850px){.demo-feature-layout{gap:12px}.chapter-list{grid-template-columns:repeat(2,minmax(0,1fr))}}@media(max-width:480px){.chapter-list{grid-template-columns:1fr}.chapter-pointer{width:22px;height:22px}.chapter-pointer::after{top:5px;left:6px}}
 </style>
 </head>
 <body>
@@ -44,23 +45,23 @@ html{scroll-behavior:smooth}.guide{position:relative;isolation:isolate;padding-b
 </section>
 
 <section id="features" class="features" aria-labelledby="features-title"><h2 id="features-title">功能與操作步驟</h2><div class="guide-jumps"><a href="#measure">看測距</a><a href="#instruments">看直尺標色</a><a href="#draw">看區域繪製</a><a href="#recent-title">查看 G 版功能</a></div><p>點 ☰ 展開側欄。工具列上的功能也可能收在「更多」。</p>
-<ul class="index"><li><a href="#view">平移、縮放與選取</a></li><li><a href="#search">搜尋與座標定位</a></li><li><a href="#measure">鐵捲尺與距離鎖定</a></li><li><a href="#instruments">直尺、量角器與圓規</a></li><li><a href="#draw">標記、線段、區域與自由繪圖</a></li><li><a href="#edit">物件修訂與精確座標</a></li><li><a href="#layers">新增、顯示與定位圖層</a></li><li><a href="#references">航路、航點與參考圖層</a></li><li><a href="#basemap">底圖、格線與標籤</a></li><li><a href="#history">復原、重做與取消</a></li><li><a href="#backup">KML 與專案備份</a></li><li><a href="#print">列印與 PDF</a></li><li><a href="#offline">安裝與離線底圖</a></li></ul>
+<div class="feature-filter" hidden><label for="find-tool">搜尋功能、工具或操作</label><input id="find-tool" type="search" placeholder="例如：直尺、圖層、備份"><p id="filter-status" role="status"></p></div><ul class="index"><li><a href="#view">平移、縮放與選取</a></li><li><a href="#search">搜尋與座標定位</a></li><li><a href="#measure">鐵捲尺與距離鎖定</a></li><li><a href="#instruments">直尺、量角器與圓規</a></li><li><a href="#draw">標記、線段、區域與自由繪圖</a></li><li><a href="#edit">物件修訂與精確座標</a></li><li><a href="#layers">新增、顯示與定位圖層</a></li><li><a href="#references">航路、航點與參考圖層</a></li><li><a href="#basemap">底圖、格線與標籤</a></li><li><a href="#history">復原、重做與取消</a></li><li><a href="#backup">KML 與專案備份</a></li><li><a href="#print">列印與 PDF</a></li><li><a href="#offline">安裝與離線底圖</a></li></ul>
 <div class="demo-features"><article id="measure" class="demo-feature"><h3>鐵捲尺與距離鎖定</h3>
-<div class="demo-feature-layout"><div class="demo-screen"><video class="feature-video" controls muted loop playsinline preload="none" poster="media/04-tape-distance.jpg" aria-label="兩點測距操作短片"><source src="media/tape.mp4" type="video/mp4"><a href="media/tape.mp4">下載操作短片</a></video><a class="screen-link" href="media/tape.mp4" target="_blank" rel="noopener">開啟原尺寸影片</a></div>
-<div class="demo-instructions"><div class="tool-label"><span class="symbol" aria-hidden="true"><svg width="23" height="23" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" aria-hidden="true"><path d="M3 16V9a6 6 0 0 1 12 0v7H3Zm0 0v4h18v-4h-6M7 17v3m4-3v3m4-3v3m4-3v3"/><circle cx="9" cy="9" r="2"/></svg></span><span>鐵捲尺</span></div><p class="tool-entry"><strong>在哪裡開啟</strong><span>上方工具列 › 鐵捲尺（捲尺圖示）</span></p><ol class="tool-steps"><li>依序點起點、終點，距離會直接顯示在線段上。到「設定 › 地圖單位」可改用海里、公里或公尺。</li><li>點線上的距離標籤開啟詳細修訂。輸入數值、套用並勾選「鎖定距離」，會以起點為基準調整終點。鎖定後拖曳端點仍保持設定長度。</li><li>可沿線移動距離標籤，避開其他文字。若端點設為跟隨母點（MOM），距離會隨母點更新；解除跟隨後可再手動鎖距。</li></ol></div></div>
+<div class="demo-feature-layout"><div class="demo-screen"><div class="chapter-stage"><video class="feature-video" controls muted loop playsinline preload="none" poster="media/04-tape-distance.jpg" aria-label="兩點測距操作短片"><source src="media/tape.mp4" type="video/mp4"><a href="media/tape.mp4">下載操作短片</a></video><img class="chapter-still" alt="" hidden><span class="chapter-pointer" aria-hidden="true"></span></div><button type="button" class="chapter-replay" hidden>播放完整短片</button><a class="screen-link" href="media/tape.mp4" target="_blank" rel="noopener">開啟原尺寸影片</a></div>
+<div class="demo-instructions"><div class="tool-label"><span class="symbol" aria-hidden="true"><svg width="23" height="23" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" aria-hidden="true"><path d="M3 16V9a6 6 0 0 1 12 0v7H3Zm0 0v4h18v-4h-6M7 17v3m4-3v3m4-3v3m4-3v3"/><circle cx="9" cy="9" r="2"/></svg></span><span>鐵捲尺</span></div><p class="tool-entry"><strong>在哪裡開啟</strong><span>上方工具列 › 鐵捲尺（捲尺圖示）</span></p><ol class="chapter-list" aria-label="點選步驟跳到操作畫面"><li><button type="button" class="chapter-button" data-time="0.2" data-frame="media/02-tape-tool.jpg" data-x="168" data-y="30" aria-current="step"><span class="chapter-number" aria-hidden="true">1</span><span><strong>選擇鐵捲尺</strong><small>點上方捲尺圖示。</small></span></button></li><li><button type="button" class="chapter-button" data-time="3.2" data-frame="media/03-tape-start.jpg" data-x="510" data-y="410" aria-current="false"><span class="chapter-number" aria-hidden="true">2</span><span><strong>設定起點</strong><small>在地圖上點第一個位置。</small></span></button></li><li><button type="button" class="chapter-button" data-time="6.2" data-frame="media/04-tape-distance.jpg" data-x="650" data-y="480" aria-current="false"><span class="chapter-number" aria-hidden="true">3</span><span><strong>設定終點並讀距離</strong><small>點第二個位置，線上會顯示直線距離。</small></span></button></li></ol><details class="chapter-notes"><summary>更多操作細節</summary><ol class="tool-steps"><li>依序點起點、終點，距離會直接顯示在線段上。到「設定 › 地圖單位」可改用海里、公里或公尺。</li><li>點線上的距離標籤開啟詳細修訂。輸入數值、套用並勾選「鎖定距離」，會以起點為基準調整終點。鎖定後拖曳端點仍保持設定長度。</li><li>可沿線移動距離標籤，避開其他文字。若端點設為跟隨母點（MOM），距離會隨母點更新；解除跟隨後可再手動鎖距。</li></ol></details></div></div>
 <details class="demo-stills"><summary>查看逐步截圖</summary><div class="media-shots"><figure><a href="media/02-tape-tool.jpg" target="_blank" rel="noopener" aria-label="放大：選擇鐵捲尺"><img src="media/02-tape-tool.jpg" alt="選擇鐵捲尺" loading="lazy" decoding="async"></a><figcaption>選擇鐵捲尺</figcaption></figure>
 <figure><a href="media/03-tape-start.jpg" target="_blank" rel="noopener" aria-label="放大：點起點"><img src="media/03-tape-start.jpg" alt="點起點" loading="lazy" decoding="async"></a><figcaption>點起點</figcaption></figure>
 <figure><a href="media/04-tape-distance.jpg" target="_blank" rel="noopener" aria-label="放大：點終點，讀取線上的距離"><img src="media/04-tape-distance.jpg" alt="點終點，讀取線上的距離" loading="lazy" decoding="async"></a><figcaption>點終點，讀取線上的距離</figcaption></figure></div></details></article>
 <article id="instruments" class="demo-feature"><h3>直尺、量角器與圓規</h3>
-<div class="demo-feature-layout"><div class="demo-screen"><video class="feature-video" controls muted loop playsinline preload="none" poster="media/08-ruler-color.jpg" aria-label="刻度直尺與標色操作短片"><source src="media/ruler.mp4" type="video/mp4"><a href="media/ruler.mp4">下載操作短片</a></video><a class="screen-link" href="media/ruler.mp4" target="_blank" rel="noopener">開啟原尺寸影片</a></div>
-<div class="demo-instructions"><div class="tool-label"><span class="symbol" aria-hidden="true"><svg class="instrument-tool-icon" viewBox="0 0 28 28" width="26" height="26" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 8h22v12H3zM7 8v6m4-6v3m4-3v6m4-6v3m4-3v6"/></svg></span><span class="symbol" aria-hidden="true"><svg class="instrument-tool-icon" viewBox="0 0 28 28" width="26" height="26" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 8h22v12H3zM7 8v6m4-6v3m4-3v6m4-6v3m4-3v6"/></svg></span><span class="symbol" aria-hidden="true"><svg class="instrument-tool-icon" viewBox="0 0 28 28" width="26" height="26" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="14" cy="14" r="11"/><path d="M14 3v4m11 7h-4M14 25v-4M3 14h4m-.8-7.8 2.6 2.6m13-2.6-2.6 2.6m2.6 13-2.6-2.6m-13 2.6 2.6-2.6M14 14V8m0 6 5 3"/><circle cx="14" cy="14" r="1"/></svg></span><span>尺規工具</span></div><p class="tool-entry"><strong>在哪裡開啟</strong><span>上方工具列 › 尺規工具 › 直尺／圓形量角器／圓規；側欄 ☰ › 尺規設定</span></p><ol class="tool-steps"><li>直尺標色：在「尺規設定 › 直尺標色範圍」輸入起點與終點、挑色，按「套用範圍」。使用目前的地圖單位。已儲存的範圍可分別調整顯示，也可用「清除標色」。</li><li>直尺讀距離：打開「吸附點詳細距離（由直尺 0 點量起）」。讓尺靠近可見航點或標記，吸附點會出現距離及座標。距離以直尺 0 點為起算位置。</li><li>尺規吸附：在「設定」勾選「尺規 0 點與直尺中段吸附航點／標記」。拖動直尺或量角器的 0 點靠近已顯示的航點、航路點、標繪頂點、參考圖層點或機場點。吸附後 0 點鎖定，點 0 解鎖；鎖定時可拖另一端旋轉或伸縮。直尺兩端靠近不同點時也可分別對齊。</li><li>圓形量角器標色：在「量角器標色範圍」輸入角度並套用。0° 在上方，角度順時針增加。輸入 350° 到 10° 可標出跨越 0° 的扇區。亦可輸入旋轉角度，或把尺規移回中央。</li><li>圓規：先點地圖指定圓心，再輸入半徑。小十字可點擊解鎖，解鎖後拖曳接近可見點時可自動吸附。筆端雙擊後按住拖動畫弧，雙擊後直接放開可標點。收起圓規後可連點弧線進入修訂。</li></ol></div></div>
+<div class="demo-feature-layout"><div class="demo-screen"><div class="chapter-stage"><video class="feature-video" controls muted loop playsinline preload="none" poster="media/08-ruler-color.jpg" aria-label="刻度直尺與標色操作短片"><source src="media/ruler.mp4" type="video/mp4"><a href="media/ruler.mp4">下載操作短片</a></video><img class="chapter-still" alt="" hidden><span class="chapter-pointer" aria-hidden="true"></span></div><button type="button" class="chapter-replay" hidden>播放完整短片</button><a class="screen-link" href="media/ruler.mp4" target="_blank" rel="noopener">開啟原尺寸影片</a></div>
+<div class="demo-instructions"><div class="tool-label"><span class="symbol" aria-hidden="true"><svg class="instrument-tool-icon" viewBox="0 0 28 28" width="26" height="26" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 8h22v12H3zM7 8v6m4-6v3m4-3v6m4-6v3m4-3v6"/></svg></span><span class="symbol" aria-hidden="true"><svg class="instrument-tool-icon" viewBox="0 0 28 28" width="26" height="26" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 8h22v12H3zM7 8v6m4-6v3m4-3v6m4-6v3m4-3v6"/></svg></span><span class="symbol" aria-hidden="true"><svg class="instrument-tool-icon" viewBox="0 0 28 28" width="26" height="26" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="14" cy="14" r="11"/><path d="M14 3v4m11 7h-4M14 25v-4M3 14h4m-.8-7.8 2.6 2.6m13-2.6-2.6 2.6m2.6 13-2.6-2.6m-13 2.6 2.6-2.6M14 14V8m0 6 5 3"/><circle cx="14" cy="14" r="1"/></svg></span><span>尺規工具</span></div><p class="tool-entry"><strong>在哪裡開啟</strong><span>上方工具列 › 尺規工具 › 直尺／圓形量角器／圓規；側欄 ☰ › 尺規設定</span></p><ol class="chapter-list" aria-label="點選步驟跳到操作畫面"><li><button type="button" class="chapter-button" data-time="0.2" data-frame="media/05-ruler-menu.jpg" data-x="660" data-y="30" aria-current="step"><span class="chapter-number" aria-hidden="true">1</span><span><strong>開啟尺規工具</strong><small>點上方尺規圖示。</small></span></button></li><li><button type="button" class="chapter-button" data-time="3.2" data-frame="media/06-ruler-open.jpg" data-x="52" data-y="438" aria-current="false"><span class="chapter-number" aria-hidden="true">2</span><span><strong>顯示刻度直尺</strong><small>在選單選「刻度直尺」，再展開側欄尺規設定。</small></span></button></li><li><button type="button" class="chapter-button" data-time="6.2" data-frame="media/07-ruler-range.jpg" data-x="145" data-y="616" aria-current="false"><span class="chapter-number" aria-hidden="true">3</span><span><strong>輸入標色範圍</strong><small>示範使用 10 到 45 海里。</small></span></button></li><li><button type="button" class="chapter-button" data-time="9.2" data-frame="media/08-ruler-color.jpg" data-x="57" data-y="728" aria-current="false"><span class="chapter-number" aria-hidden="true">4</span><span><strong>套用標色</strong><small>按「套用範圍」，地圖上的直尺會顯示色帶。</small></span></button></li></ol><details class="chapter-notes"><summary>更多操作細節</summary><ol class="tool-steps"><li>直尺標色：在「尺規設定 › 直尺標色範圍」輸入起點與終點、挑色，按「套用範圍」。使用目前的地圖單位。已儲存的範圍可分別調整顯示，也可用「清除標色」。</li><li>直尺讀距離：打開「吸附點詳細距離（由直尺 0 點量起）」。讓尺靠近可見航點或標記，吸附點會出現距離及座標。距離以直尺 0 點為起算位置。</li><li>尺規吸附：在「設定」勾選「尺規 0 點與直尺中段吸附航點／標記」。拖動直尺或量角器的 0 點靠近已顯示的航點、航路點、標繪頂點、參考圖層點或機場點。吸附後 0 點鎖定，點 0 解鎖；鎖定時可拖另一端旋轉或伸縮。直尺兩端靠近不同點時也可分別對齊。</li><li>圓形量角器標色：在「量角器標色範圍」輸入角度並套用。0° 在上方，角度順時針增加。輸入 350° 到 10° 可標出跨越 0° 的扇區。亦可輸入旋轉角度，或把尺規移回中央。</li><li>圓規：先點地圖指定圓心，再輸入半徑。小十字可點擊解鎖，解鎖後拖曳接近可見點時可自動吸附。筆端雙擊後按住拖動畫弧，雙擊後直接放開可標點。收起圓規後可連點弧線進入修訂。</li></ol></details></div></div>
 <details class="demo-stills"><summary>查看逐步截圖</summary><div class="media-shots"><figure><a href="media/05-ruler-menu.jpg" target="_blank" rel="noopener" aria-label="放大：開啟尺規選單"><img src="media/05-ruler-menu.jpg" alt="開啟尺規選單" loading="lazy" decoding="async"></a><figcaption>開啟尺規選單</figcaption></figure>
 <figure><a href="media/06-ruler-open.jpg" target="_blank" rel="noopener" aria-label="放大：選擇刻度直尺"><img src="media/06-ruler-open.jpg" alt="選擇刻度直尺" loading="lazy" decoding="async"></a><figcaption>選擇刻度直尺</figcaption></figure>
 <figure><a href="media/07-ruler-range.jpg" target="_blank" rel="noopener" aria-label="放大：在尺規設定輸入標色起訖"><img src="media/07-ruler-range.jpg" alt="在尺規設定輸入標色起訖" loading="lazy" decoding="async"></a><figcaption>在尺規設定輸入標色起訖</figcaption></figure>
 <figure><a href="media/08-ruler-color.jpg" target="_blank" rel="noopener" aria-label="放大：套用範圍，查看尺面標色"><img src="media/08-ruler-color.jpg" alt="套用範圍，查看尺面標色" loading="lazy" decoding="async"></a><figcaption>套用範圍，查看尺面標色</figcaption></figure></div></details></article>
 <article id="draw" class="demo-feature"><h3>標記、線段、區域與自由繪圖</h3>
-<div class="demo-feature-layout"><div class="demo-screen"><video class="feature-video" controls muted loop playsinline preload="none" poster="media/13-area-complete.jpg" aria-label="繪製區域操作短片"><source src="media/area.mp4" type="video/mp4"><a href="media/area.mp4">下載操作短片</a></video><a class="screen-link" href="media/area.mp4" target="_blank" rel="noopener">開啟原尺寸影片</a></div>
-<div class="demo-instructions"><div class="tool-label"><span class="symbol" aria-hidden="true">⌖</span><span class="symbol" aria-hidden="true">╱</span><span class="symbol" aria-hidden="true">⬡</span><span class="symbol" aria-hidden="true">✎</span><span class="symbol" aria-hidden="true"><svg viewBox="0 0 24 24" width="23" height="23" fill="none" stroke="currentColor" stroke-width="1.7" aria-hidden="true"><path d="m3 14 10-10a2 2 0 0 1 3 0l5 5a2 2 0 0 1 0 3L11 22H9l-6-6a1.4 1.4 0 0 1 0-2Z"/><path d="m7 10 8 8M10 22h12"/></svg></span><span>新增標記、繪製線段、繪製區域、自由繪圖</span></div><p class="tool-entry"><strong>在哪裡開啟</strong><span>上方工具列 › 新增標記／繪製線段／繪製區域／自由繪圖／標繪顏色</span></p><ol class="tool-steps"><li>先在「我的圖層」指定編輯圖層，再選顏色。標記點一下即可；線段至少兩點，區域至少三點。依序點頂點後點 ✓，也可在鍵盤按 Enter。</li><li>用手指或滑鼠拖曳可自由繪圖。點 × 或按 Esc 取消未完成的操作。完成後可在物件修訂修改顏色，或用橡皮擦點選物件，再用復原取回。</li></ol></div></div>
+<div class="demo-feature-layout"><div class="demo-screen"><div class="chapter-stage"><video class="feature-video" controls muted loop playsinline preload="none" poster="media/13-area-complete.jpg" aria-label="繪製區域操作短片"><source src="media/area.mp4" type="video/mp4"><a href="media/area.mp4">下載操作短片</a></video><img class="chapter-still" alt="" hidden><span class="chapter-pointer" aria-hidden="true"></span></div><button type="button" class="chapter-replay" hidden>播放完整短片</button><a class="screen-link" href="media/area.mp4" target="_blank" rel="noopener">開啟原尺寸影片</a></div>
+<div class="demo-instructions"><div class="tool-label"><span class="symbol" aria-hidden="true">⌖</span><span class="symbol" aria-hidden="true">╱</span><span class="symbol" aria-hidden="true">⬡</span><span class="symbol" aria-hidden="true">✎</span><span class="symbol" aria-hidden="true"><svg viewBox="0 0 24 24" width="23" height="23" fill="none" stroke="currentColor" stroke-width="1.7" aria-hidden="true"><path d="m3 14 10-10a2 2 0 0 1 3 0l5 5a2 2 0 0 1 0 3L11 22H9l-6-6a1.4 1.4 0 0 1 0-2Z"/><path d="m7 10 8 8M10 22h12"/></svg></span><span>新增標記、繪製線段、繪製區域、自由繪圖</span></div><p class="tool-entry"><strong>在哪裡開啟</strong><span>上方工具列 › 新增標記／繪製線段／繪製區域／自由繪圖／標繪顏色</span></p><ol class="chapter-list" aria-label="點選步驟跳到操作畫面"><li><button type="button" class="chapter-button" data-time="0.2" data-frame="media/10-drawing-tools.jpg" data-x="126" data-y="29" aria-current="step"><span class="chapter-number" aria-hidden="true">1</span><span><strong>展開繪圖選單</strong><small>點上方繪圖工具群組。</small></span></button></li><li><button type="button" class="chapter-button" data-time="3.2" data-frame="media/11-area-tool.jpg" data-x="222" data-y="85" aria-current="false"><span class="chapter-number" aria-hidden="true">2</span><span><strong>選擇繪製區域</strong><small>點六邊形圖示。</small></span></button></li><li><button type="button" class="chapter-button" data-time="6.2" data-frame="media/12-area-vertices.jpg" data-x="730" data-y="603" aria-current="false"><span class="chapter-number" aria-hidden="true">3</span><span><strong>選取三個頂點</strong><small>依序點地圖上的三個位置。</small></span></button></li><li><button type="button" class="chapter-button" data-time="9.2" data-frame="media/13-area-complete.jpg" data-x="373" data-y="30" aria-current="false"><span class="chapter-number" aria-hidden="true">4</span><span><strong>完成區域</strong><small>點上方 ✓，讓 MPS 封閉區域。</small></span></button></li></ol><details class="chapter-notes"><summary>更多操作細節</summary><ol class="tool-steps"><li>先在「我的圖層」指定編輯圖層，再選顏色。標記點一下即可；線段至少兩點，區域至少三點。依序點頂點後點 ✓，也可在鍵盤按 Enter。</li><li>用手指或滑鼠拖曳可自由繪圖。點 × 或按 Esc 取消未完成的操作。完成後可在物件修訂修改顏色，或用橡皮擦點選物件，再用復原取回。</li></ol></details></div></div>
 <details class="demo-stills"><summary>查看逐步截圖</summary><div class="media-shots"><figure><a href="media/10-drawing-tools.jpg" target="_blank" rel="noopener" aria-label="放大：打開繪圖選單"><img src="media/10-drawing-tools.jpg" alt="打開繪圖選單" loading="lazy" decoding="async"></a><figcaption>打開繪圖選單</figcaption></figure>
 <figure><a href="media/11-area-tool.jpg" target="_blank" rel="noopener" aria-label="放大：選擇繪製區域"><img src="media/11-area-tool.jpg" alt="選擇繪製區域" loading="lazy" decoding="async"></a><figcaption>選擇繪製區域</figcaption></figure>
 <figure><a href="media/12-area-vertices.jpg" target="_blank" rel="noopener" aria-label="放大：依序點三個頂點"><img src="media/12-area-vertices.jpg" alt="依序點三個頂點" loading="lazy" decoding="async"></a><figcaption>依序點三個頂點</figcaption></figure>
@@ -80,6 +81,16 @@ html{scroll-behavior:smooth}.guide{position:relative;isolation:isolate;padding-b
 <article id="json-import"><h3>只匯入需要的 JSON 項目</h3><p class="tool-entry"><strong>在哪裡開啟</strong><span>工具列 › 備份與還原 › 新增／選擇性匯入 JSON</span></p><p>選檔後勾選要加入的物件或要套用的設定，再確認匯入。已存在的物件若再次勾選，會建立副本。</p></article>
 <article id="excel"><h3>把預覽範圍內的座標匯出成 Excel</h3><p class="tool-entry"><strong>在哪裡開啟</strong><span>工具列 › 列印／PDF › 產生預覽 › 匯出座標 Excel</span></p><p>將預覽移到所需範圍，再匯出已開啟經緯度顯示的物件與各點名稱。</p></article>
 <article id="offline-check"><h3>下載並檢查離線資源</h3><p class="tool-entry"><strong>在哪裡開啟</strong><span>側欄 ☰ › 底圖與格線 › 下載離線底圖；側欄 › 離線就緒檢查</span></p><p>先下載需要的底圖，再到「離線就緒檢查」核對目前範圍與所需地形解析度。可在連線時先切換到已安裝的離線底圖確認。</p></article></div></section>
+<section class="recent-tools" aria-labelledby="extra-tools-title"><h3 id="extra-tools-title">更多工具與操作</h3><div class="guide-cards"><article id="quick-ruler"><h3>雙點量尺與航向</h3><p class="tool-entry"><strong>在哪裡開啟</strong><span>尺規工具 › 雙點量尺</span></p><p>拖動兩端調整量測線，讀取距離與航向。到「設定 › 量尺航向基準」切換磁航向 M 或真航向 T。</p></article>
+<article id="object-options"><h3>線型、點半徑與等距記號</h3><p class="tool-entry"><strong>在哪裡開啟</strong><span>平移／選取 › 點選物件 › 修訂詳細資料</span></p><p>依物件類型選擇線型、設定點半徑，或在線段上加入等距記號。套用前可併同檢查頂點座標。</p></article>
+<article id="mom"><h3>讓標記跟隨母點</h3><p class="tool-entry"><strong>在哪裡開啟</strong><span>修訂詳細資料 › 逐點編輯 › 吸附點 MOM</span></p><p>依名稱選母點。母點移動時，跟隨的頂點會更新；若是鐵捲尺端點，距離也會重新計算。</p></article>
+<article id="customize"><h3>調整工具列與顯示</h3><p class="tool-entry"><strong>在哪裡開啟</strong><span>工具列 › 編輯位置；側欄 › 設定 › 常用工具列</span></p><p>編輯位置可重排工具與側欄區段，常用工具列可將常用命令保留在外面。標籤字體、密度、主題和移動搖桿透明度也可調整。</p></article>
+<article id="history-timeline"><h3>從操作紀錄回到某一步</h3><p class="tool-entry"><strong>在哪裡開啟</strong><span>工具列 › 操作紀錄；收起時可從更多開啟</span></p><p>開啟清單並選取要回到的步驟。清單會區分已執行與已復原的操作。</p></article>
+<article id="search-address"><h3>搜尋地名與直接開啟工具</h3><p class="tool-entry"><strong>在哪裡開啟</strong><span>工具列 › 統一搜尋</span></p><p>有網路時可勾選「搜尋地名」。也可輸入「設定」或「底圖與格線」等工具名稱，從搜尋結果直達面板。</p></article>
+<article id="reference-copy"><h3>從參考資料建立可編輯副本</h3><p class="tool-entry"><strong>在哪裡開啟</strong><span>側欄 › 航路網 › 展開個別航路</span></p><p>按「建立此航路可修改副本」，再到「我的圖層」編輯副本的頂點、名稱或樣式。</p></article>
+<article id="terrain"><h3>下載地形高度</h3><p class="tool-entry"><strong>在哪裡開啟</strong><span>側欄 › 離線地形高度</span></p><p>選定範圍與解析度後下載。可到「離線就緒檢查」確認是否需要補下地形圖磚。</p></article>
+<article id="offline-package"><h3>打包離線網站</h3><p class="tool-entry"><strong>在哪裡開啟</strong><span>工具列 › 更多 › 打包離線網站</span></p><p>先在「設定 › 額外功能」依提示開啟打包功能，下載可完整解壓的離線包。Windows 可從包內的 MPS-Offline.exe 啟動。</p></article>
+<article id="cloud-recovery"><h3>Google 同步與舊版工作區</h3><p class="tool-entry"><strong>在哪裡開啟</strong><span>側欄 › 設定 › Google 雲端同步；備份與還原 › 找回舊版圖層與設定</span></p><p>若部署已設定 Google 同步，可依畫面登入。用「找回舊版圖層與設定」選擇舊工作區或備份，只還原需要的圖層與設定。</p></article></div></section>
 <p class="sources"><a href="../G/data-sources.html">查看 MPS 資料來源與授權</a></p>
 </section>
 <section id="faq" class="faq"><h2>常見問題</h2>
@@ -90,31 +101,97 @@ html{scroll-behavior:smooth}.guide{position:relative;isolation:isolate;padding-b
 <footer class="footer"><div class="wrap"><strong>MPS 地圖工作空間</strong><a href="https://github.com/LeHarold/MPS">GitHub 原始碼</a></div></footer>
 
 <script>
-const clips = document.querySelectorAll('.feature-video');
-const visibility = new Map();
-const reducedMotion = matchMedia('(prefers-reduced-motion: reduce)');
-function updatePlayback(video) {
-  if (document.hidden || !visibility.get(video) || reducedMotion.matches) {
+const demos = [...document.querySelectorAll('.demo-feature')].map(card => {
+  const video = card.querySelector('video');
+  const steps = [...card.querySelectorAll('.chapter-button')];
+  const pointer = card.querySelector('.chapter-pointer');
+  const still = card.querySelector('.chapter-still');
+  const replay = card.querySelector('.chapter-replay');
+  const demo = {video, visible: false, pinned: false};
+  function highlight(index) {
+    const step = steps[index];
+    steps.forEach((button, i) => button.setAttribute('aria-current', i === index ? 'step' : 'false'));
+    pointer.style.setProperty('--pointer-x', Number(step.dataset.x) / 978 * 100 + '%');
+    pointer.style.setProperty('--pointer-y', Number(step.dataset.y) / 909 * 100 + '%');
+  }
+  function syncHighlight() {
+    if (!demo.pinned) highlight(Math.min(steps.length - 1, Math.floor(video.currentTime / 3)));
+  }
+  steps.forEach((step, index) => step.addEventListener('click', () => {
+    demo.pinned = true;
     video.pause();
+    highlight(index);
+    still.src = step.dataset.frame;
+    still.hidden = false;
+    if (video.readyState === 0) video.preload = 'auto';
+    video.currentTime = Number(step.dataset.time);
+  }));
+  video.addEventListener('seeked', () => { still.hidden = true; });
+  video.addEventListener('timeupdate', syncHighlight);
+  video.addEventListener('play', () => {
+    demo.pinned = false;
+    still.hidden = true;
+    syncHighlight();
+  });
+  replay.hidden = false;
+  replay.addEventListener('click', () => {
+    demo.pinned = false;
+    still.hidden = true;
+    video.currentTime = 0;
+    video.playbackRate = 1.75;
+    video.play().catch(() => {});
+  });
+  highlight(0);
+  return demo;
+});
+const reducedMotion = matchMedia('(prefers-reduced-motion: reduce)');
+function updatePlayback(demo) {
+  if (document.hidden || !demo.visible || reducedMotion.matches || demo.pinned) {
+    demo.video.pause();
     return;
   }
-  video.muted = true;
-  video.playbackRate = 1.75;
-  video.play().catch(() => {});
+  demo.video.playbackRate = 1.75;
+  demo.video.play().catch(() => {});
 }
 if ('IntersectionObserver' in window) {
+  const byVideo = new Map(demos.map(demo => [demo.video, demo]));
   const observer = new IntersectionObserver(entries => {
     for (const entry of entries) {
-      visibility.set(entry.target, entry.isIntersecting && entry.intersectionRatio >= 0.5);
-      updatePlayback(entry.target);
+      const demo = byVideo.get(entry.target);
+      demo.visible = entry.isIntersecting && entry.intersectionRatio >= 0.5;
+      updatePlayback(demo);
     }
   }, {threshold: [0, 0.5]});
-  clips.forEach(video => observer.observe(video));
-  document.addEventListener('visibilitychange', () => clips.forEach(updatePlayback));
-  if (reducedMotion.addEventListener) {
-    reducedMotion.addEventListener('change', () => clips.forEach(updatePlayback));
-  }
+  demos.forEach(demo => observer.observe(demo.video));
+  document.addEventListener('visibilitychange', () => demos.forEach(updatePlayback));
+  reducedMotion.addEventListener?.('change', () => demos.forEach(updatePlayback));
 }
+const filter = document.querySelector('#find-tool');
+const status = document.querySelector('#filter-status');
+const features = document.querySelector('#features');
+const cards = [...features.querySelectorAll('article[id]')];
+const searchable = cards.map(card => card.textContent.toLocaleLowerCase());
+filter.closest('.feature-filter').hidden = false;
+function filterCards() {
+  const term = filter.value.trim().toLocaleLowerCase();
+  let shown = 0;
+  cards.forEach((card, index) => {
+    card.hidden = !searchable[index].includes(term);
+    if (!card.hidden) shown++;
+  });
+  for (const section of features.querySelectorAll('.recent-tools')) {
+    section.hidden = !section.querySelector('article:not([hidden])');
+  }
+  status.textContent = term ? '找到 ' + shown + ' 項功能' : '';
+}
+filter.addEventListener('input', filterCards);
+document.addEventListener('click', event => {
+  const link = event.target.closest('a[href^="#"]');
+  if (link && filter.value && document.getElementById(link.hash.slice(1))?.closest('[hidden]')) {
+    filter.value = '';
+    filterCards();
+  }
+});
 </script>
 </body>
 </html>
