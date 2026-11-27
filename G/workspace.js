@@ -1,11 +1,11 @@
-import {mountRegionalAirways} from './regional-airways.mjs?v=217';
-import {normalizePack,readBasemapPack,removeBasemapPack,downloadBasemapPack,makeOfflineBasemap} from './offline-basemaps.mjs?v=217';
+import {mountRegionalAirways} from './regional-airways.mjs?v=218';
+import {normalizePack,readBasemapPack,removeBasemapPack,downloadBasemapPack,makeOfflineBasemap} from './offline-basemaps.mjs?v=218';
 import {ObjectSpatialIndex,simplifyDisplay,detailBucket,diffVisible} from './spatial-objects.mjs?v=191';
 import { createNavigationRuler, navigationReadout } from './navigation-ruler.mjs?v=191';
 import { placeNearbyWaypoints, viewportPaintDue } from './compact-waypoints.mjs?v=191';
 import { coordinateRows, coordinateWorkbook } from './coordinate-excel.mjs?v=191';
 import { LINE_STYLES, lineStyleOptions, installDoubleLines } from './line-appearance.mjs?v=191';
-import {openWorkspaceStorage} from './workspace-storage.mjs?v=217';
+import {openWorkspaceStorage} from './workspace-storage.mjs?v=218';
 import {labelDisplaySize,frameTask,memoAreaOffset} from './display-performance.mjs?v=191';
 import {areaSouthwest,limitAreaOffset,areaInteriorOffset} from './area-labels.mjs?v=191';
 import {stableLabelOffset,rememberLabelOffset,validAreaPlacement} from './label-stability.mjs?v=191';
@@ -15,7 +15,7 @@ import {applyLabelRotation,preserveLabelCenter,rotatedLabelEdge,labelBorderSize}
 import {nearestPoint,attachPoint,releasePoint} from './point-snap.mjs?v=191';
 import {decodeTerrainBlob,bindTouchCursor,setupIOSStorage} from './ios-pwa.mjs?v=191';
 import {actionDescription} from './action-history.mjs?v=191';
-import {printRaster} from './print-raster.mjs?v=217';
+import {printRaster} from './print-raster.mjs?v=218';
 import {uniqueLabelIds} from './label-visibility.mjs?v=191';
 import {outerVertices,transformPoints,nearestPathFraction} from './map-editing.mjs?v=191';
 import {createPressControls} from './press-controls.mjs?v=191';
@@ -34,7 +34,7 @@ const canPackageWebsite=()=>!offlineBundle&&featuresUnlocked;
 if(window.MPS_IMPORT_BUNDLE)await window.MPS_IMPORT_BUNDLE();
 import {intervalPlan,placeCursorBox,extensionEndpoint} from './workspace-interactions.mjs?v=191';
 import {planProjectImport,mergeProjectItems} from './project-merge.mjs?v=191';
-import {parseSearchPosition,searchCatalog,placeLabelBoxes,labelRank,calibrationDistance,readPrintTemplate,openBackupHistory} from './workspace-ux.mjs?v=217';
+import {parseSearchPosition,searchCatalog,placeLabelBoxes,labelRank,calibrationDistance,readPrintTemplate,openBackupHistory} from './workspace-ux.mjs?v=218';
 if(window.MPS_BUNDLE_READY)await window.MPS_BUNDLE_READY;
 const bundleNamespace=offlineBundle?'bundle:'+window.MPS_BUNDLE.id+':':/(?:^|\/)(?:G|google-workspace)(?:\/|$)/.test(location.pathname)?'google-workspace:':'';
 const workspaceStorage = await openWorkspaceStorage(error => {
@@ -1035,7 +1035,7 @@ opacityButton.onclick=()=>{const levels=[1,.75,.5,.25],value=levels.includes(sta
 $('settings-panel').querySelector('.section-body').append(opacityButton);const refreshBeforeMovementOpacity=refreshUI;refreshUI=function(){refreshBeforeMovementOpacity();paintMovementOpacity()};paintMovementOpacity();
 }
 
-if(typeof document!=='undefined'){const version=document.createElement('p');version.id='app-version';version.textContent='程式版本 v217（Google 分支）';$('settings-panel').querySelector('.section-body').append(version)}
+if(typeof document!=='undefined'){const version=document.createElement('p');version.id='app-version';version.textContent='程式版本 v218（Google 分支）';$('settings-panel').querySelector('.section-body').append(version)}
 
 // Quick navigation ruler and persistent graduated ruler are independent tools.
 if (typeof document !== 'undefined') {
@@ -2180,4 +2180,80 @@ if(typeof document!=='undefined'&&bundleNamespace==='google-workspace:'){
   }catch(error){status.textContent='找回未完成。'+error.message;}
   finally{updateButton();}
  };
+}
+
+if(typeof document!=='undefined'){
+ const workspace=$('workspace');
+ let drag=null,ignoreClickUntil=0;
+ function findItem(target){
+  const header=target.closest('summary');
+  if(!header)return null;
+  const layer=header.closest('.layer-entry');
+  if(layer?.dataset.layerId)return {node:layer,header,kind:'layer'};
+  const panel=header.parentElement;
+  return panel.parentElement===workspace?{node:panel,header,kind:'panel'}:null;
+ }
+ function clearDrag(){
+  if(!drag)return;
+  clearTimeout(drag.timer);
+  drag.item.header.classList.remove('layout-held');
+  drag.destination?.header.classList.remove('layout-drop-before','layout-drop-after');
+  if(drag.item.header.hasPointerCapture(drag.pointer))drag.item.header.releasePointerCapture(drag.pointer);
+  drag=null;
+ }
+ workspace.addEventListener('pointerdown',event=>{
+  if(!layoutEditing||layoutScope!=='workspace'||!event.isPrimary||event.button!==0||
+    event.target.closest('.layout-handles,button,input,select,a'))return;
+  const item=findItem(event.target);
+  if(!item)return;
+  clearDrag();
+  drag={item,pointer:event.pointerId,x:event.clientX,y:event.clientY,held:false};
+  drag.timer=setTimeout(()=>{
+   if(!drag)return;
+   drag.held=true;
+   item.header.classList.add('layout-held');
+   item.header.setPointerCapture(event.pointerId);
+  },400);
+ });
+ workspace.addEventListener('pointermove',event=>{
+  if(drag?.pointer!==event.pointerId)return;
+  if(!drag.held){
+   if(Math.hypot(event.clientX-drag.x,event.clientY-drag.y)>9)clearDrag();
+   return;
+  }
+  event.preventDefault();
+  drag.destination?.header.classList.remove('layout-drop-before','layout-drop-after');
+  drag.destination=null;
+  const target=document.elementFromPoint(event.clientX,event.clientY);
+  const destination=target&&findItem(target);
+  if(!destination||destination.kind!==drag.item.kind||destination.node===drag.item.node)return;
+  const bounds=destination.header.getBoundingClientRect();
+  drag.before=event.clientY<bounds.top+bounds.height/2;
+  drag.destination=destination;
+  destination.header.classList.add(drag.before?'layout-drop-before':'layout-drop-after');
+ },{passive:false});
+ workspace.addEventListener('pointerup',event=>{
+  if(drag?.pointer!==event.pointerId)return;
+  const {item,held,destination,before}=drag;
+  clearDrag();
+  if(!held)return;
+  ignoreClickUntil=performance.now()+400;
+  if(!destination)return;
+  if(item.kind==='layer'){
+   const from=state.layers.findIndex(layer=>layer.id===item.node.dataset.layerId);
+   let to=state.layers.findIndex(layer=>layer.id===destination.node.dataset.layerId)+(before?0:1);
+   if(from<to)to--;
+   if(from>=0)moveLayer(item.node.dataset.layerId,to-from);
+  }else{
+   if(before)destination.node.before(item.node);else destination.node.after(item.node);
+   persistLayout('panel');decorateLayout();
+  }
+ });
+ window.addEventListener('pointerup',clearDrag);
+ window.addEventListener('pointercancel',clearDrag);
+ workspace.addEventListener('click',event=>{
+  if(performance.now()<ignoreClickUntil&&event.target.closest('summary')){
+   event.preventDefault();event.stopImmediatePropagation();
+  }
+ },true);
 }
