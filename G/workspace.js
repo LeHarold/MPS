@@ -1,11 +1,11 @@
-import {mountRegionalAirways} from './regional-airways.mjs?v=220';
-import {normalizePack,readBasemapPack,removeBasemapPack,downloadBasemapPack,makeOfflineBasemap} from './offline-basemaps.mjs?v=220';
+import {mountRegionalAirways} from './regional-airways.mjs?v=221';
+import {normalizePack,readBasemapPack,removeBasemapPack,downloadBasemapPack,makeOfflineBasemap} from './offline-basemaps.mjs?v=221';
 import {ObjectSpatialIndex,simplifyDisplay,detailBucket,diffVisible} from './spatial-objects.mjs?v=191';
 import { createNavigationRuler, navigationReadout } from './navigation-ruler.mjs?v=191';
 import { placeNearbyWaypoints, viewportPaintDue } from './compact-waypoints.mjs?v=191';
 import { coordinateRows, coordinateWorkbook } from './coordinate-excel.mjs?v=191';
 import { LINE_STYLES, lineStyleOptions, installDoubleLines } from './line-appearance.mjs?v=191';
-import {openWorkspaceStorage} from './workspace-storage.mjs?v=220';
+import {openWorkspaceStorage} from './workspace-storage.mjs?v=221';
 import {labelDisplaySize,frameTask,memoAreaOffset} from './display-performance.mjs?v=191';
 import {areaSouthwest,limitAreaOffset,areaInteriorOffset} from './area-labels.mjs?v=191';
 import {stableLabelOffset,rememberLabelOffset,validAreaPlacement} from './label-stability.mjs?v=191';
@@ -15,7 +15,7 @@ import {applyLabelRotation,preserveLabelCenter,rotatedLabelEdge,labelBorderSize}
 import {nearestPoint,attachPoint,releasePoint} from './point-snap.mjs?v=191';
 import {decodeTerrainBlob,bindTouchCursor,setupIOSStorage} from './ios-pwa.mjs?v=191';
 import {actionDescription} from './action-history.mjs?v=191';
-import {printRaster} from './print-raster.mjs?v=220';
+import {printRaster} from './print-raster.mjs?v=221';
 import {uniqueLabelIds} from './label-visibility.mjs?v=191';
 import {outerVertices,transformPoints,nearestPathFraction} from './map-editing.mjs?v=191';
 import {createPressControls} from './press-controls.mjs?v=191';
@@ -34,7 +34,7 @@ const canPackageWebsite=()=>!offlineBundle&&featuresUnlocked;
 if(window.MPS_IMPORT_BUNDLE)await window.MPS_IMPORT_BUNDLE();
 import {intervalPlan,placeCursorBox,extensionEndpoint} from './workspace-interactions.mjs?v=191';
 import {planProjectImport,mergeProjectItems} from './project-merge.mjs?v=191';
-import {parseSearchPosition,searchCatalog,placeLabelBoxes,labelRank,calibrationDistance,readPrintTemplate,openBackupHistory} from './workspace-ux.mjs?v=220';
+import {parseSearchPosition,searchCatalog,placeLabelBoxes,labelRank,calibrationDistance,readPrintTemplate,openBackupHistory} from './workspace-ux.mjs?v=221';
 if(window.MPS_BUNDLE_READY)await window.MPS_BUNDLE_READY;
 const bundleNamespace=offlineBundle?'bundle:'+window.MPS_BUNDLE.id+':':/(?:^|\/)(?:G|google-workspace)(?:\/|$)/.test(location.pathname)?'google-workspace:':'';
 const workspaceStorage = await openWorkspaceStorage(error => {
@@ -175,7 +175,7 @@ $('route-search').oninput=renderRouteList;for(const id of ['routes-all','routes-
 function renderReferences(){referenceGroup.clearLayers();referencePaths.clear();$('reference-list').replaceChildren();for(const ref of references){const entry=document.createElement('div');entry.className='reference-entry';entry.dataset.workspaceKey='reference:'+ref.id;const label=document.createElement('label'),input=document.createElement('input');input.type='checkbox';input.checked=state.settings.referenceVisibility?.[ref.id]!==false;input.setAttribute('aria-label','顯示 '+ref.name);label.append(input,document.createTextNode(ref.name));const details=document.createElement('details'),summary=document.createElement('summary');summary.textContent='各頂點經緯度與來源';const note=document.createElement('p');note.className='reference-note';note.textContent=ref.note+' 資料日期：'+ref.date;const link=document.createElement('a');link.href=ref.source;link.textContent=ref.sourceLabel+' ↗';link.target='_blank';link.rel='noopener';details.append(summary,note,makePointsTable(ref.points,ref.pointNames?i=>ref.pointNames[i]:ref.name),link);if(ref.additionalSource){const a=document.createElement('a');a.href=ref.additionalSource;a.textContent=ref.id==='strait-median'?'立法院公開議事錄佐證 ↗':'官方基點座標表 ↗';a.target='_blank';a.rel='noopener';details.append(document.createElement('br'),a)}const copy=document.createElement('button');copy.textContent='建立可修改副本';copy.onclick=()=>{snapshot();const layer={id:uid(),name:ref.name+' 副本',visible:true,objects:[{id:uid(),name:ref.name,type:ref.type,points:clone(ref.pathPoints||ref.points),color:ref.color,description:ref.note+'\n來源：'+ref.source}]};state.layers.push(layer);state.activeLayerId=layer.id;save('已建立獨立參考圖層副本，原始參考資料不變');renderObjects();renderLayers();openPanel('layers-panel')};details.append(document.createElement('br'),copy,makeLocateButton({key:'reference:'+ref.id,name:ref.name,points:ref.pathPoints||ref.points,panel:'reference-panel'}));entry.append(label,opacityControl(ref.name,state.settings.referenceOpacity?.[ref.id]??1,value=>{state.settings.referenceOpacity||={};state.settings.referenceOpacity[ref.id]=value;applyReferenceOpacity();save()}),details);$('reference-list').append(entry);const drawRef=()=>{if(!input.checked)return;const options={pane:'referencePane',interactive:false,referenceId:ref.id,color:ref.color,weight:2,dashArray:'8 6',fillOpacity:.025,bubblingMouseEvents:false};const line=(ref.type==='polygon'?L.polygon(ref.pathPoints||ref.points,options):L.polyline(ref.pathPoints||ref.points,options)).addTo(referenceGroup).bindTooltip(ref.name);referencePaths.set(ref.id,line);ref.points.forEach((p,i)=>L.circleMarker(p,{pane:'referencePointPane',referenceId:ref.id,radius:5*pointSize(ref.name),color:ref.color,fillOpacity:1,bubblingMouseEvents:false}).addTo(referenceGroup).bindPopup(showPointPopup(ref.pointNames?.[i]||ref.name,p,ref.source)).on('click',e=>{if(tool==='tape'){L.DomEvent.stopPropagation(e);map.closePopup();pickTape(p,ref.pointNames?.[i]||ref.name)}}).on('dblclick',e=>{L.DomEvent.stopPropagation(e);if(tool==='pan')revealWorkspaceItem('reference:'+ref.id)}))};input.onchange=()=>{state.settings.referenceVisibility||={};state.settings.referenceVisibility[ref.id]=input.checked;save();renderReferences()};drawRef()}applyReferenceOpacity();updateOpacityInputs()}
 map.createPane('basePane');map.getPane('basePane').style.zIndex='200';map.getPane('basePane').style.pointerEvents='none';
 const offlineBasemapLayers=new Map();
-function setBasemap(){for(const layer of [land,street,satellite,...offlineBasemapLayers.values()])map.removeLayer(layer);const preferred=state.settings.basemap;const pack=offlineBasemapLayers.get(preferred);if(pack){pack.addTo(map);$('basemap-status').textContent='使用本機離線圖包';applyBasemapOpacity();return;}const base=navigator.onLine&&!['protomaps','sentinel2'].includes(preferred)?preferred:'vector';(base==='satellite'?satellite:base==='street'?street:land).addTo(map);$('basemap-status').textContent=base==='vector'?(['protomaps','sentinel2'].includes(preferred)?'此裝置尚無所選圖包，目前顯示離線向量':preferred==='vector'?'離線海岸線與國界':'已切換離線向量；連線後恢復慣用底圖'):base==='satellite'?'Esri 衛星／航照影像，非即時；需網路':'OpenStreetMap 街道圖；需網路';applyBasemapOpacity()}
+function setBasemap(){map.getContainer().parentElement.classList.remove('street-basemap');for(const layer of [land,street,satellite,...offlineBasemapLayers.values()])map.removeLayer(layer);const preferred=state.settings.basemap;const pack=offlineBasemapLayers.get(preferred);if(pack){pack.addTo(map);$('basemap-status').textContent='使用本機離線圖包';applyBasemapOpacity();return;}const base=navigator.onLine&&!['protomaps','sentinel2'].includes(preferred)?preferred:'vector';(base==='satellite'?satellite:base==='street'?street:land).addTo(map);map.getContainer().parentElement.classList.toggle('street-basemap',base==='street');$('basemap-status').textContent=base==='vector'?(['protomaps','sentinel2'].includes(preferred)?'此裝置尚無所選圖包，目前顯示離線向量':preferred==='vector'?'離線海岸線與國界':'已切換離線向量；連線後恢復慣用底圖'):base==='satellite'?'Esri 衛星／航照影像，非即時；需網路':'OpenStreetMap 街道圖；需網路';applyBasemapOpacity()}
 $('basemap').onchange=()=>{state.settings.basemap=$('basemap').value;setBasemap();save()};for(const layer of [street,satellite])layer.on('tileerror',()=>$('basemap-status').textContent='部分影像載入失敗，請檢查連線或切換離線向量底圖');
 function renderGrid(){grid.clearLayers();if(!state.settings.grid)return;const b=map.getBounds(),zoom=map.getZoom(),step=zoom<4?10:zoom<6?5:zoom<8?1:zoom<11?.25:.05;for(let x=Math.max(-180,Math.ceil(b.getWest()/step)*step);x<=Math.min(180,b.getEast());x+=step)L.polyline([[-85,x],[85,x]],{color:'#8ea7b5',weight:1,opacity:.15,interactive:false}).addTo(grid);for(let y=Math.max(-85,Math.ceil(b.getSouth()/step)*step);y<=Math.min(85,b.getNorth());y+=step)L.polyline([[y,-180],[y,180]],{color:'#8ea7b5',weight:1,opacity:.15,interactive:false}).addTo(grid)}
 $('grid').onchange=()=>{state.settings.grid=$('grid').checked;renderGrid();save()};$('taiwan').onclick=()=>map.setView([24,121],6);$('asia').onclick=()=>map.fitBounds([[2,67],[52,150]]);
@@ -1076,7 +1076,7 @@ opacityButton.onclick=()=>{const levels=[1,.75,.5,.25],value=levels.includes(sta
 $('settings-panel').querySelector('.section-body').append(opacityButton);const refreshBeforeMovementOpacity=refreshUI;refreshUI=function(){refreshBeforeMovementOpacity();paintMovementOpacity()};paintMovementOpacity();
 }
 
-if(typeof document!=='undefined'){const version=document.createElement('p');version.id='app-version';version.textContent='程式版本 v220（Google 分支）';$('settings-panel').querySelector('.section-body').append(version)}
+if(typeof document!=='undefined'){const version=document.createElement('p');version.id='app-version';version.textContent='程式版本 v221（Google 分支）';$('settings-panel').querySelector('.section-body').append(version)}
 
 // Quick navigation ruler and persistent graduated ruler are independent tools.
 if (typeof document !== 'undefined') {
