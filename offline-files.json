@@ -68,5 +68,10 @@
   "vendor/protomaps-leaflet.js",
   "vendor/pmtiles.LICENSE",
   "vendor/protomaps-leaflet.LICENSE",
-  "google-workspace.mjs"
+  "google-workspace.mjs",
+  "regional-airways.mjs",
+  "regional-japan.json",
+  "regional-philippines.json",
+  "regional-china.json",
+  "regional-airways-COPYING.txt"
 ]
