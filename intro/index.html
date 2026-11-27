@@ -19,19 +19,48 @@ h1,h2,h3,p{margin-top:0}h1{font-size:clamp(2.5rem,5.4vw,4.8rem);line-height:1.06
 .demo{border:1px solid #36594e;border-radius:17px;overflow:hidden;background:#112a26;color:white;box-shadow:0 18px 40px #17322420;min-width:0}.demo-bar{display:flex;flex-wrap:wrap;align-items:center;gap:8px;padding:12px}.demo-bar strong{margin-right:auto}.demo button{border:1px solid #80958a;border-radius:7px;background:#1d4238;color:white;padding:5px 10px;min-height:40px}.demo button:disabled{opacity:.5;cursor:default}.demo p{color:#edf5ec;margin:0;padding:10px 14px;min-height:72px;font-size:.93rem}
 .features{border-top:1px solid var(--line);padding-block:56px}.grid{display:grid;grid-template-columns:repeat(3,1fr);gap:22px}.grid article{padding:20px 0 0;border-top:3px solid #416454}.grid p{margin-bottom:0}.faq{padding-block:38px 70px;max-width:760px}.faq details{border-bottom:1px solid var(--line);padding:14px 0}.faq summary{font-weight:750;cursor:pointer}.faq p{margin:10px 0 0}.footer{background:var(--ink);color:white}.footer .wrap{display:flex;gap:18px;justify-content:space-between;flex-wrap:wrap;padding-block:24px}
 @media(max-width:760px){.hero,.grid{grid-template-columns:1fr}.hero{align-items:start}nav a:not(.brand):not(.button){display:none}.features{padding-block:38px}}
-.guide{display:block;padding-block:clamp(36px,7vw,74px)}.guide .lede{max-width:44ch}.live{margin-bottom:48px}.live p{min-height:0}.live iframe{display:block;width:100%;height:clamp(540px,72vh,840px);border:0;background:#101e28}.live iframe[hidden]{display:none}.live button{background:var(--green);border-color:var(--green);color:var(--ink);font-weight:750}.index{list-style:none;display:flex;flex-wrap:wrap;gap:7px;margin:0 0 28px;padding:0}.index a{display:block;border:1px solid var(--line);border-radius:7px;padding:4px 9px;text-decoration:none}.index a:hover{background:#e7ede0}.grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:30px}.tool-label{display:flex;flex-wrap:wrap;align-items:center;gap:6px;margin-bottom:10px;font-size:.9rem;font-weight:750}.symbol{display:grid;place-items:center;min-width:25px;height:25px;padding:3px;background:#112a26;color:white;border-radius:4px}.symbol svg{width:19px;height:19px}.sources{margin-top:24px}@media(max-width:760px){.grid{grid-template-columns:1fr}.live iframe{height:640px}}
+.guide{display:block;padding-block:clamp(36px,7vw,74px)}.guide .lede{max-width:44ch}.live{margin-bottom:48px}.live p{min-height:0}.live iframe{display:block;width:100%;height:clamp(540px,72vh,840px);border:0;background:#101e28}.live button{background:var(--green);border-color:var(--green);color:var(--ink);font-weight:750}.index{list-style:none;display:flex;flex-wrap:wrap;gap:7px;margin:0 0 28px;padding:0}.index a{display:block;border:1px solid var(--line);border-radius:7px;padding:4px 9px;text-decoration:none}.index a:hover{background:#e7ede0}.grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:30px}.tool-label{display:flex;flex-wrap:wrap;align-items:center;gap:6px;margin-bottom:10px;font-size:.9rem;font-weight:750}.symbol{display:grid;place-items:center;min-width:25px;height:25px;padding:3px;background:#112a26;color:white;border-radius:4px}.symbol svg{width:19px;height:19px}.sources{margin-top:24px}@media(max-width:760px){.grid{grid-template-columns:1fr}.live iframe{height:640px}}
+
+html{scroll-behavior:smooth}.guide{position:relative;isolation:isolate;padding-bottom:48px}.guide::after{content:"";position:absolute;z-index:-1;inset:5% 0 0 52%;background:repeating-radial-gradient(ellipse at 75% 52%,transparent 0 13px,#55796024 14px 15px,transparent 16px 27px);mask-image:linear-gradient(90deg,transparent,#000 60%);pointer-events:none}.live{box-shadow:0 20px 50px #112a2622}.live iframe{height:clamp(460px,70svh,760px)}.tool-label{align-items:center}.symbol{display:inline-grid;place-content:center;place-items:center;width:29px;height:29px;flex:none;padding:0;font:700 18px/1 system-ui,sans-serif;text-align:center}.symbol svg{display:block;width:20px;height:20px;margin:auto;overflow:visible}.grid article{transition:border-color .2s,background .2s;padding-inline:14px;padding-bottom:14px;border-radius:0 0 10px 10px}.grid article:target{background:#e5efdc;border-color:#477840}.index a,.button,.lesson-controls button,.lesson-nav button{transition:background .2s,color .2s,border-color .2s}.tutorial{padding-block:20px 42px}.lesson-nav,.lesson-controls{display:flex;flex-wrap:wrap;gap:8px}.lesson-nav{margin-bottom:12px}.lesson-nav button,.lesson-controls button{padding:7px 12px;border-radius:7px;border:1px solid #799085;background:#fff;color:var(--ink);min-height:44px}.lesson-nav button[aria-pressed=true],#step-next{background:#173c31;color:white;border-color:#173c31}.lesson-controls button:disabled{opacity:.48;cursor:default}.lesson-layout{display:grid;grid-template-columns:minmax(0,1.08fr) minmax(0,.92fr);border:1px solid var(--line);border-radius:14px;overflow:hidden;background:#fff}.lesson-copy{padding:clamp(18px,3vw,34px);display:flex;flex-direction:column;align-items:flex-start}.lesson-count{margin:0 0 8px;font-variant-numeric:tabular-nums}.lesson-controls{margin-top:auto}.practice{margin-top:16px}.lesson-note{margin-top:8px;font-size:.9rem}.illustration{background:#e8eddb;min-width:0}.illustration-bar{display:flex;gap:16px;align-items:center;background:#132d27;color:white;padding:8px 14px}.illustration-bar span{font-weight:900;letter-spacing:.1em}.illustration-bar strong{color:var(--green)}.scene{height:260px;position:relative;overflow:hidden;background:repeating-linear-gradient(90deg,#657d651c 0 1px,transparent 1px 27px),repeating-linear-gradient(0deg,#657d651c 0 1px,transparent 1px 27px),#e9efdc}.river,.park,.road,.scene-shape,.dot,.scene-result{position:absolute}.river{width:35%;height:170%;left:-12%;top:-24%;background:#b7dadd;transform:rotate(-24deg);border-radius:40%}.park{background:#c9ddb8;width:35%;height:45%;right:6%;top:14%;border-radius:20px;transform:rotate(10deg)}.road{height:5px;background:#fff;width:120%;transform-origin:left}.road-a{top:65%;left:0;transform:rotate(-15deg)}.road-b{top:32%;left:5%;transform:rotate(12deg)}.road-c{top:0;left:55%;transform:rotate(80deg)}.dot{display:none;place-items:center;margin:-13px;width:26px;height:26px;border-radius:50%;background:#125745;color:white;font:700 13px/1 system-ui;border:2px solid white;z-index:2}.dot.a{left:26%;top:32%}.dot.b{left:74%;top:32%}.dot.c{left:56%;top:71%}.scene[data-points="1"] .a,.scene[data-points="2"] .a,.scene[data-points="2"] .b,.scene[data-points="3"] .dot{display:grid}.scene-shape{inset:0;pointer-events:none}.scene[data-shape="line"] .scene-shape{inset:auto;left:26%;top:32%;width:48%;height:4px;background:#166c56;transform-origin:left;animation:draw-line .55s ease-out both}.scene[data-shape="area"] .scene-shape{background:#21846a70;clip-path:polygon(26% 32%,74% 32%,56% 71%);animation:scene-fade .45s ease-out both}.scene-result{bottom:12px;left:12px;right:12px;background:#133b31;color:white;padding:7px 10px;border-radius:6px;font-size:.9rem;font-weight:700}.scene-result:empty{display:none}.scene[data-shape="layers"] .scene-shape{inset:8% 15%;border-radius:10px;border:3px solid #34785f;background:#73b38d88;box-shadow:8px 8px #fff9,14px 14px #7ba68b88;animation:scene-fade .45s ease-out both}@keyframes scene-fade{from{opacity:0}to{opacity:1}}@keyframes draw-line{from{transform:scaleX(0)}to{transform:scaleX(1)}}@media(max-width:760px){.lesson-layout{grid-template-columns:1fr}.scene{height:195px}.live iframe{height:560px}.guide::after{left:42%;opacity:.6}}@media(prefers-reduced-motion:reduce){html{scroll-behavior:auto}*,*::after{animation:none!important;transition:none!important}}
+
 </style>
 </head>
 <body>
-<header><nav class="wrap" aria-label="主選單"><a class="brand" href="./"><img src="../icon.svg" alt="">MPS</a><a href="#features">功能</a><a href="#demo">互動地圖</a><a href="#faq">常見問題</a><a class="button" href="../">開啟 MPS</a></nav></header>
+<header><nav class="wrap" aria-label="主選單"><a class="brand" href="./"><img src="../icon.svg" alt="">MPS</a><a href="#features">功能</a><a href="#tutorial">操作教學</a><a href="#demo">互動地圖</a><a href="#faq">常見問題</a><a class="button" href="../">開啟 MPS</a></nav></header>
 <main class="wrap">
 <section class="hero guide" aria-labelledby="headline">
-<div><span class="kicker">MPS 操作指南</span><h1 id="headline">從座標定位到<br>完成一張地圖</h1><p class="lede">找到你要用的工具，按步驟操作，再在 MPS 工作空間實際練習。</p><div class="actions"><a class="button" href="#demo">操作實際工具</a><a class="button secondary" href="#features">查看功能指南</a></div></div>
+<div><span class="kicker">MPS 操作指南</span><h1 id="headline">從座標定位到<br>完成一張地圖</h1><p class="lede">找到你要用的工具，按步驟操作，再在 MPS 工作空間實際練習。</p><div class="actions"><a class="button" href="#demo">操作實際工具</a><a class="button secondary" href="#tutorial">跟著動畫操作</a></div></div>
 </section>
 <section class="demo live" id="demo" aria-labelledby="live-title">
-<div class="demo-bar"><strong id="live-title">MPS 正式工作空間</strong><button id="open-workspace" type="button" aria-controls="workspace-frame" aria-expanded="false">在本頁開啟</button><a class="button" href="../" target="_blank" rel="noopener">在新分頁開啟</a></div>
-<p>這裡會載入正式 MPS。首次使用請依畫面提示解鎖。這裡的操作會使用同一瀏覽器的專案資料，練習前可先在「檔案與備份」建立空白專案。</p>
-<iframe id="workspace-frame" title="MPS 正式工作空間" hidden></iframe>
+<div class="demo-bar"><strong id="live-title">MPS 正式工作空間</strong><a class="button" href="../" target="_blank" rel="noopener">在新分頁開啟</a></div>
+<p>下方已開啟正式 MPS。首次使用請依畫面提示解鎖。這裡的操作會使用同一瀏覽器的專案資料，練習前可先在「檔案與備份」建立空白專案。</p>
+<iframe id="workspace-frame" src="../" title="MPS 正式工作空間"></iframe>
+</section>
+<section id="tutorial" class="tutorial" aria-labelledby="tutorial-title">
+<h2 id="tutorial-title">跟著操作</h2>
+<div class="lesson-nav" aria-label="選擇教學">
+<button type="button" data-lesson="0" aria-pressed="true">兩點測距</button>
+<button type="button" data-lesson="1" aria-pressed="false">繪製區域</button>
+<button type="button" data-lesson="2" aria-pressed="false">圖層與備份</button>
+</div>
+<div class="lesson-layout">
+<div class="illustration" aria-hidden="true">
+<div class="illustration-bar"><span>MPS</span><strong id="scene-tool">鐵捲尺</strong></div>
+<div class="scene">
+<div class="river"></div><div class="park"></div><div class="road road-a"></div><div class="road road-b"></div><div class="road road-c"></div>
+<div id="shape" class="scene-shape"></div>
+<i class="dot a">A</i><i class="dot b">B</i><i class="dot c">C</i>
+<div id="scene-result" class="scene-result"></div>
+</div>
+</div>
+<div class="lesson-copy">
+<p id="lesson-count" class="lesson-count">步驟 1 / 4</p>
+<div id="lesson-step" aria-live="polite" aria-atomic="true"><h3 id="step-title">選取鐵捲尺</h3><p id="step-detail">在正式工作空間的上方工具列選鐵捲尺，地圖會等待你指定起點。</p></div>
+<div class="lesson-controls"><button type="button" id="step-back" disabled>上一步</button><button type="button" id="step-next">下一步</button><button type="button" id="step-play">播放動畫</button></div>
+<a class="practice" href="#demo">回到正式工作空間練習</a>
+</div>
+</div>
+<p class="lesson-note">教學動畫使用示意地圖。上方正式工作空間可實際操作。</p>
 </section>
 <section id="features" class="features" aria-labelledby="features-title"><h2 id="features-title">功能與操作步驟</h2>
 <ul class="index"><li><a href="#view">平移、縮放與選取</a></li><li><a href="#search">搜尋與座標定位</a></li><li><a href="#measure">鐵捲尺與距離鎖定</a></li><li><a href="#instruments">直尺、量角器與圓規</a></li><li><a href="#draw">標記、線段、區域與自由繪圖</a></li><li><a href="#edit">物件修訂與精確座標</a></li><li><a href="#layers">新增、顯示與定位圖層</a></li><li><a href="#references">航路、航點與參考圖層</a></li><li><a href="#basemap">底圖、格線與標籤</a></li><li><a href="#history">復原、重做與取消</a></li><li><a href="#backup">KML 與專案備份</a></li><li><a href="#print">列印與 PDF</a></li><li><a href="#offline">安裝與離線底圖</a></li></ul>
@@ -57,15 +86,63 @@ h1,h2,h3,p{margin-top:0}h1{font-size:clamp(2.5rem,5.4vw,4.8rem);line-height:1.06
 </main>
 <footer class="footer"><div class="wrap"><strong>MPS 地圖工作空間</strong><a href="https://github.com/LeHarold/MPS">GitHub 原始碼</a></div></footer>
 <script>
-const openWorkspace = document.getElementById('open-workspace');
-const workspaceFrame = document.getElementById('workspace-frame');
-openWorkspace.addEventListener('click', () => {
-  workspaceFrame.src = '../';
-  workspaceFrame.hidden = false;
-  openWorkspace.setAttribute('aria-expanded', 'true');
-  openWorkspace.textContent = '已開啟工作空間';
-  openWorkspace.disabled = true;
+const lessons = [[["選取鐵捲尺","在正式工作空間的上方工具列選鐵捲尺，地圖會等待你指定起點。",0,"",""],["放下起點 A","點一下地圖上的起點。需要精準對齊時，可將游標移到已顯示的標記附近。",1,"","已選擇起點 A"],["選取終點 B","點第二個位置，MPS 會在兩點之間畫出測距線，並標示直線距離。",2,"line","A 至 B · 直線距離"],["修訂或鎖定距離","點地圖上的距離標籤，輸入需要的長度後啟用鎖定。起點保持固定，終點沿原方位調整。",2,"line","距離標籤 · 開啟詳細修訂"]],[["選取繪製區域","先在「我的圖層」指定目前編輯圖層，再選上方的「繪製區域」。",0,"",""],["依序放下頂點","沿外框依序點 A、B、C。若點錯，可先復原上一步，再補上正確頂點。",3,"","已選擇三個頂點"],["完成並命名","點完成或按 Enter 封閉區域。切回平移／選取，點區域並在詳細資料修改名稱、顏色與備註。",3,"area","區域已建立 · 可修改名稱與顏色"]],[["建立練習圖層","展開「我的圖層」，按「新圖層」並命名，例如「測距練習」。指定它為目前編輯圖層，再新增標繪。",0,"layers","我的圖層 / 測距練習"],["檢查顯示範圍","勾選圖層可切換可見性。選取該層後點「定位圖層」，地圖會移到它涵蓋的範圍。",2,"layers","定位圖層 · 查看全部標繪"],["下載完整專案","點工具列的磁碟圖示，開啟「備份與還原」並下載專案 JSON。只需交換目前圖層時，可從側欄匯出 KML。",2,"layers","備份與還原 · 專案 JSON"]]];
+const byId = id => document.getElementById(id);
+const choices = [...document.querySelectorAll('[data-lesson]')];
+const scene = document.querySelector('.scene');
+const back = byId('step-back');
+const next = byId('step-next');
+const play = byId('step-play');
+let activeLesson = 0;
+let step = 0;
+let timer = null;
+
+function render() {
+  const [title, detail, points, shape, result] = lessons[activeLesson][step];
+  byId('step-title').textContent = title;
+  byId('step-detail').textContent = detail;
+  byId('lesson-count').textContent = '步驟 ' + (step + 1) + ' / ' + lessons[activeLesson].length;
+  byId('scene-tool').textContent = choices[activeLesson].textContent;
+  byId('scene-result').textContent = result;
+  scene.dataset.points = points;
+  scene.dataset.shape = shape;
+  back.disabled = step === 0;
+  next.disabled = step === lessons[activeLesson].length - 1;
+}
+function stop() {
+  clearInterval(timer);
+  timer = null;
+  play.textContent = '播放動畫';
+}
+function move(direction) {
+  stop();
+  step += direction;
+  render();
+}
+choices.forEach((button, index) => button.addEventListener('click', () => {
+  stop();
+  activeLesson = index;
+  step = 0;
+  for (const choice of choices) choice.setAttribute('aria-pressed', String(choice === button));
+  render();
+}));
+back.addEventListener('click', () => move(-1));
+next.addEventListener('click', () => move(1));
+play.addEventListener('click', () => {
+  if (timer !== null) {
+    stop();
+    return;
+  }
+  step = 0;
+  render();
+  play.textContent = '暫停播放';
+  timer = setInterval(() => {
+    step++;
+    render();
+    if (next.disabled) stop();
+  }, 3500);
 });
+render();
 </script>
 </body>
 </html>
