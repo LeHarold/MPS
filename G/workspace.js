@@ -1,11 +1,11 @@
-import {mountRegionalAirways} from './regional-airways.mjs?v=214';
-import {normalizePack,readBasemapPack,removeBasemapPack,downloadBasemapPack,makeOfflineBasemap} from './offline-basemaps.mjs?v=214';
+import {mountRegionalAirways} from './regional-airways.mjs?v=215';
+import {normalizePack,readBasemapPack,removeBasemapPack,downloadBasemapPack,makeOfflineBasemap} from './offline-basemaps.mjs?v=215';
 import {ObjectSpatialIndex,simplifyDisplay,detailBucket,diffVisible} from './spatial-objects.mjs?v=191';
 import { createNavigationRuler, navigationReadout } from './navigation-ruler.mjs?v=191';
 import { placeNearbyWaypoints, viewportPaintDue } from './compact-waypoints.mjs?v=191';
 import { coordinateRows, coordinateWorkbook } from './coordinate-excel.mjs?v=191';
 import { LINE_STYLES, lineStyleOptions, installDoubleLines } from './line-appearance.mjs?v=191';
-import {openWorkspaceStorage} from './workspace-storage.mjs?v=214';
+import {openWorkspaceStorage} from './workspace-storage.mjs?v=215';
 import {labelDisplaySize,frameTask,memoAreaOffset} from './display-performance.mjs?v=191';
 import {areaSouthwest,limitAreaOffset,areaInteriorOffset} from './area-labels.mjs?v=191';
 import {stableLabelOffset,rememberLabelOffset,validAreaPlacement} from './label-stability.mjs?v=191';
@@ -15,7 +15,7 @@ import {applyLabelRotation,preserveLabelCenter,rotatedLabelEdge,labelBorderSize}
 import {nearestPoint,attachPoint,releasePoint} from './point-snap.mjs?v=191';
 import {decodeTerrainBlob,bindTouchCursor,setupIOSStorage} from './ios-pwa.mjs?v=191';
 import {actionDescription} from './action-history.mjs?v=191';
-import {printRaster} from './print-raster.mjs?v=214';
+import {printRaster} from './print-raster.mjs?v=215';
 import {uniqueLabelIds} from './label-visibility.mjs?v=191';
 import {outerVertices,transformPoints,nearestPathFraction} from './map-editing.mjs?v=191';
 import {createPressControls} from './press-controls.mjs?v=191';
@@ -34,7 +34,7 @@ const canPackageWebsite=()=>!offlineBundle&&featuresUnlocked;
 if(window.MPS_IMPORT_BUNDLE)await window.MPS_IMPORT_BUNDLE();
 import {intervalPlan,placeCursorBox,extensionEndpoint} from './workspace-interactions.mjs?v=191';
 import {planProjectImport,mergeProjectItems} from './project-merge.mjs?v=191';
-import {parseSearchPosition,searchCatalog,placeLabelBoxes,labelRank,calibrationDistance,readPrintTemplate,openBackupHistory} from './workspace-ux.mjs?v=214';
+import {parseSearchPosition,searchCatalog,placeLabelBoxes,labelRank,calibrationDistance,readPrintTemplate,openBackupHistory} from './workspace-ux.mjs?v=215';
 if(window.MPS_BUNDLE_READY)await window.MPS_BUNDLE_READY;
 const bundleNamespace=offlineBundle?'bundle:'+window.MPS_BUNDLE.id+':':/(?:^|\/)(?:G|google-workspace)(?:\/|$)/.test(location.pathname)?'google-workspace:':'';
 const workspaceStorage = await openWorkspaceStorage(error => {
@@ -1000,7 +1000,7 @@ opacityButton.onclick=()=>{const levels=[1,.75,.5,.25],value=levels.includes(sta
 $('settings-panel').querySelector('.section-body').append(opacityButton);const refreshBeforeMovementOpacity=refreshUI;refreshUI=function(){refreshBeforeMovementOpacity();paintMovementOpacity()};paintMovementOpacity();
 }
 
-if(typeof document!=='undefined'){const version=document.createElement('p');version.id='app-version';version.textContent='程式版本 v214（Google 分支）';$('settings-panel').querySelector('.section-body').append(version)}
+if(typeof document!=='undefined'){const version=document.createElement('p');version.id='app-version';version.textContent='程式版本 v215（Google 分支）';$('settings-panel').querySelector('.section-body').append(version)}
 
 // Quick navigation ruler and persistent graduated ruler are independent tools.
 if (typeof document !== 'undefined') {
@@ -2056,3 +2056,68 @@ if(typeof document!=='undefined'&&!offlineBundle){
 }
 
 if(typeof document!=='undefined')mountRegionalAirways({L,map,mount:$('routes-panel'),getSettings:()=>state.settings,save,formatPair:pair});
+
+if(typeof document!=='undefined'&&bundleNamespace==='google-workspace:'){
+ const recovery=document.createElement('details');
+ recovery.innerHTML='<summary>找回舊版圖層</summary><p>從此瀏覽器的舊版 MPS 或本機備份選擇圖層。找回的圖層會加入目前工作區。</p><label>資料來源<select></select></label><div class="recovery-layers"></div><button type="button" disabled>找回選取圖層</button><p role="status"></p>';
+ $('backup-version-list').before(recovery);
+ const source=recovery.querySelector('select'),list=recovery.querySelector('.recovery-layers');
+ const apply=recovery.querySelector('button'),status=recovery.querySelector('[role=status]');
+ let records=[];
+ function showLayers(){
+  list.replaceChildren();
+  const selected=records[Number(source.value)];
+  if(!selected){apply.disabled=true;return;}
+  for(const layer of selected.project.layers){
+   const label=document.createElement('label'),check=document.createElement('input');
+   check.type='checkbox';check.value=layer.id;check.checked=layer.objects.length>0;
+   check.onchange=()=>{apply.disabled=!list.querySelector(':checked');};
+   label.append(check,document.createTextNode(layer.name+'（'+layer.objects.length+' 個物件）'));
+   list.append(label);
+  }
+  apply.disabled=!list.querySelector(':checked');
+ }
+ async function load(){
+  status.textContent='尋找本機舊版資料…';
+  source.replaceChildren();list.replaceChildren();apply.disabled=true;records=[];
+  const legacy=await openWorkspaceStorage(()=>{},'',{readOnly:true});
+  const add=(name,data)=>{
+   try{const project=validateProject(data);if(project.layers.length)records.push({name,project});}catch{}
+  };
+  try{const data=JSON.parse(legacy.getItem('map-workspace-project-v2'));if(data)add('舊版 MPS 最後儲存的工作區',data);}catch{}
+  for(const namespace of ['',bundleNamespace]){
+   try{
+    const store=namespace?backupHistory:await openBackupHistory('');
+    for(const record of await store?.list()||[]){
+     add((namespace?'Google 版備份':'舊版備份')+' · '+record.name+' · '+backupDate(record.createdAt),record.state);
+    }
+   }catch{}
+  }
+  for(const [index,record] of records.entries())source.add(new Option(record.name,String(index)));
+  status.textContent=records.length?'選取要找回的圖層。':'此瀏覽器找不到舊版工作區或本機備份。可從「從 JSON 還原」載入外部備份。';
+  showLayers();
+ }
+ recovery.addEventListener('toggle',()=>{if(recovery.open)load().catch(e=>{status.textContent=e.message;});});
+ source.onchange=showLayers;
+ apply.onclick=async()=>{
+  const selected=records[Number(source.value)];
+  if(!selected)return;
+  const chosen=new Set([...list.querySelectorAll(':checked')].map(input=>input.value));
+  apply.disabled=true;
+  try{
+   const base=state;
+   const incoming={...selected.project,layers:selected.project.layers.filter(layer=>chosen.has(layer.id)),settings:{},instruments:{}};
+   const plan=planProjectImport(base,incoming);
+   const keys=plan.filter(item=>item.status!=='same'&&(item.kind==='object'||item.kind==='layer'&&item.status==='new')).map(item=>item.id);
+   if(!keys.length){status.textContent='選取的圖層和物件已存在於目前工作區。';return;}
+   if(!backupHistory)throw Error('本機備份空間無法使用，請先匯出 JSON。');
+   await createBackupVersion('找回圖層前自動保護');
+   if(state!==base)throw Error('目前工作區已變更，請重新選擇資料來源。');
+   const result=mergeProjectItems(state,incoming,keys,uid);
+   snapshot();state=validateProject(result.project);refreshUI();restoreLayout();save();
+   status.textContent='已找回 '+result.stats.layers+' 個新圖層、'+result.stats.objects+' 個物件。原有物件已保留。';
+   await renderBackupVersions();
+  }catch(error){status.textContent='找回未完成。'+error.message;}
+  finally{apply.disabled=!list.querySelector(':checked');}
+ };
+}

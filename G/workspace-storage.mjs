@@ -25,7 +25,7 @@ function openDatabase() {
   });
 }
 
-export async function openWorkspaceStorage(onSaveError = () => {}, namespace = "") {
+export async function openWorkspaceStorage(onSaveError = () => {}, namespace = "", {readOnly=false} = {}) {
   const values = new Map();
   const timestamps = new Map();
   for (const key of DATA_KEYS) {
@@ -72,11 +72,12 @@ export async function openWorkspaceStorage(onSaveError = () => {}, namespace = "
   }
 
   for (const [key, value] of values) {
-    if (!existingBackups.has(key)) writeBackup(key, value, false)?.catch(() => {});
+    if (!readOnly&&!existingBackups.has(key)) writeBackup(key, value, false)?.catch(() => {});
   }
   return {
     getItem(key) { return values.get(key) ?? null; },
     setItem(key, value) {
+      if(readOnly)throw Error('此工作區以唯讀方式開啟');
       values.set(key, value);
       const savedAt=Math.max(Date.now(),(timestamps.get(key)||0)+1);
       timestamps.set(key,savedAt);
