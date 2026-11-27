@@ -2,8 +2,15 @@ const CACHE='map-workspace-v210',FILES=["offline-basemaps.mjs?v=210","vendor/pmt
 self.addEventListener('install',event=>event.waitUntil(caches.open(CACHE).then(cache=>cache.addAll(FILES)).then(()=>self.skipWaiting())));
 self.addEventListener('activate',event=>event.waitUntil(self.clients.claim()));
 self.addEventListener('message',event=>{if(event.data?.type==='MPS_CACHE_STATUS')event.ports?.[0]?.postMessage({cache:CACHE})});
-function normalFetch(event){const request=event.request,url=new URL(request.url);if(request.method!=='GET'||url.origin!==location.origin)return;event.respondWith((async()=>{const cache=await caches.open(CACHE);if(request.mode==='navigate'){const home=new URL(self.registration.scope),shell=url.pathname===home.pathname||url.pathname===new URL('index.html',home).pathname,key=shell?'index.html':request;try{const response=await fetch(request);if(!response.ok)throw Error('navigation unavailable');try{await cache.put(key,response.clone())}catch{}return response}catch{return await cache.match(key)||await caches.match(key)}}const cached=await cache.match(request)||await caches.match(request);if(cached)return cached;try{const response=await fetch(request);if(response.ok)try{await cache.put(request,response.clone())}catch{}return response}catch(error){const fallback=await cache.match(request,{ignoreSearch:true});if(fallback)return fallback;throw error}})())}
-self.addEventListener('fetch',event=>{const request=event.request,url=new URL(request.url);event.respondWith(handleOfflineTest(event,request,url));});
+function normalFetch(event){const request=event.request,url=new URL(request.url);if(request.method!=='GET'||url.origin!==location.origin)return;event.respondWith((async()=>{const cache=await caches.open(CACHE);if(request.mode==='navigate'){const home=new URL(self.registration.scope),shell=url.pathname===home.pathname||url.pathname===new URL('index.html',home).pathname,key=shell?'index.html':request;try{const response=await fetch(request);if(response.type==='opaqueredirect')return response;if(!response.ok)throw Error('navigation unavailable');try{await cache.put(key,response.clone())}catch{}return response}catch{return await cache.match(key)||await caches.match(key)}}const cached=await cache.match(request)||await caches.match(request);if(cached)return cached;try{const response=await fetch(request);if(response.ok)try{await cache.put(request,response.clone())}catch{}return response}catch(error){const fallback=await cache.match(request,{ignoreSearch:true});if(fallback)return fallback;throw error}})())}
+self.addEventListener('fetch',event=>{
+ const request=event.request,url=new URL(request.url);
+ const scope=new URL(self.registration.scope);
+ // Let browser navigation follow the native Pages redirect for child app directories.
+ if(request.mode==='navigate'&&url.origin===scope.origin&&
+    ['G','google-workspace'].some(name=>url.pathname===new URL(name,scope).pathname))return;
+ event.respondWith(handleOfflineTest(event,request,url));
+});
 async function handleOfflineTest(event,request,url){
  const route=new URL('__offline-basemap/',self.registration.scope);
  if(request.method==='GET'&&url.origin===route.origin&&url.pathname.startsWith(route.pathname)){
