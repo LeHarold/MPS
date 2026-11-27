@@ -283,9 +283,13 @@ body.history-modal-open{overflow:hidden;overscroll-behavior:none}
  #regional-airways fieldset p { grid-column:1/-1; }
  .regional-route-name,.regional-point-name { color:var(--text);background:var(--panel);border:1px solid var(--line);box-shadow:none;font-size:11px;pointer-events:none; }
  .regional-route-name::before { display:none; }
- .workspace-layout-editing #workspace > details > summary,
- .workspace-layout-editing #workspace .layer-entry summary { touch-action:none;user-select:none;cursor:grab; }
- #workspace summary.layout-held { cursor:grabbing;outline:2px solid var(--mint);outline-offset:-2px; }
- #workspace summary.layout-drop-before { box-shadow:inset 0 3px var(--mint); }
- #workspace summary.layout-drop-after { box-shadow:inset 0 -3px var(--mint); }
+ #workspace summary,.toolbar { -webkit-touch-callout:none; }
+ #workspace summary,.toolbar > label,.toolbar > button,.toolbar .layout-group-menu > button { user-select:none; }
+ .layout-held { cursor:grabbing!important;outline:2px solid var(--mint);outline-offset:-2px; }
+ .layout-drop-before { box-shadow:inset 0 3px var(--mint); }
+ .layout-drop-after { box-shadow:inset 0 -3px var(--mint); }
+ body:not(.toolbar-layout-editing) .toolbar > .layout-drop-before { box-shadow:inset 3px 0 var(--mint); }
+ body:not(.toolbar-layout-editing) .toolbar > .layout-drop-after { box-shadow:inset -3px 0 var(--mint); }
 }
+
+.workspace-sort-hint{margin:0;padding:0 12px 8px;color:var(--muted);font-size:11px}
