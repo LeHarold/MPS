@@ -143,7 +143,8 @@ html{-webkit-text-size-adjust:100%}body>header{-webkit-backdrop-filter:blur(14px
 <div class="feedback-fields"><label for="feedback-category">類型<select id="feedback-category" name="類型" required><option value="功能建議">功能建議</option><option value="問題回報">問題回報</option><option value="其他">其他</option></select></label>
 <label for="feedback-email">回覆信箱（選填）<input type="email" name="email" id="feedback-email" autocomplete="email" maxlength="254"></label></div>
 <label for="feedback-message">回饋內容<textarea name="回饋內容" id="feedback-message" rows="6" maxlength="4000" required></textarea></label>
-<p class="feedback-privacy">送出後會前往 FormSubmit。若出現驗證，請依畫面提示完成。成功後會回到本頁。</p>
+<p class="feedback-privacy">回饋會透過 FormSubmit 寄送。</p>
+<p id="feedback-error" role="alert" hidden></p>
 <button class="button" type="submit">送出回饋</button>
 <a class="screen-link" id="feedback-mail" href="mailto:trihpii11@gmail.com?subject=MPS%20%E7%B6%B2%E7%AB%99%E5%9B%9E%E9%A5%8B">也可用電子郵件寄送</a>
 </form></section>
@@ -424,6 +425,41 @@ window.addEventListener('pageshow', scheduleProgress);
 window.addEventListener('orientationchange', scheduleProgress);
 if (window.visualViewport) {
   window.visualViewport.addEventListener('resize', scheduleProgress);
+}
+const feedbackForm = document.querySelector('.feedback-form');
+const feedbackResult = document.getElementById('feedback-result');
+const feedbackError = document.getElementById('feedback-error');
+if (window.fetch && feedbackForm) {
+  feedbackForm.addEventListener('submit', async (event) => {
+    event.preventDefault();
+    const button = feedbackForm.querySelector('button[type="submit"]');
+    if (button.disabled) return;
+    const payload = new URLSearchParams(new FormData(feedbackForm));
+    payload.delete('_next');
+    feedbackError.hidden = true;
+    feedbackResult.hidden = true;
+    button.disabled = true;
+    button.textContent = '送出中…';
+    try {
+      const response = await fetch(feedbackForm.action.replace('formsubmit.co/', 'formsubmit.co/ajax/'), {
+        method: 'POST',
+        headers: { Accept: 'application/json', 'Content-Type': 'application/json' },
+        body: JSON.stringify(Object.fromEntries(payload))
+      });
+      const result = await response.json();
+      if (!response.ok || ![true, 'true'].includes(result.success)) throw new Error('Submission failed');
+      feedbackForm.reset();
+      feedbackResult.hidden = false;
+      feedbackResult.tabIndex = -1;
+      feedbackResult.focus();
+    } catch {
+      feedbackError.textContent = '目前無法確認是否送出。內容已保留，你可以再試一次，或用下方的電子郵件連結寄送。';
+      feedbackError.hidden = false;
+    } finally {
+      button.disabled = false;
+      button.textContent = '送出回饋';
+    }
+  });
 }
 if (new URLSearchParams(location.search).get('feedback') === 'sent') {
   document.getElementById('feedback-result').hidden = false;
