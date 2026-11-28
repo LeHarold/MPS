@@ -318,3 +318,8 @@ body:not(.bright-mode) .map-wrap.street-basemap :is(.map-sources-toggle,.source-
 /* Keep map controls and the sidebar inside the landscape safe area. */
 body main,body.layout-editing main{padding-inline:env(safe-area-inset-left,0px) env(safe-area-inset-right,0px)}
 @media(pointer:coarse){.bottom{padding-bottom:8px}.toolbar{overscroll-behavior-x:contain}.map-sources-toggle{min-height:24px}}
+
+body.has-provider-credit main,body.has-provider-credit.layout-editing main{height:calc(var(--mps-viewport-height,100dvh) - var(--toolbar-height,60px) - 30px)}
+.provider-credit-strip{height:30px;display:flex;align-items:center;justify-content:center;padding:0 10px;text-align:center;background:var(--panel);color:var(--text);font-size:10px;line-height:1.2}
+.provider-credit-strip a{font-size:inherit;color:inherit;text-decoration:underline;margin-inline:2px}
+.device-location-settings button{margin:2px}

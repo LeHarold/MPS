@@ -1,11 +1,11 @@
-import {mountRegionalAirways} from './regional-airways.mjs?v=222';
-import {normalizePack,readBasemapPack,removeBasemapPack,downloadBasemapPack,makeOfflineBasemap} from './offline-basemaps.mjs?v=222';
+import {mountRegionalAirways} from './regional-airways.mjs?v=223';
+import {normalizePack,readBasemapPack,removeBasemapPack,downloadBasemapPack,makeOfflineBasemap} from './offline-basemaps.mjs?v=223';
 import {ObjectSpatialIndex,simplifyDisplay,detailBucket,diffVisible} from './spatial-objects.mjs?v=191';
 import { createNavigationRuler, navigationReadout } from './navigation-ruler.mjs?v=191';
 import { placeNearbyWaypoints, viewportPaintDue } from './compact-waypoints.mjs?v=191';
 import { coordinateRows, coordinateWorkbook } from './coordinate-excel.mjs?v=191';
 import { LINE_STYLES, lineStyleOptions, installDoubleLines } from './line-appearance.mjs?v=191';
-import {openWorkspaceStorage} from './workspace-storage.mjs?v=222';
+import {openWorkspaceStorage} from './workspace-storage.mjs?v=223';
 import {labelDisplaySize,frameTask,memoAreaOffset} from './display-performance.mjs?v=191';
 import {areaSouthwest,limitAreaOffset,areaInteriorOffset} from './area-labels.mjs?v=191';
 import {stableLabelOffset,rememberLabelOffset,validAreaPlacement} from './label-stability.mjs?v=191';
@@ -13,9 +13,9 @@ import {buildTimeline,seekTimeline,formatActionTime} from './history-timeline.mj
 import {pdfTimeName,translatePixels,pointAlongScreenPath,horizontalTurn,rotatePixels,usableMapSize} from './movement.mjs?v=191';
 import {applyLabelRotation,preserveLabelCenter,rotatedLabelEdge,labelBorderSize} from './label-rotation.mjs?v=191';
 import {nearestPoint,attachPoint,releasePoint} from './point-snap.mjs?v=191';
-import {decodeTerrainBlob,bindTouchCursor,setupIOSStorage} from './ios-pwa.mjs?v=222';
+import {decodeTerrainBlob,bindTouchCursor,setupIOSStorage} from './ios-pwa.mjs?v=223';
 import {actionDescription} from './action-history.mjs?v=191';
-import {printRaster} from './print-raster.mjs?v=222';
+import {printRaster} from './print-raster.mjs?v=223';
 import {uniqueLabelIds} from './label-visibility.mjs?v=191';
 import {outerVertices,transformPoints,nearestPathFraction} from './map-editing.mjs?v=191';
 import {createPressControls} from './press-controls.mjs?v=191';
@@ -34,7 +34,7 @@ const canPackageWebsite=()=>!offlineBundle&&featuresUnlocked;
 if(window.MPS_IMPORT_BUNDLE)await window.MPS_IMPORT_BUNDLE();
 import {intervalPlan,placeCursorBox,extensionEndpoint} from './workspace-interactions.mjs?v=191';
 import {planProjectImport,mergeProjectItems} from './project-merge.mjs?v=191';
-import {parseSearchPosition,searchCatalog,placeLabelBoxes,labelRank,calibrationDistance,readPrintTemplate,openBackupHistory} from './workspace-ux.mjs?v=222';
+import {parseSearchPosition,searchCatalog,placeLabelBoxes,labelRank,calibrationDistance,readPrintTemplate,openBackupHistory} from './workspace-ux.mjs?v=223';
 if(window.MPS_BUNDLE_READY)await window.MPS_BUNDLE_READY;
 const bundleNamespace=offlineBundle?'bundle:'+window.MPS_BUNDLE.id+':':/(?:^|\/)(?:G|google-workspace)(?:\/|$)/.test(location.pathname)?'google-workspace:':'';
 const workspaceStorage = await openWorkspaceStorage(error => {
@@ -367,7 +367,7 @@ function precision(key,fallback){const n=state.settings.precision?.[key];return 
 function dms(value,lat){const digits=precision('seconds',1),unit=10**digits,total=Math.round(Math.abs(value)*3600*unit),degree=Math.floor(total/(3600*unit)),minute=Math.floor(total%(3600*unit)/(60*unit)),seconds=(total%(60*unit)/unit).toFixed(digits);return degree+'°'+String(minute).padStart(2,'0')+'′'+seconds.padStart(digits?digits+3:2,'0')+'″'+(lat?(value<0?'S':'N'):(value<0?'W':'E'))}
 const precisionPanel=document.createElement('fieldset');const precisionTitle=document.createElement('legend');precisionTitle.textContent='顯示小數位數';precisionPanel.append(precisionTitle);for(const [key,title,fallback]of [['nm','海里 NM',3],['km','公里 km',3],['m','公尺 m',1],['ft','高度 feet',0],['decimal','十進位經緯度',6],['seconds','度分秒：秒',1]]){const label=document.createElement('label');label.textContent=title;const select=document.createElement('select');select.setAttribute('aria-label',title+'小數位數');for(let n=0;n<=8;n++){const option=document.createElement('option');option.value=n;option.textContent=n+' 位';select.append(option)}select.value=precision(key,fallback);select.onchange=()=>{state.settings.precision||={};state.settings.precision[key]=Number(select.value);save();refreshUI();paintCursorHeight();positionScale()};label.append(select);precisionPanel.append(label)}$('settings-panel').querySelector('.section-body').append(precisionPanel);
 
-const sourceFooter=document.createElement('div');sourceFooter.className='source-footer';document.querySelector('.map-wrap').append(sourceFooter);sourceFooter.append(map.attributionControl.getContainer());
+const sourceFooter=document.createElement('div');sourceFooter.className='source-footer';sourceFooter.append(map.attributionControl.getContainer());
 
 function bearing(a,b){const x=rad(a[0]),y=rad(b[0]),d=rad(b[1]-a[1]);return Math.atan2(Math.sin(d)*Math.cos(y),Math.cos(x)*Math.sin(y)-Math.sin(x)*Math.cos(y)*Math.cos(d))*180/Math.PI}
 function destination(a,heading,metres,alt=0){const d=metres/6371008.8,p=rad(a[0]),l=rad(a[1]),h=rad(heading),q=Math.asin(Math.sin(p)*Math.cos(d)+Math.cos(p)*Math.sin(d)*Math.cos(h)),r=l+Math.atan2(Math.sin(h)*Math.sin(d)*Math.cos(p),Math.cos(d)-Math.sin(p)*Math.sin(q));return[q*180/Math.PI,((r*180/Math.PI+540)%360)-180,alt]}
@@ -402,13 +402,106 @@ function renderBasemapSources(){
  ];
  const selected=sources.find(([layer])=>layer&&map.hasLayer(layer));
  $('sources-content').innerHTML=selected
-  ?'<h3>'+selected[1]+'</h3><p>'+selected[2]+'</p>'+(selected[0]===offlineBasemapLayers.get('sentinel2')?'<p>'+selected[0].getAttribution()+'</p>':'')
+  ?'<h3>'+selected[1]+'</h3><p>'+selected[2]+'</p><p>'+selected[0].getAttribution()+'</p>'
   :'<h3>離線向量圖</h3><p><a href="https://www.naturalearthdata.com/about/terms-of-use/" target="_blank" rel="noopener">Natural Earth</a>（公有領域）及 <a href="https://github.com/dkaoster/taiwan-atlas" target="_blank" rel="noopener">Taiwan Atlas</a>（MIT），台灣輪廓原始資料來自內政部。</p>';
 }
 sourcesButton.onclick=()=>{renderBasemapSources();sourceDialog.showModal()};
 map.on('layeradd layerremove',event=>{
  if(sourceDialog.open&&(event.layer===land||event.layer===street||event.layer===satellite||[...offlineBasemapLayers.values()].includes(event.layer)))renderBasemapSources();
 });
+const providerNotice=document.createElement('div');
+providerNotice.className='provider-credit-strip';
+providerNotice.hidden=true;
+document.querySelector('main').after(providerNotice);
+let providerTimer,shownBasemap;
+function updateProviderNotice(){
+ const active=[street,satellite,...offlineBasemapLayers.values()].find(layer=>map.hasLayer(layer));
+ if(active===shownBasemap)return;
+ shownBasemap=active;
+ clearTimeout(providerTimer);
+ const credit=active?.getAttribution?.();
+ providerNotice.innerHTML=credit||'';
+ providerNotice.hidden=!credit;
+ document.body.classList.toggle('has-provider-credit',!!credit);
+ map.invalidateSize({pan:false});
+ if(active&&(active===street||active===offlineBasemapLayers.get('protomaps'))){
+  providerTimer=setTimeout(()=>{
+   providerNotice.hidden=true;
+   document.body.classList.remove('has-provider-credit');
+   map.invalidateSize({pan:false});
+  },5000);
+ }
+}
+map.on('layeradd layerremove',event=>{
+ if([land,street,satellite,...offlineBasemapLayers.values()].includes(event.layer))queueMicrotask(updateProviderNotice);
+});
+updateProviderNotice();
+
+const locationPanel=document.createElement('fieldset');
+locationPanel.className='device-location-settings';
+locationPanel.innerHTML='<legend>裝置定位</legend><label><input type="checkbox" data-location> 允許 MPS 讀取裝置位置</label><label><input type="checkbox" data-position disabled checked> 顯示即時位置</label><label><input type="checkbox" data-trail disabled> 顯示移動／飛行軌跡</label><p data-location-status role="status">定位已關閉</p><button type="button" data-center disabled>移至我的位置</button><button type="button" data-clear disabled>清除軌跡</button><p>座標與軌跡僅在目前頁面使用。Safari 切到背景後可能暫停定位。</p>';
+$('settings-panel').querySelector('.section-body').append(locationPanel);
+const locationSwitch=locationPanel.querySelector('[data-location]'),
+ positionSwitch=locationPanel.querySelector('[data-position]'),
+ trailSwitch=locationPanel.querySelector('[data-trail]'),
+ locationStatus=locationPanel.querySelector('[data-location-status]'),
+ centerLocation=locationPanel.querySelector('[data-center]'),
+ clearLocation=locationPanel.querySelector('[data-clear]');
+const deviceMarker=L.circleMarker([0,0],{radius:7,color:'#fff',weight:2,fillColor:'#0076e0',fillOpacity:1,interactive:false});
+const deviceTrail=L.polyline([],{color:'#137ade',weight:3,opacity:.9,interactive:false});
+let locationWatch=null,locationRun=0,latestPosition=null,trackPoints=[];
+function paintDeviceLocation(){
+ const showPosition=locationSwitch.checked&&positionSwitch.checked&&latestPosition;
+ const showTrail=locationSwitch.checked&&trailSwitch.checked&&trackPoints.length>1;
+ if(showPosition){deviceMarker.setLatLng(latestPosition);deviceMarker.addTo(map)}else deviceMarker.remove();
+ if(showTrail){deviceTrail.setLatLngs(trackPoints);deviceTrail.addTo(map)}else deviceTrail.remove();
+ centerLocation.disabled=!latestPosition;
+ clearLocation.disabled=!trackPoints.length;
+}
+function stopDeviceLocation(message){
+ locationRun++;
+ if(locationWatch!==null)navigator.geolocation.clearWatch(locationWatch);
+ locationWatch=null;
+ locationSwitch.checked=false;
+ positionSwitch.disabled=trailSwitch.disabled=true;
+ latestPosition=null;
+ trackPoints=[];
+ locationStatus.textContent=message;
+ paintDeviceLocation();
+}
+locationSwitch.onchange=()=>{
+ if(!locationSwitch.checked){stopDeviceLocation('定位已關閉');return}
+ if(!window.isSecureContext||!navigator.geolocation){stopDeviceLocation('此環境無法使用裝置定位，請從 HTTPS 開啟 MPS。');return}
+ positionSwitch.disabled=trailSwitch.disabled=false;
+ locationStatus.textContent='等待裝置定位…';
+ const run=++locationRun;
+ try{
+  locationWatch=navigator.geolocation.watchPosition(({coords})=>{
+   if(run!==locationRun)return;
+   latestPosition=[coords.latitude,coords.longitude];
+   const previous=trackPoints.at(-1);
+   if(trailSwitch.checked&&(!previous||map.distance(previous,latestPosition)>=5)){
+    trackPoints.push(latestPosition);
+    if(trackPoints.length>5000)trackPoints.shift();
+   }
+   const accuracy=Number.isFinite(coords.accuracy)?' · 精度約 '+Math.round(coords.accuracy)+' 公尺':'';
+   locationStatus.textContent=pair(latestPosition)+accuracy;
+   paintDeviceLocation();
+  },error=>{
+   if(run!==locationRun)return;
+   if(error.code===1){stopDeviceLocation('未允許定位。請在瀏覽器或系統設定開放此網站的位置權限。');return}
+   locationStatus.textContent=latestPosition?'暫時無法更新，地圖保留最後一次位置。':'暫時無法取得定位，正在等待裝置更新。';
+  },{enableHighAccuracy:true,maximumAge:5000,timeout:20000});
+ }catch{stopDeviceLocation('無法啟動裝置定位。')}
+};
+positionSwitch.onchange=paintDeviceLocation;
+trailSwitch.onchange=()=>{
+ trackPoints=trailSwitch.checked&&latestPosition?[latestPosition]:[];
+ paintDeviceLocation();
+};
+centerLocation.onclick=()=>{if(latestPosition)map.panTo(latestPosition)};
+clearLocation.onclick=()=>{trackPoints=[];paintDeviceLocation()};
+window.addEventListener('pagehide',()=>stopDeviceLocation('定位已關閉'));
 const visitCounter=$('workspace-visits');
 if(visitCounter){
  try{
@@ -1095,7 +1188,7 @@ opacityButton.onclick=()=>{const levels=[1,.75,.5,.25],value=levels.includes(sta
 $('settings-panel').querySelector('.section-body').append(opacityButton);const refreshBeforeMovementOpacity=refreshUI;refreshUI=function(){refreshBeforeMovementOpacity();paintMovementOpacity()};paintMovementOpacity();
 }
 
-if(typeof document!=='undefined'){const version=document.createElement('p');version.id='app-version';version.textContent='程式版本 v222（Google 分支）';$('settings-panel').querySelector('.section-body').append(version)}
+if(typeof document!=='undefined'){const version=document.createElement('p');version.id='app-version';version.textContent='程式版本 v223（Google 分支）';$('settings-panel').querySelector('.section-body').append(version)}
 
 // Quick navigation ruler and persistent graduated ruler are independent tools.
 if (typeof document !== 'undefined') {
