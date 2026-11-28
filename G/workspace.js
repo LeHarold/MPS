@@ -1,11 +1,11 @@
-import {mountRegionalAirways} from './regional-airways.mjs?v=223';
-import {normalizePack,readBasemapPack,removeBasemapPack,downloadBasemapPack,makeOfflineBasemap} from './offline-basemaps.mjs?v=223';
+import {mountRegionalAirways} from './regional-airways.mjs?v=224';
+import {normalizePack,readBasemapPack,removeBasemapPack,downloadBasemapPack,makeOfflineBasemap} from './offline-basemaps.mjs?v=224';
 import {ObjectSpatialIndex,simplifyDisplay,detailBucket,diffVisible} from './spatial-objects.mjs?v=191';
 import { createNavigationRuler, navigationReadout } from './navigation-ruler.mjs?v=191';
 import { placeNearbyWaypoints, viewportPaintDue } from './compact-waypoints.mjs?v=191';
 import { coordinateRows, coordinateWorkbook } from './coordinate-excel.mjs?v=191';
 import { LINE_STYLES, lineStyleOptions, installDoubleLines } from './line-appearance.mjs?v=191';
-import {openWorkspaceStorage} from './workspace-storage.mjs?v=223';
+import {openWorkspaceStorage} from './workspace-storage.mjs?v=224';
 import {labelDisplaySize,frameTask,memoAreaOffset} from './display-performance.mjs?v=191';
 import {areaSouthwest,limitAreaOffset,areaInteriorOffset} from './area-labels.mjs?v=191';
 import {stableLabelOffset,rememberLabelOffset,validAreaPlacement} from './label-stability.mjs?v=191';
@@ -13,9 +13,9 @@ import {buildTimeline,seekTimeline,formatActionTime} from './history-timeline.mj
 import {pdfTimeName,translatePixels,pointAlongScreenPath,horizontalTurn,rotatePixels,usableMapSize} from './movement.mjs?v=191';
 import {applyLabelRotation,preserveLabelCenter,rotatedLabelEdge,labelBorderSize} from './label-rotation.mjs?v=191';
 import {nearestPoint,attachPoint,releasePoint} from './point-snap.mjs?v=191';
-import {decodeTerrainBlob,bindTouchCursor,setupIOSStorage} from './ios-pwa.mjs?v=223';
+import {decodeTerrainBlob,bindTouchCursor,setupIOSStorage} from './ios-pwa.mjs?v=224';
 import {actionDescription} from './action-history.mjs?v=191';
-import {printRaster} from './print-raster.mjs?v=223';
+import {printRaster} from './print-raster.mjs?v=224';
 import {uniqueLabelIds} from './label-visibility.mjs?v=191';
 import {outerVertices,transformPoints,nearestPathFraction} from './map-editing.mjs?v=191';
 import {createPressControls} from './press-controls.mjs?v=191';
@@ -34,7 +34,7 @@ const canPackageWebsite=()=>!offlineBundle&&featuresUnlocked;
 if(window.MPS_IMPORT_BUNDLE)await window.MPS_IMPORT_BUNDLE();
 import {intervalPlan,placeCursorBox,extensionEndpoint} from './workspace-interactions.mjs?v=191';
 import {planProjectImport,mergeProjectItems} from './project-merge.mjs?v=191';
-import {parseSearchPosition,searchCatalog,placeLabelBoxes,labelRank,calibrationDistance,readPrintTemplate,openBackupHistory} from './workspace-ux.mjs?v=223';
+import {parseSearchPosition,searchCatalog,placeLabelBoxes,labelRank,calibrationDistance,readPrintTemplate,openBackupHistory} from './workspace-ux.mjs?v=224';
 if(window.MPS_BUNDLE_READY)await window.MPS_BUNDLE_READY;
 const bundleNamespace=offlineBundle?'bundle:'+window.MPS_BUNDLE.id+':':/(?:^|\/)(?:G|google-workspace)(?:\/|$)/.test(location.pathname)?'google-workspace:':'';
 const workspaceStorage = await openWorkspaceStorage(error => {
@@ -91,7 +91,7 @@ function makeCoordinateRow(name,p,action){const button=document.createElement('b
 const lazyCoordinateTables=new WeakMap();function makePointsTable(points,name,action){const table=document.createElement('div');table.className='points-table';table.dataset.lazyCoordinates='true';let loaded=false;const load=()=>{if(loaded)return;loaded=true;points.forEach((p,i)=>table.append(makeCoordinateRow(typeof name==='function'?name(i):name,p,action)))};lazyCoordinateTables.set(table,load);requestAnimationFrame(()=>loadVisibleTables(table));return table}function loadVisibleTables(root){for(const table of root.matches?.('.points-table')?[root]:root.querySelectorAll('.points-table')){let visible=true;for(let n=table.parentElement;n;n=n.parentElement){if(n.tagName==='DETAILS'&&!n.open){visible=false;break}if(n.hidden){visible=false;break}}if(visible)lazyCoordinateTables.get(table)?.()}}document.addEventListener('toggle',e=>{if(e.target.tagName==='DETAILS'&&e.target.open)requestAnimationFrame(()=>loadVisibleTables(e.target))},true);
 function refreshLayerSelectors(){for(const id of ['active-layer','object-layer']){const current=id==='active-layer'?state.activeLayerId:getObject()?.layer.id;$(id).replaceChildren();state.layers.forEach(l=>{const opt=document.createElement('option');opt.value=l.id;opt.textContent=l.name;$(id).append(opt)});$(id).value=current||state.activeLayerId}$('layer-name').value=activeLayer().name;$('layer-count').textContent=state.layers.filter(l=>l.visible).length+'/'+state.layers.length}
 const workspaceObjectLimits=new Map();
-function renderLayers(){const openIds=new Set([...$('layer-list').querySelectorAll('details[open]')].map(x=>x.dataset.id));$('layer-list').replaceChildren();refreshLayerSelectors();for(const l of state.layers){const row=document.createElement('div');row.className='layer-entry'+(l.id===state.activeLayerId?' active':'');const show=document.createElement('input');show.type='checkbox';show.checked=l.visible;show.setAttribute('aria-label','顯示圖層 '+l.name);show.onchange=()=>{snapshot();l.visible=show.checked;if(!l.visible&&getObject()?.layer.id===l.id){selected=null;$('editor-panel').hidden=true}save();renderObjects();renderLayers()};const active=document.createElement('input');active.type='radio';active.name='active-map-layer';active.checked=l.id===state.activeLayerId;active.setAttribute('aria-label','編輯圖層 '+l.name);active.onchange=()=>{state.activeLayerId=l.id;save();renderLayers()};const details=document.createElement('details');details.dataset.id=l.id;details.dataset.workspaceKey='layer:'+l.id;details.open=openIds.has(l.id);const summary=document.createElement('summary'),name=document.createElement('span'),count=document.createElement('small');name.className='layer-name';name.textContent=l.name;count.textContent=l.objects.length+' 物件';summary.append(name,count);details.append(summary,layerStyle(l,()=>{renderObjects();save()},'split'),opacityControl('圖層 '+l.name,l.opacity??1,value=>{snapshot();l.opacity=value;renderObjects();save()}));const del=document.createElement('button');del.textContent='刪除圖層';del.className='danger';del.onclick=()=>deleteLayer(l.id);details.append(del,makeLocateButton({key:'layer:'+l.id,name:l.name,points:l.objects.flatMap(o=>o.points),panel:'layers-panel'}));if(!l.objects.length){const empty=document.createElement('p');empty.textContent='尚無標繪';details.append(empty)}for(const o of l.objects.slice(0,workspaceObjectLimits.get(l.id)||100)){const entry=document.createElement('details');entry.dataset.workspaceKey='object:'+o.id;const label=document.createElement('summary');label.textContent=o.name;const desc=document.createElement('p');desc.textContent=o.description||({point:'標記',line:'線段',polygon:'區域'}[o.type]);const visibility=document.createElement('input');visibility.type='checkbox';visibility.checked=o.visible!==false;visibility.setAttribute('aria-label','顯示物件 '+o.name);visibility.onclick=e=>e.stopPropagation();visibility.onchange=()=>{snapshot();o.visible=visibility.checked;save();renderObjects()};label.prepend(visibility);const coords=document.createElement('button');const updateCoords=()=>{coords.textContent=(o.showCoordinates?'隱藏':'顯示')+'各點經緯度'};updateCoords();coords.onclick=()=>{snapshot();o.showCoordinates=!o.showCoordinates;updateCoords();save();renderObjects()};entry.append(coords,objectColorControl(o),makeLocateButton({key:'object:'+o.id,name:o.name,points:o.points,panel:'layers-panel'}));entry.append(label,desc);if(isCompassArc(o)){const edit=document.createElement('button');edit.textContent='修訂弧線';edit.onclick=()=>selectObject(o.id);entry.append(edit)}else entry.append(makePointsTable(o.points,i=>objectVertexName(o,i),()=>selectObject(o.id)));if(o.boxVertices&&o.boxInputMode!=='ordered')entry.append(makePointsTable(o.boxVertices.map(v=>v.position),i=>o.boxVertices[i].name));details.append(entry)}if(l.objects.length>(workspaceObjectLimits.get(l.id)||100)){const more=document.createElement('button');more.textContent='載入更多物件（'+Math.min(l.objects.length,workspaceObjectLimits.get(l.id)||100)+' / '+l.objects.length+'）';more.onclick=()=>{workspaceObjectLimits.set(l.id,(workspaceObjectLimits.get(l.id)||100)+100);renderLayers();};details.append(more);}row.append(show,active,details);$('layer-list').append(row)}$('objects').replaceChildren();const l=activeLayer();l.objects.slice(0,workspaceObjectLimits.get(l.id)||100).forEach(o=>{const b=document.createElement('button');b.textContent=({point:'⌖ ',line:'╱ ',polygon:'⬡ '}[o.type])+o.name;b.style.borderLeftColor=o.color;b.style.borderLeftWidth='3px';b.onclick=()=>{selectObject(o.id);map.fitBounds(L.latLngBounds(o.points),{maxZoom:10,padding:[35,35]})};$('objects').append(b)});applyLayerGroups();if(layoutEditing)decorateLayout()}
+function renderLayers(){const openIds=new Set([...$('layer-list').querySelectorAll('details[open]')].map(x=>x.dataset.id));$('layer-list').replaceChildren();refreshLayerSelectors();for(const l of state.layers){const row=document.createElement('div');row.dataset.layerId=l.id;row.className='layer-entry'+(l.id===state.activeLayerId?' active':'');const show=document.createElement('input');show.type='checkbox';show.checked=l.visible;show.setAttribute('aria-label','顯示圖層 '+l.name);show.onchange=()=>{snapshot();l.visible=show.checked;if(!l.visible&&getObject()?.layer.id===l.id){selected=null;$('editor-panel').hidden=true}save();renderObjects();renderLayers()};const active=document.createElement('input');active.type='radio';active.name='active-map-layer';active.checked=l.id===state.activeLayerId;active.setAttribute('aria-label','編輯圖層 '+l.name);active.onchange=()=>{state.activeLayerId=l.id;save();renderLayers()};const details=document.createElement('details');details.dataset.id=l.id;details.dataset.workspaceKey='layer:'+l.id;details.open=openIds.has(l.id);const summary=document.createElement('summary'),name=document.createElement('span'),count=document.createElement('small');name.className='layer-name';name.textContent=l.name;count.textContent=l.objects.length+' 物件';summary.append(name,count);details.append(summary,layerStyle(l,()=>{renderObjects();save()},'split'),opacityControl('圖層 '+l.name,l.opacity??1,value=>{snapshot();l.opacity=value;renderObjects();save()}));const del=document.createElement('button');del.textContent='刪除圖層';del.className='danger';del.onclick=()=>deleteLayer(l.id);details.append(del,makeLocateButton({key:'layer:'+l.id,name:l.name,points:l.objects.flatMap(o=>o.points),panel:'layers-panel'}));if(!l.objects.length){const empty=document.createElement('p');empty.textContent='尚無標繪';details.append(empty)}for(const o of l.objects.slice(0,workspaceObjectLimits.get(l.id)||100)){const entry=document.createElement('details');entry.dataset.objectId=o.id;entry.dataset.workspaceKey='object:'+o.id;const label=document.createElement('summary');label.textContent=o.name;const desc=document.createElement('p');desc.textContent=o.description||({point:'標記',line:'線段',polygon:'區域'}[o.type]);const visibility=document.createElement('input');visibility.type='checkbox';visibility.checked=o.visible!==false;visibility.setAttribute('aria-label','顯示物件 '+o.name);visibility.onclick=e=>e.stopPropagation();visibility.onchange=()=>{snapshot();o.visible=visibility.checked;save();renderObjects()};label.prepend(visibility);const coords=document.createElement('button');const updateCoords=()=>{coords.textContent=(o.showCoordinates?'隱藏':'顯示')+'各點經緯度'};updateCoords();coords.onclick=()=>{snapshot();o.showCoordinates=!o.showCoordinates;updateCoords();save();renderObjects()};entry.append(coords,objectColorControl(o),makeLocateButton({key:'object:'+o.id,name:o.name,points:o.points,panel:'layers-panel'}));entry.append(label,desc);if(isCompassArc(o)){const edit=document.createElement('button');edit.textContent='修訂弧線';edit.onclick=()=>selectObject(o.id);entry.append(edit)}else entry.append(makePointsTable(o.points,i=>objectVertexName(o,i),()=>selectObject(o.id)));if(o.boxVertices&&o.boxInputMode!=='ordered')entry.append(makePointsTable(o.boxVertices.map(v=>v.position),i=>o.boxVertices[i].name));details.append(entry)}if(l.objects.length>(workspaceObjectLimits.get(l.id)||100)){const more=document.createElement('button');more.textContent='載入更多物件（'+Math.min(l.objects.length,workspaceObjectLimits.get(l.id)||100)+' / '+l.objects.length+'）';more.onclick=()=>{workspaceObjectLimits.set(l.id,(workspaceObjectLimits.get(l.id)||100)+100);renderLayers();};details.append(more);}row.append(show,active,details);$('layer-list').append(row)}$('objects').replaceChildren();const l=activeLayer();l.objects.slice(0,workspaceObjectLimits.get(l.id)||100).forEach(o=>{const b=document.createElement('button');b.textContent=({point:'⌖ ',line:'╱ ',polygon:'⬡ '}[o.type])+o.name;b.style.borderLeftColor=o.color;b.style.borderLeftWidth='3px';b.onclick=()=>{selectObject(o.id);map.fitBounds(L.latLngBounds(o.points),{maxZoom:10,padding:[35,35]})};$('objects').append(b)});applyLayerGroups();if(layoutEditing)decorateLayout()}
 function isCompassArc(o){return o?.type==='line'&&(o.compassDrawing===true||/^圓規圓弧/.test(o.name))}
 function cleanVertexSuffix(name){return typeof name==='string'?name.replace(/(?:\s*[·．・\-—_]\s*|\s*)頂點\s*[0-9０-９]+\s*$/u,'').trim():name;}
 function cleanExistingVertexNames(){for(const layer of state.layers){layer.name=cleanVertexSuffix(layer.name)||'未命名圖層';for(const o of layer.objects){o.name=cleanVertexSuffix(o.name)||'未命名物件';for(const item of [...(o.pointProperties||[]),...(o.boxVertices||[])])if(item&&typeof item.name==='string')item.name=cleanVertexSuffix(item.name);if(Array.isArray(o.pointNames))o.pointNames=o.pointNames.map(cleanVertexSuffix);}}}
@@ -439,7 +439,7 @@ updateProviderNotice();
 
 const locationPanel=document.createElement('fieldset');
 locationPanel.className='device-location-settings';
-locationPanel.innerHTML='<legend>裝置定位</legend><label><input type="checkbox" data-location> 允許 MPS 讀取裝置位置</label><label><input type="checkbox" data-position disabled checked> 顯示即時位置</label><label><input type="checkbox" data-trail disabled> 顯示移動／飛行軌跡</label><p data-location-status role="status">定位已關閉</p><button type="button" data-center disabled>移至我的位置</button><button type="button" data-clear disabled>清除軌跡</button><p>座標與軌跡僅在目前頁面使用。Safari 切到背景後可能暫停定位。</p>';
+locationPanel.innerHTML='<legend>裝置定位</legend><label><input type="checkbox" data-location> 允許 MPS 讀取裝置位置</label><label><input type="checkbox" data-position disabled checked> 顯示即時位置</label><label><input type="checkbox" data-trail disabled> 顯示移動／飛行軌跡</label><p data-location-status role="status">定位已關閉</p><button type="button" data-center disabled>移至我的位置</button><button type="button" data-clear disabled>清除軌跡</button><p>即時位置僅在目前頁面使用；軌跡儲存於我的圖層，並納入工作區備份及同步。Safari 切到背景後可能暫停定位。</p>';
 $('settings-panel').querySelector('.section-body').append(locationPanel);
 const locationSwitch=locationPanel.querySelector('[data-location]'),
  positionSwitch=locationPanel.querySelector('[data-position]'),
@@ -449,10 +449,50 @@ const locationSwitch=locationPanel.querySelector('[data-location]'),
  clearLocation=locationPanel.querySelector('[data-clear]');
 const deviceMarker=L.circleMarker([0,0],{radius:7,color:'#fff',weight:2,fillColor:'#0076e0',fillOpacity:1,interactive:false});
 const deviceTrail=L.polyline([],{color:'#137ade',weight:3,opacity:.9,interactive:false});
-let locationWatch=null,locationRun=0,latestPosition=null,trackPoints=[];
+let locationWatch=null,locationRun=0,latestPosition=null,trackPoints=[],trackLayerId=null,trackObjectId=null;
+function startTrailLayer(){
+ if(state.layers.length>=200){trailSwitch.checked=false;toast('已達圖層上限');return}
+ const layer={id:uid(),name:new Date().toLocaleString('sv-SE',{hour12:false}),visible:true,objects:[]};
+ snapshot();
+ state.layers.push(layer);
+ trackLayerId=layer.id;
+ trackObjectId=null;
+ trackPoints=latestPosition?[latestPosition]:[];
+ save();renderLayers();
+}
+function writeTrailLayer(){
+ const layer=state.layers.find(item=>item.id===trackLayerId);
+ if(!layer){trailSwitch.checked=false;trackPoints=[];return}
+ if(trackPoints.length<2)return;
+ if(!trackObjectId){
+  const object={id:uid(),type:'line',name:'裝置軌跡',description:'裝置定位自動記錄',color:'#137ade',points:trackPoints.slice()};
+  layer.objects.push(object);
+  trackObjectId=object.id;
+  userSpatialIndex=new ObjectSpatialIndex(state.layers);
+  syncSpatialViewport();
+  renderLayers();
+ }else{
+  const object=layer.objects.find(item=>item.id===trackObjectId);
+  if(!object){trailSwitch.checked=false;trackPoints=[];return}
+  object.points=trackPoints.slice();
+ }
+ save();
+}
+function finishTrailLayer(){
+ if(trackObjectId){
+  userSpatialIndex=new ObjectSpatialIndex(state.layers);
+  syncSpatialViewport(true);
+ }
+ trackLayerId=trackObjectId=null;
+ trackPoints=[];
+}
 function paintDeviceLocation(){
  const showPosition=locationSwitch.checked&&positionSwitch.checked&&latestPosition;
- const showTrail=locationSwitch.checked&&trailSwitch.checked&&trackPoints.length>1;
+ const layer=state.layers.find(item=>item.id===trackLayerId);
+ const object=layer?.objects.find(item=>item.id===trackObjectId);
+ const path=objectPaths.get(trackObjectId);
+ if(path&&object)path.setLatLngs(object.points);
+ const showTrail=locationSwitch.checked&&trailSwitch.checked&&layer?.visible&&object?.visible!==false&&!path&&trackPoints.length>1;
  if(showPosition){deviceMarker.setLatLng(latestPosition);deviceMarker.addTo(map)}else deviceMarker.remove();
  if(showTrail){deviceTrail.setLatLngs(trackPoints);deviceTrail.addTo(map)}else deviceTrail.remove();
  centerLocation.disabled=!latestPosition;
@@ -465,7 +505,7 @@ function stopDeviceLocation(message){
  locationSwitch.checked=false;
  positionSwitch.disabled=trailSwitch.disabled=true;
  latestPosition=null;
- trackPoints=[];
+ finishTrailLayer();
  locationStatus.textContent=message;
  paintDeviceLocation();
 }
@@ -474,6 +514,7 @@ locationSwitch.onchange=()=>{
  if(!window.isSecureContext||!navigator.geolocation){stopDeviceLocation('此環境無法使用裝置定位，請從 HTTPS 開啟 MPS。');return}
  positionSwitch.disabled=trailSwitch.disabled=false;
  locationStatus.textContent='等待裝置定位…';
+ if(trailSwitch.checked)startTrailLayer();
  const run=++locationRun;
  try{
   locationWatch=navigator.geolocation.watchPosition(({coords})=>{
@@ -482,7 +523,7 @@ locationSwitch.onchange=()=>{
    const previous=trackPoints.at(-1);
    if(trailSwitch.checked&&(!previous||map.distance(previous,latestPosition)>=5)){
     trackPoints.push(latestPosition);
-    if(trackPoints.length>5000)trackPoints.shift();
+    writeTrailLayer();
    }
    const accuracy=Number.isFinite(coords.accuracy)?' · 精度約 '+Math.round(coords.accuracy)+' 公尺':'';
    locationStatus.textContent=pair(latestPosition)+accuracy;
@@ -496,11 +537,17 @@ locationSwitch.onchange=()=>{
 };
 positionSwitch.onchange=paintDeviceLocation;
 trailSwitch.onchange=()=>{
- trackPoints=trailSwitch.checked&&latestPosition?[latestPosition]:[];
+ if(trailSwitch.checked)startTrailLayer();else finishTrailLayer();
  paintDeviceLocation();
 };
 centerLocation.onclick=()=>{if(latestPosition)map.panTo(latestPosition)};
-clearLocation.onclick=()=>{trackPoints=[];paintDeviceLocation()};
+clearLocation.onclick=()=>{
+ const layer=state.layers.find(item=>item.id===trackLayerId);
+ if(layer&&trackObjectId){snapshot();layer.objects=layer.objects.filter(item=>item.id!==trackObjectId);save();renderObjects();renderLayers()}
+ trackObjectId=null;
+ trackPoints=latestPosition?[latestPosition]:[];
+ paintDeviceLocation();
+};
 window.addEventListener('pagehide',()=>stopDeviceLocation('定位已關閉'));
 const visitCounter=$('workspace-visits');
 if(visitCounter){
@@ -573,7 +620,7 @@ function declutterPrint(root){const bounds=root.getBoundingClientRect(),items=[]
 $('print-preview').onclick=async()=>{state.settings.printPreferences=currentPrintTemplate();save();const ratio=Number($('print-ratio').value);if(!(ratio>=100&&ratio<=100000000))return $('print-status').textContent='比例尺須介於 1:100 與 1:100,000,000';$('print-preview').disabled=true;$('print-download').disabled=true;$('print-status').textContent='正在依每度緯度 60 NM 校正輸出…';try{await Promise.all([loadPrintScript('vendor/html2canvas.min.js','html2canvas'),loadPrintScript('vendor/jspdf.umd.min.js','jspdf')]);const formats={a4:[210,297],a3:[297,420],letter:[215.9,279.4]},paper=formats[$('print-paper').value],landscape=$('print-orientation').value==='landscape',[pw,ph]=landscape?[paper[1],paper[0]]:paper;pdfPreview=await fixedLatitudePrint(pw,ph,ratio);$('print-image').src=pdfPreview.data;$('print-image').hidden=false;$('print-download').disabled=false;mountPrintPreview();$('print-status').textContent='預覽可拖曳平移。1:'+ratio.toLocaleString()+'；每 1° 緯度 = 60 NM = '+(111120000/ratio).toFixed(2)+' mm。列印請選實際大小／100%，關閉符合頁面。'}catch(e){$('print-status').textContent='無法產生 PDF：'+e.message}finally{$('print-preview').disabled=false}};
 $('print-download').onclick=()=>{if(!pdfPreview)return;const p=pdfPreview,doc=new jspdf.jsPDF({orientation:p.pw>p.ph?'landscape':'portrait',unit:'mm',format:[p.pw,p.ph]});doc.addImage(p.data,'PNG',p.x,p.y,p.mw,p.mh);drawPdfCalibration(doc,p);doc.setFontSize(9);if(p.footerVisible)doc.text('MPS | 1:'+p.ratio+' | Latitude 1 deg = 60 NM | '+new Date().toISOString(),p.x,p.y+p.mh+6);doc.save(pdfTimeName())};
 
-function applyLayerGroups(){const root=$('layer-list');for(const group of root.querySelectorAll(':scope > details.layer-ui-group')){for(const row of [...group.querySelectorAll('.layer-entry')])group.before(row);group.remove()}if(layoutEditing&&layoutScope==='workspace')return;const groups=new Map();for(const row of [...root.querySelectorAll('.layer-entry')]){const id=row.querySelector('details')?.dataset.id,name=state.layers.find(l=>l.id===id)?.uiGroup;if(!name)continue;let group=groups.get(name);if(!group){group=document.createElement('details');group.className='layer-ui-group';const summary=document.createElement('summary');summary.textContent=name;group.append(summary);root.append(group);groups.set(name,group)}group.append(row)}}
+function applyLayerGroups(){const root=$('layer-list');for(const group of root.querySelectorAll(':scope > details.layer-ui-group')){for(const row of [...group.querySelectorAll('.layer-entry')])group.before(row);group.remove()}if(layoutEditing&&layoutScope==='workspace')return;const groups=new Map();for(const row of [...root.querySelectorAll('.layer-entry')]){const id=row.querySelector('details')?.dataset.id,name=state.layers.find(l=>l.id===id)?.uiGroup;if(!name)continue;let group=groups.get(name);if(!group){group=document.createElement('details');group.className='layer-ui-group';const summary=document.createElement('summary');summary.textContent=name;group.append(summary);row.before(group);groups.set(name,group)}group.append(row)}}
 
 
 restoreLayout();
@@ -1188,7 +1235,7 @@ opacityButton.onclick=()=>{const levels=[1,.75,.5,.25],value=levels.includes(sta
 $('settings-panel').querySelector('.section-body').append(opacityButton);const refreshBeforeMovementOpacity=refreshUI;refreshUI=function(){refreshBeforeMovementOpacity();paintMovementOpacity()};paintMovementOpacity();
 }
 
-if(typeof document!=='undefined'){const version=document.createElement('p');version.id='app-version';version.textContent='程式版本 v223（Google 分支）';$('settings-panel').querySelector('.section-body').append(version)}
+if(typeof document!=='undefined'){const version=document.createElement('p');version.id='app-version';version.textContent='程式版本 v224（Google 分支）';$('settings-panel').querySelector('.section-body').append(version)}
 
 // Quick navigation ruler and persistent graduated ruler are independent tools.
 if (typeof document !== 'undefined') {
@@ -2348,7 +2395,10 @@ if(typeof document!=='undefined'){
   }
   const header=target.closest('summary');
   const layer=header?.closest('.layer-entry');
+  const object=header?.parentElement;
+  if(object?.dataset.objectId&&layer)return {node:object,header,kind:'object'};
   if(layer?.dataset.layerId)return {node:layer,header,kind:'layer'};
+  if(header?.parentElement.matches('.layer-ui-group'))return {node:header.parentElement,header,kind:'layer-group'};
   const panel=header?.parentElement;
   return panel&&(panel.parentElement===workspace||panel.parentElement?.matches('#workspace .layout-group'))
    ?{node:panel,header,kind:'panel'}:null;
@@ -2360,22 +2410,25 @@ if(typeof document!=='undefined'){
   clearTimeout(active.timer);
   cancelAnimationFrame(active.frame);
   active.item.header.classList.remove('layout-held');
-  active.destination?.header.classList.remove('layout-drop-before','layout-drop-after');
+  active.destination?.header.classList.remove('layout-drop-before','layout-drop-after','layout-drop-inside');
   if(active.item.header.hasPointerCapture(active.pointer))active.item.header.releasePointerCapture(active.pointer);
  }
  function updateDestination(){
   const {root,item,x,y}=drag;
   const target=document.elementFromPoint(x,y);
   const destination=target&&root.contains(target)&&findItem(target,root);
-  const compatible=destination&&destination.kind===item.kind&&destination.node!==item.node&&destination.node.parentElement===item.node.parentElement;
+  const compatible=destination&&destination.node!==item.node&&!item.node.contains(destination.node)&&(destination.kind===item.kind||item.kind==='layer'&&destination.kind==='layer-group'||item.kind==='object'&&destination.kind==='layer');
   const horizontal=root===toolbar&&!document.body.classList.contains('toolbar-layout-editing')&&item.node.parentElement===toolbar;
   const bounds=compatible&&destination.header.getBoundingClientRect();
-  const before=compatible&&(horizontal?x<bounds.left+bounds.width/2:y<bounds.top+bounds.height/2);
-  if(drag.destination?.node===destination?.node&&drag.before===before)return;
-  drag.destination?.header.classList.remove('layout-drop-before','layout-drop-after');
+  const fraction=compatible?(horizontal?(x-bounds.left)/bounds.width:(y-bounds.top)/bounds.height):0;
+  const newGroup=compatible&&item.kind===destination.kind&&['layer','panel','tool'].includes(item.kind)&&!item.node.matches('.layout-group')&&!destination.node.closest('.layout-group,.layer-ui-group')&&fraction>.35&&fraction<.65;
+  const inside=newGroup||compatible&&(item.kind==='layer'&&destination.kind==='layer-group'||item.kind==='object'&&destination.kind==='layer'||item.kind===destination.kind&&!item.node.matches('.layout-group')&&destination.node.matches('.layout-group')&&fraction>.25&&fraction<.75);
+  const before=fraction<.5;
+  if(drag.destination?.node===destination?.node&&drag.before===before&&drag.inside===inside&&drag.newGroup===newGroup)return;
+  drag.destination?.header.classList.remove('layout-drop-before','layout-drop-after','layout-drop-inside');
   drag.destination=compatible?destination:null;
-  drag.before=before;
-  if(compatible)destination.header.classList.add(before?'layout-drop-before':'layout-drop-after');
+  drag.before=before;drag.inside=inside;drag.newGroup=newGroup;
+  if(compatible)destination.header.classList.add(inside?'layout-drop-inside':before?'layout-drop-before':'layout-drop-after');
  }
  function scrollDuringDrag(){
   const {root,x,y}=drag;
@@ -2425,20 +2478,49 @@ if(typeof document!=='undefined'){
  });
  window.addEventListener('pointerup',event=>{
   if(drag?.pointer!==event.pointerId)return;
-  const {root,item,held,destination,before}=drag;
+  const {root,item,held,destination,before,inside,newGroup}=drag;
   clearDrag();
   if(!held)return;
   suppressedClick={root,until:performance.now()+400};
   if(!destination)return;
-  if(item.kind==='layer'){
-   const from=state.layers.findIndex(layer=>layer.id===item.node.dataset.layerId);
-   let to=state.layers.findIndex(layer=>layer.id===destination.node.dataset.layerId)+(before?0:1);
-   if(from<to)to--;
-   if(from>=0)moveLayer(item.node.dataset.layerId,to-from);
-   return;
+  const groupName=newGroup?window.prompt('輸入新群組名稱')?.trim():null;
+  if(newGroup&&!groupName)return;
+  if(item.kind==='object'){
+   const source=getObject(item.node.dataset.objectId);
+   const neighbor=destination.kind==='object'?getObject(destination.node.dataset.objectId):null;
+   const target=neighbor?.layer||state.layers.find(layer=>layer.id===destination.node.dataset.layerId);
+   if(!source||!target||target!==source.layer&&target.objects.length>=20000)return;
+   snapshot();
+   source.layer.objects.splice(source.layer.objects.indexOf(source.object),1);
+   const index=neighbor?target.objects.indexOf(neighbor.object)+(before?0:1):target.objects.length;
+   target.objects.splice(index,0,source.object);
+   save();renderLayers();renderObjects();return;
   }
-  if(before)destination.node.before(item.node);else destination.node.after(item.node);
-  persistLayout(item.kind);
+  if(item.kind==='layer'||item.kind==='layer-group'){
+   const find=node=>state.layers.find(layer=>layer.id===node.dataset.layerId);
+   const members=node=>node.matches('.layer-ui-group')?[...node.querySelectorAll('.layer-entry')].map(find).filter(Boolean):[find(node)].filter(Boolean);
+   const moved=members(item.node),target=members(destination.node);
+   if(!moved.length||!target.length)return;
+   snapshot();
+   if(groupName)target[0].uiGroup=groupName;
+   if(item.kind==='layer')moved[0].uiGroup=target[0].uiGroup||'';
+   state.layers=state.layers.filter(layer=>!moved.includes(layer));
+   const reference=before&&!inside?target[0]:target.at(-1);
+   state.layers.splice(state.layers.indexOf(reference)+(before&&!inside?0:1),0,...moved);
+   save();renderLayers();renderObjects();return;
+  }
+  if(!item.node.matches('.layout-group')){
+   state.settings.layout||={};
+   state.settings.layout[item.kind]||={};
+   const groups=state.settings.layout[item.kind].groups||={};
+   const group=destination.node.closest('.layout-group');
+   const member=group?.querySelector(item.kind==='tool'?'.layout-group-menu > *':':scope > details');
+   if(groupName)groups[layoutId(destination.node)]=groupName;
+   groups[layoutId(item.node)]=groupName||(member&&(inside||group!==destination.node)?groups[layoutId(member)]||'':'');
+  }
+  if(inside&&!newGroup)(destination.node.querySelector(':scope > .layout-group-menu')||destination.node).append(item.node);
+  else if(before)destination.node.before(item.node);else destination.node.after(item.node);
+  persistLayout(item.kind);restoreLayout();decorateLayout();
  });
  window.addEventListener('pointercancel',event=>{if(drag?.pointer===event.pointerId)clearDrag()});
  window.addEventListener('blur',clearDrag);

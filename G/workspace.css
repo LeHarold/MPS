@@ -323,3 +323,6 @@ body.has-provider-credit main,body.has-provider-credit.layout-editing main{heigh
 .provider-credit-strip{height:30px;display:flex;align-items:center;justify-content:center;padding:0 10px;text-align:center;background:var(--panel);color:var(--text);font-size:10px;line-height:1.2}
 .provider-credit-strip a{font-size:inherit;color:inherit;text-decoration:underline;margin-inline:2px}
 .device-location-settings button{margin:2px}
+
+.map-wrap .map-sources-toggle{background:transparent!important;box-shadow:none;border:0;font-size:12px}
+.layout-drop-inside{outline:2px dashed var(--mint);outline-offset:-2px}
