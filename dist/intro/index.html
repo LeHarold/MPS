@@ -37,6 +37,7 @@ html{scroll-behavior:smooth}.guide{position:relative;isolation:isolate;padding-b
 
 .hd-instrument{margin-bottom:20px}.hd-instrument .instrument-closeup{aspect-ratio:16/9;max-height:none;background:#10212b}.hd-instrument .visual-steps{grid-template-columns:repeat(2,minmax(0,1fr))}.hd-instrument .closeup-caption{font-weight:750}.hd-stills summary{cursor:pointer;padding:10px 0;font-weight:750}.hd-stills img{aspect-ratio:16/9}.ruler-help{max-width:65ch}mark{color:inherit;background:linear-gradient(transparent 42%,#e2f569 42%,#e2f569 90%,transparent 90%);background-repeat:no-repeat}.visual-steps [aria-current="step"] mark,.ruler-help mark{animation:ink-sweep .38s ease-out both}@keyframes ink-sweep{from{background-size:0% 100%}to{background-size:100% 100%}}@media(max-width:540px){.hd-instrument .visual-steps{grid-template-columns:1fr}}@media(prefers-reduced-motion:reduce){.visual-steps [aria-current="step"] mark,.ruler-help mark{animation:none}}
 .chapter-caption,.closeup-caption{margin:8px 0 4px;color:var(--ink);font-weight:700;font-size:.92rem}.chapter-progress{position:fixed;z-index:20;color:#15382c}.chapter-progress details{background:#f8fbf6f5;border:1px solid #9db7a6;border-radius:11px;box-shadow:0 6px 22px #17362724;backdrop-filter:blur(12px)}.chapter-progress summary{list-style:none;display:grid;gap:3px;padding:10px 12px;font-weight:800;cursor:pointer}.chapter-progress summary::-webkit-details-marker{display:none}.progress-meta{display:flex;justify-content:space-between;gap:6px;font-weight:600;font-size:.79rem;font-variant-numeric:tabular-nums}.chapter-progress progress{appearance:none;-webkit-appearance:none;width:100%;height:4px;background:#d6e3d7;border:0;border-radius:8px;overflow:hidden}.chapter-progress progress::-webkit-progress-bar{background:#d6e3d7}.chapter-progress progress::-webkit-progress-value{background:#267453}.chapter-progress progress::-moz-progress-bar{background:#267453}.chapter-progress nav ol{list-style:none;margin:0;padding:4px 7px 8px}.chapter-progress nav a{display:flex;align-items:center;min-height:40px;border-radius:6px;padding:6px;text-decoration:none;font-size:.83rem;line-height:1.25}.chapter-progress nav a:hover{background:#e6f1e8}.chapter-progress nav a[aria-current="location"]{background:#1d563e;color:#fff;font-weight:800}.mission-links[aria-hidden="true"] a{white-space:nowrap}@media(min-width:960px){.chapter-progress{right:max(12px,calc((100vw - 1390px)/2));top:clamp(108px,19vh,180px);width:150px;max-height:calc(100vh - 192px);overflow:auto}body>main.wrap{width:min(1140px,calc(100% - 196px));margin-left:max(20px,calc((100% - 1330px)/2));margin-right:auto}.chapter-progress summary{pointer-events:none;cursor:default}}@media(max-width:959px){body{padding-bottom:calc(73px + env(safe-area-inset-bottom))}.chapter-progress{right:10px;left:10px;bottom:max(7px,env(safe-area-inset-bottom))}.chapter-progress summary{grid-template-columns:minmax(0,1fr) auto;align-items:center}.chapter-progress summary progress{grid-column:1/-1}.chapter-progress summary .progress-current::after{content:" ▾"}.chapter-progress details[open] summary .progress-current::after{content:" ▴"}.chapter-progress nav ol{display:grid;grid-template-columns:1fr 1fr;max-height:45vh;overflow:auto}.chapter-progress nav a{min-height:42px}}
+html{-webkit-text-size-adjust:100%}body>header{-webkit-backdrop-filter:blur(14px)}.chapter-progress details{-webkit-backdrop-filter:blur(12px)}.headline-typed{-webkit-clip-path:inset(0)}.inline-play{display:block;min-height:44px;margin:8px 0;padding:6px 12px;border:1px solid #267453;border-radius:8px;color:#15382c;background:#f2f9ed;font-weight:750;touch-action:manipulation}.chapter-stage>.inline-play{position:absolute;z-index:3;bottom:54px;left:12px}.feedback-form input:not([hidden]),.feedback-form textarea,.feedback-form select,.feature-filter input{font-size:max(16px,1rem)}.chapter-progress summary,.chapter-progress a,.chapter-button,.visual-steps button,.mission-links a{touch-action:manipulation}@media(max-width:959px){.chapter-progress{left:10px;right:10px;left:max(10px,env(safe-area-inset-left));right:max(10px,env(safe-area-inset-right))}.chapter-progress nav ol{-webkit-overflow-scrolling:touch;overscroll-behavior:contain;max-height:45vh;max-height:45dvh}.has-editing-field .chapter-progress{visibility:hidden}}@media(max-width:350px){.hero.guide{padding-inline:17px}.hero h1{white-space:normal;overflow-wrap:anywhere}.feedback{padding-inline:14px}}
 </style>
 </head>
 <body>
@@ -66,7 +67,7 @@ html{scroll-behavior:smooth}.guide{position:relative;isolation:isolate;padding-b
 <article id="reference-copy"><h3>從參考資料建立可編輯副本</h3><figure class="tool-flow" aria-label="從參考資料建立可編輯副本操作路徑"><div class="flow-track"><span>側欄</span><span>航路網</span><span>展開個別航路</span></div></figure><p>按「建立此航路可修改副本」，再到「我的圖層」編輯副本的頂點、名稱或樣式。</p></article>
 <article id="layers"><h3>新增、顯示與定位圖層</h3><div class="tool-label"><span>我的圖層、新圖層、定位圖層</span></div><p class="tool-entry"><strong>在哪裡開啟</strong><span>上方 ☰ › 我的圖層 › 新圖層／建立副本／定位圖層</span></p><ol class="tool-steps"><li>命名後按「儲存圖層」。勾選可顯示或隱藏圖層。想把新標繪加到某圖層，請先把它設為編輯圖層。</li><li>定位前先選圖層，再按「定位圖層」檢查全部物件是否都落在想要的範圍。可在圖層樣式調整透明度或循環切換點大小。</li></ol><div class="feature-media"><div class="media-shots"><figure><a href="media/14-layers.jpg" target="_blank" rel="noopener" aria-label="放大：在我的圖層查看標繪"><img src="media/14-layers.jpg" alt="在我的圖層查看標繪" loading="lazy" decoding="async"></a><figcaption>在我的圖層查看標繪</figcaption></figure></div></div></article></div></section>
 <section class="recent-tools ordered-group" aria-labelledby="drawing-tools-title"><h3 id="drawing-tools-title">繪圖與編輯</h3><article id="draw" class="demo-feature"><h3>標記、線段、區域與自由繪圖</h3>
-<div class="demo-feature-layout"><div class="demo-screen"><div class="chapter-stage"><video class="feature-video" controls muted loop playsinline preload="none" poster="media/13-area-complete.jpg" aria-label="繪製區域操作短片"><source src="media/area.mp4" type="video/mp4"><a href="media/area.mp4">下載操作短片</a></video><img class="chapter-still" alt="" hidden><span class="chapter-pointer" aria-hidden="true"></span></div><p class="chapter-caption"></p><button type="button" class="chapter-replay" hidden>播放完整短片</button><a class="screen-link" href="media/area.mp4" target="_blank" rel="noopener">開啟原尺寸影片</a></div>
+<div class="demo-feature-layout"><div class="demo-screen"><div class="chapter-stage"><video class="feature-video" controls muted loop playsinline webkit-playsinline preload="none" poster="media/13-area-complete.jpg" aria-label="繪製區域操作短片"><source src="media/area.mp4" type="video/mp4"><a href="media/area.mp4">下載操作短片</a></video><button type="button" class="inline-play" hidden>在頁內播放</button><img class="chapter-still" alt="" hidden><span class="chapter-pointer" aria-hidden="true"></span></div><p class="chapter-caption"></p><button type="button" class="chapter-replay" hidden>播放完整短片</button><a class="screen-link" href="media/area.mp4" target="_blank" rel="noopener">開啟原尺寸影片</a></div>
 <div class="demo-instructions"><div class="tool-label"><span class="symbol" aria-hidden="true">⌖</span><span class="symbol" aria-hidden="true">╱</span><span class="symbol" aria-hidden="true">⬡</span><span class="symbol" aria-hidden="true">✎</span><span class="symbol" aria-hidden="true"><svg viewBox="0 0 24 24" width="23" height="23" fill="none" stroke="currentColor" stroke-width="1.7" aria-hidden="true"><path d="m3 14 10-10a2 2 0 0 1 3 0l5 5a2 2 0 0 1 0 3L11 22H9l-6-6a1.4 1.4 0 0 1 0-2Z"/><path d="m7 10 8 8M10 22h12"/></svg></span><span>新增標記、繪製線段、繪製區域、自由繪圖</span></div><p class="tool-entry"><strong>在哪裡開啟</strong><span>上方工具列 › 新增標記／繪製線段／繪製區域／自由繪圖／標繪顏色</span></p><ol class="chapter-list" aria-label="點選步驟跳到操作畫面"><li><button type="button" class="chapter-button" data-time="0.2" data-frame="media/10-drawing-tools.jpg" data-x="126" data-y="29" aria-current="step"><span class="chapter-number" aria-hidden="true">1</span><span><strong>展開繪圖選單</strong><small>點上方繪圖工具群組。</small></span></button></li><li><button type="button" class="chapter-button" data-time="3.2" data-frame="media/11-area-tool.jpg" data-x="222" data-y="85" aria-current="false"><span class="chapter-number" aria-hidden="true">2</span><span><strong>選擇繪製區域</strong><small>點六邊形圖示。</small></span></button></li><li><button type="button" class="chapter-button" data-time="6.2" data-frame="media/12-area-vertices.jpg" data-x="730" data-y="603" aria-current="false"><span class="chapter-number" aria-hidden="true">3</span><span><strong>選取三個頂點</strong><small>依序點地圖上的三個位置。</small></span></button></li><li><button type="button" class="chapter-button" data-time="9.2" data-frame="media/13-area-complete.jpg" data-x="373" data-y="30" aria-current="false"><span class="chapter-number" aria-hidden="true">4</span><span><strong>完成區域</strong><small>點上方 ✓，讓 MPS 封閉區域。</small></span></button></li></ol><details class="chapter-notes"><summary>更多操作細節</summary><ol class="tool-steps"><li>先在「我的圖層」指定編輯圖層，再選顏色。標記點一下即可；線段至少兩點，區域至少三點。依序點頂點後點 ✓，也可在鍵盤按 Enter。</li><li>用手指或滑鼠拖曳可自由繪圖。點 × 或按 Esc 取消未完成的操作。完成後可在物件修訂修改顏色，或用橡皮擦點選物件，再用復原取回。</li></ol></details></div></div>
 <details class="demo-stills"><summary>查看逐步截圖</summary><div class="media-shots"><figure><a href="media/10-drawing-tools.jpg" target="_blank" rel="noopener" aria-label="放大：打開繪圖選單"><img src="media/10-drawing-tools.jpg" alt="打開繪圖選單" loading="lazy" decoding="async"></a><figcaption>打開繪圖選單</figcaption></figure>
 <figure><a href="media/11-area-tool.jpg" target="_blank" rel="noopener" aria-label="放大：選擇繪製區域"><img src="media/11-area-tool.jpg" alt="選擇繪製區域" loading="lazy" decoding="async"></a><figcaption>選擇繪製區域</figcaption></figure>
@@ -79,27 +80,27 @@ html{scroll-behavior:smooth}.guide{position:relative;isolation:isolate;padding-b
 <section id="instrument-gallery" class="recent-tools ordered-group instrument-gallery" aria-labelledby="instrument-title"><h3 id="instrument-title">量尺與尺規操作</h3><p class="ruler-help">先在「設定」開啟尺規吸附，並顯示想對齊的航點或標記。<mark>看到鎖定圖示才表示已吸附</mark>。點選影片下的步驟可停在該畫面。</p>
 <div class="instrument-order"><a href="#measure">鐵捲尺</a><a href="#visual-straight">刻度直尺</a><a href="#visual-angle">圓形量角器</a><a href="#visual-compass">圓規</a><a href="#visual-two">雙點量尺</a></div>
 <article id="measure" class="demo-feature"><h3>鐵捲尺與距離鎖定</h3>
-<div class="demo-feature-layout"><div class="demo-screen"><div class="chapter-stage"><video class="feature-video" controls muted loop playsinline preload="none" poster="media/04-tape-distance.jpg" aria-label="兩點測距操作短片"><source src="media/tape.mp4" type="video/mp4"><a href="media/tape.mp4">下載操作短片</a></video><img class="chapter-still" alt="" hidden><span class="chapter-pointer" aria-hidden="true"></span></div><p class="chapter-caption"></p><button type="button" class="chapter-replay" hidden>播放完整短片</button><a class="screen-link" href="media/tape.mp4" target="_blank" rel="noopener">開啟原尺寸影片</a></div>
+<div class="demo-feature-layout"><div class="demo-screen"><div class="chapter-stage"><video class="feature-video" controls muted loop playsinline webkit-playsinline preload="none" poster="media/04-tape-distance.jpg" aria-label="兩點測距操作短片"><source src="media/tape.mp4" type="video/mp4"><a href="media/tape.mp4">下載操作短片</a></video><button type="button" class="inline-play" hidden>在頁內播放</button><img class="chapter-still" alt="" hidden><span class="chapter-pointer" aria-hidden="true"></span></div><p class="chapter-caption"></p><button type="button" class="chapter-replay" hidden>播放完整短片</button><a class="screen-link" href="media/tape.mp4" target="_blank" rel="noopener">開啟原尺寸影片</a></div>
 <div class="demo-instructions"><div class="tool-label"><span class="symbol" aria-hidden="true"><svg width="23" height="23" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" aria-hidden="true"><path d="M3 16V9a6 6 0 0 1 12 0v7H3Zm0 0v4h18v-4h-6M7 17v3m4-3v3m4-3v3m4-3v3"/><circle cx="9" cy="9" r="2"/></svg></span><span>鐵捲尺</span></div><p class="tool-entry"><strong>在哪裡開啟</strong><span>上方工具列 › 鐵捲尺（捲尺圖示）</span></p><ol class="chapter-list" aria-label="點選步驟跳到操作畫面"><li><button type="button" class="chapter-button" data-time="0.2" data-frame="media/02-tape-tool.jpg" data-x="168" data-y="30" aria-current="step"><span class="chapter-number" aria-hidden="true">1</span><span><strong>選擇鐵捲尺</strong><small>點上方捲尺圖示。</small></span></button></li><li><button type="button" class="chapter-button" data-time="3.2" data-frame="media/03-tape-start.jpg" data-x="510" data-y="410" aria-current="false"><span class="chapter-number" aria-hidden="true">2</span><span><strong>設定起點</strong><small>在地圖上點第一個位置。</small></span></button></li><li><button type="button" class="chapter-button" data-time="6.2" data-frame="media/04-tape-distance.jpg" data-x="650" data-y="480" aria-current="false"><span class="chapter-number" aria-hidden="true">3</span><span><strong>設定終點並讀距離</strong><small>點第二個位置，線上會顯示直線距離。</small></span></button></li></ol><details class="chapter-notes"><summary>更多操作細節</summary><ol class="tool-steps"><li>依序點起點、終點，距離會直接顯示在線段上。到「設定 › 地圖單位」可改用海里、公里或公尺。</li><li>點線上的距離標籤開啟詳細修訂。輸入數值、套用並勾選「鎖定距離」，會以起點為基準調整終點。鎖定後拖曳端點仍保持設定長度。</li><li>可沿線移動距離標籤，避開其他文字。若端點設為跟隨母點（MOM），距離會隨母點更新；解除跟隨後可再手動鎖距。</li></ol></details></div></div>
 <details class="demo-stills"><summary>查看逐步截圖</summary><div class="media-shots"><figure><a href="media/02-tape-tool.jpg" target="_blank" rel="noopener" aria-label="放大：選擇鐵捲尺"><img src="media/02-tape-tool.jpg" alt="選擇鐵捲尺" loading="lazy" decoding="async"></a><figcaption>選擇鐵捲尺</figcaption></figure>
 <figure><a href="media/03-tape-start.jpg" target="_blank" rel="noopener" aria-label="放大：點起點"><img src="media/03-tape-start.jpg" alt="點起點" loading="lazy" decoding="async"></a><figcaption>點起點</figcaption></figure>
 <figure><a href="media/04-tape-distance.jpg" target="_blank" rel="noopener" aria-label="放大：點終點，讀取線上的距離"><img src="media/04-tape-distance.jpg" alt="點終點，讀取線上的距離" loading="lazy" decoding="async"></a><figcaption>點終點，讀取線上的距離</figcaption></figure></div></details></article><div class="instrument-grid"><article id="visual-straight" class="instrument-card hd-instrument" data-position="0">
-<h4>刻度直尺</h4><video class="instrument-closeup" controls muted playsinline preload="none" poster="media/ruler-lesson-1.jpg" aria-label="刻度直尺實際操作"><source src="media/ruler-lock-hd.mp4" type="video/mp4"></video>
+<h4>刻度直尺</h4><video class="instrument-closeup" controls muted playsinline webkit-playsinline preload="none" poster="media/ruler-lesson-1.jpg" aria-label="刻度直尺實際操作"><source src="media/ruler-lock-hd.mp4" type="video/mp4"></video><button type="button" class="inline-play" hidden>在頁內播放</button>
 <a class="screen-link" href="media/ruler-lock-hd.mp4" target="_blank" rel="noopener">開啟原尺寸影片</a>
 <p class="closeup-caption">找到左端 0</p><ol class="visual-steps" aria-label="選擇操作步驟"><li><button type="button" data-time="0.15" data-frame="media/ruler-lesson-1.jpg" aria-current="step"><strong><mark>找到左端 0</mark></strong><small>從「尺規工具」開啟「刻度直尺」。按住左端的 0。</small></button></li><li><button type="button" data-time="3.15" data-frame="media/ruler-lesson-2.jpg" aria-current="false"><strong><mark>拖近參考點後放開</mark></strong><small>0 出現鎖定圖示，表示已吸附。</small></button></li><li><button type="button" data-time="6.15" data-frame="media/ruler-lesson-3.jpg" aria-current="false"><strong><mark>點同一個 0 解鎖</mark></strong><small>點一下即可。確認鎖定圖示消失。</small></button></li><li><button type="button" data-time="9.15" data-frame="media/ruler-lesson-4.jpg" aria-current="false"><strong><mark>移到新位置</mark></strong><small>解鎖後再拖 0。若放開時靠近另一個參考點，會再次吸附。</small></button></li></ol>
 <details class="hd-stills"><summary>放大逐步截圖</summary><div class="media-shots"><figure><a href="media/ruler-lesson-1.jpg" target="_blank" rel="noopener"><img src="media/ruler-lesson-1.jpg" alt="找到左端 0" loading="lazy" decoding="async"></a><figcaption>找到左端 0</figcaption></figure><figure><a href="media/ruler-lesson-2.jpg" target="_blank" rel="noopener"><img src="media/ruler-lesson-2.jpg" alt="拖近參考點後放開" loading="lazy" decoding="async"></a><figcaption>拖近參考點後放開</figcaption></figure><figure><a href="media/ruler-lesson-3.jpg" target="_blank" rel="noopener"><img src="media/ruler-lesson-3.jpg" alt="點同一個 0 解鎖" loading="lazy" decoding="async"></a><figcaption>點同一個 0 解鎖</figcaption></figure><figure><a href="media/ruler-lesson-4.jpg" target="_blank" rel="noopener"><img src="media/ruler-lesson-4.jpg" alt="移到新位置" loading="lazy" decoding="async"></a><figcaption>移到新位置</figcaption></figure></div></details></article>
 <article id="visual-angle" class="instrument-card hd-instrument" data-position="0">
-<h4>圓形量角器</h4><video class="instrument-closeup" controls muted playsinline preload="none" poster="media/dial-lesson-1.jpg" aria-label="圓形量角器實際操作"><source src="media/protractor-lock-hd.mp4" type="video/mp4"></video>
+<h4>圓形量角器</h4><video class="instrument-closeup" controls muted playsinline webkit-playsinline preload="none" poster="media/dial-lesson-1.jpg" aria-label="圓形量角器實際操作"><source src="media/protractor-lock-hd.mp4" type="video/mp4"></video><button type="button" class="inline-play" hidden>在頁內播放</button>
 <a class="screen-link" href="media/protractor-lock-hd.mp4" target="_blank" rel="noopener">開啟原尺寸影片</a>
 <p class="closeup-caption">找到中央 0</p><ol class="visual-steps" aria-label="選擇操作步驟"><li><button type="button" data-time="0.15" data-frame="media/dial-lesson-1.jpg" aria-current="step"><strong><mark>找到中央 0</mark></strong><small>從「尺規工具」開啟「圓形量角器」，按住圓心的 0。</small></button></li><li><button type="button" data-time="3.15" data-frame="media/dial-lesson-2.jpg" aria-current="false"><strong><mark>拖近參考點後放開</mark></strong><small>中央 0 出現鎖定圖示，表示已吸附。</small></button></li><li><button type="button" data-time="6.15" data-frame="media/dial-lesson-3.jpg" aria-current="false"><strong><mark>點中央 0 解鎖</mark></strong><small>外圈的 0° 是角度刻度。請點圓心的 0。</small></button></li><li><button type="button" data-time="9.15" data-frame="media/dial-lesson-4.jpg" aria-current="false"><strong><mark>移到新位置</mark></strong><small>再拖動中央 0，確認量角器可移動。</small></button></li></ol>
 <details class="hd-stills"><summary>放大逐步截圖</summary><div class="media-shots"><figure><a href="media/dial-lesson-1.jpg" target="_blank" rel="noopener"><img src="media/dial-lesson-1.jpg" alt="找到中央 0" loading="lazy" decoding="async"></a><figcaption>找到中央 0</figcaption></figure><figure><a href="media/dial-lesson-2.jpg" target="_blank" rel="noopener"><img src="media/dial-lesson-2.jpg" alt="拖近參考點後放開" loading="lazy" decoding="async"></a><figcaption>拖近參考點後放開</figcaption></figure><figure><a href="media/dial-lesson-3.jpg" target="_blank" rel="noopener"><img src="media/dial-lesson-3.jpg" alt="點中央 0 解鎖" loading="lazy" decoding="async"></a><figcaption>點中央 0 解鎖</figcaption></figure><figure><a href="media/dial-lesson-4.jpg" target="_blank" rel="noopener"><img src="media/dial-lesson-4.jpg" alt="移到新位置" loading="lazy" decoding="async"></a><figcaption>移到新位置</figcaption></figure></div></details></article>
 <article id="visual-compass" class="instrument-card" data-mode="compass" data-position="0"><h4>圓規</h4>
-<video class="instrument-closeup" controls muted loop playsinline preload="none" poster="media/compass-locked.jpg" aria-label="圓規實際畫面特寫"><source src="media/compass-closeup.mp4" type="video/mp4"></video><p class="closeup-caption"></p><ol class="visual-steps"><li><button type="button" aria-current="step"><strong>指定圓心和半徑</strong><small>尺規工具 › 圓規。先點地圖放置圓心，再輸入半徑。</small></button></li><li><button type="button" aria-current="false"><strong>解鎖後拖曳吸附</strong><small>點圓心小十字解鎖。把圓心拖到可見參考點附近，放開會吸附並重新鎖定。</small></button></li><li><button type="button" aria-current="false"><strong>點圓心解鎖或操作筆端</strong><small>再次點小十字可解鎖。雙擊筆端並按住拖曳畫弧；雙擊後直接放開可標點。</small></button></li></ol></article>
+<video class="instrument-closeup" controls muted loop playsinline webkit-playsinline preload="none" poster="media/compass-locked.jpg" aria-label="圓規實際畫面特寫"><source src="media/compass-closeup.mp4" type="video/mp4"></video><button type="button" class="inline-play" hidden>在頁內播放</button><p class="closeup-caption"></p><ol class="visual-steps"><li><button type="button" aria-current="step"><strong>指定圓心和半徑</strong><small>尺規工具 › 圓規。先點地圖放置圓心，再輸入半徑。</small></button></li><li><button type="button" aria-current="false"><strong>解鎖後拖曳吸附</strong><small>點圓心小十字解鎖。把圓心拖到可見參考點附近，放開會吸附並重新鎖定。</small></button></li><li><button type="button" aria-current="false"><strong>點圓心解鎖或操作筆端</strong><small>再次點小十字可解鎖。雙擊筆端並按住拖曳畫弧；雙擊後直接放開可標點。</small></button></li></ol></article>
 <article id="visual-two" class="instrument-card" data-mode="two" data-position="0"><h4>雙點量尺</h4>
 <div class="instrument-stage" aria-hidden="true"><div class="snap-target"></div><div class="instrument-glyph"><span class="joint">A</span><span class="tool-end">B</span></div><div class="touch-hint a"></div><div class="touch-hint b"></div><strong class="stage-state">雙指按住地圖約 1 秒</strong></div>
 <ol class="visual-steps"><li><button type="button" aria-current="step"><strong>雙指按住地圖約 1 秒</strong><small>兩指保持不動，放在要量的兩個位置。</small></button></li><li><button type="button" aria-current="false"><strong>滑動兩指調整</strong><small>量尺出現後，移動兩指可改變位置、方向和長度。放開後可讀取距離與雙向航向。</small></button></li><li><button type="button" aria-current="false"><strong>貼齊與解鎖</strong><small>端點拖近可見參考點，放開後可吸附。點已鎖定的端點解鎖；點地圖空白處收起量尺。</small></button></li></ol></article></div>
 <article id="instruments" class="instrument-card hd-instrument" data-position="0">
-<h4>直尺標色的完整操作畫面</h4><video class="instrument-closeup" controls muted playsinline preload="none" poster="media/color-lesson-1.jpg" aria-label="直尺標色的完整操作畫面實際操作"><source src="media/ruler-color-hd.mp4" type="video/mp4"></video>
+<h4>直尺標色的完整操作畫面</h4><video class="instrument-closeup" controls muted playsinline webkit-playsinline preload="none" poster="media/color-lesson-1.jpg" aria-label="直尺標色的完整操作畫面實際操作"><source src="media/ruler-color-hd.mp4" type="video/mp4"></video><button type="button" class="inline-play" hidden>在頁內播放</button>
 <a class="screen-link" href="media/ruler-color-hd.mp4" target="_blank" rel="noopener">開啟原尺寸影片</a>
 <p class="closeup-caption">展開尺規設定</p><ol class="visual-steps" aria-label="選擇操作步驟"><li><button type="button" data-time="0.15" data-frame="media/color-lesson-1.jpg" aria-current="step"><strong><mark>展開尺規設定</mark></strong><small>先開啟直尺，再展開左側「尺規設定」。</small></button></li><li><button type="button" data-time="3.15" data-frame="media/color-lesson-2.jpg" aria-current="false"><strong><mark>填入起點與終點</mark></strong><small>範例用 50 到 300 NM，接著選顏色。</small></button></li><li><button type="button" data-time="6.15" data-frame="media/color-lesson-3.jpg" aria-current="false"><strong><mark>按套用範圍</mark></strong><small>按下「套用範圍」，留意右側的直尺。</small></button></li><li><button type="button" data-time="9.15" data-frame="media/color-lesson-4.jpg" aria-current="false"><strong><mark>看放大的尺面</mark></strong><small>色帶會出現在指定刻度之間。移除時可按「清除標色」。</small></button></li></ol>
 <details class="hd-stills"><summary>放大逐步截圖</summary><div class="media-shots"><figure><a href="media/color-lesson-1.jpg" target="_blank" rel="noopener"><img src="media/color-lesson-1.jpg" alt="展開尺規設定" loading="lazy" decoding="async"></a><figcaption>展開尺規設定</figcaption></figure><figure><a href="media/color-lesson-2.jpg" target="_blank" rel="noopener"><img src="media/color-lesson-2.jpg" alt="填入起點與終點" loading="lazy" decoding="async"></a><figcaption>填入起點與終點</figcaption></figure><figure><a href="media/color-lesson-3.jpg" target="_blank" rel="noopener"><img src="media/color-lesson-3.jpg" alt="按套用範圍" loading="lazy" decoding="async"></a><figcaption>按套用範圍</figcaption></figure><figure><a href="media/color-lesson-4.jpg" target="_blank" rel="noopener"><img src="media/color-lesson-4.jpg" alt="看放大的尺面" loading="lazy" decoding="async"></a><figcaption>看放大的尺面</figcaption></figure></div></details></article>
@@ -142,6 +143,39 @@ html{scroll-behavior:smooth}.guide{position:relative;isolation:isolate;padding-b
 <footer class="footer"><div class="wrap"><strong>MPS</strong><div class="visit-info"><span>介紹頁累計瀏覽</span><img src="https://hits.sh/leharold.github.io/MPS/intro.svg?label=Views&amp;color=267453" width="86" height="20" alt="由 Hits 提供的累計瀏覽次數" referrerpolicy="no-referrer"></div><a href="https://github.com/LeHarold/MPS">GitHub 原始碼</a></div></footer>
 
 <script>
+function playInline(video, fromUser = false) {
+  const button = video.nextElementSibling;
+  video.defaultMuted = true;
+  video.muted = true;
+  video.playsInline = true;
+  const request = video.play();
+  if (request && typeof request.catch === 'function') {
+    request.catch(error => {
+      if (error.name === 'NotAllowedError' || fromUser) button.hidden = false;
+    });
+  }
+}
+const pendingSeeks = new WeakMap();
+function seekInline(video, time) {
+  if (video.readyState >= 1) {
+    video.currentTime = time;
+    return;
+  }
+  if (!pendingSeeks.has(video)) {
+    video.addEventListener('loadedmetadata', () => {
+      const next = pendingSeeks.get(video);
+      pendingSeeks.delete(video);
+      if (next !== undefined) video.currentTime = next;
+    }, {once: true});
+  }
+  pendingSeeks.set(video, time);
+  video.preload = 'auto';
+}
+document.querySelectorAll('video + .inline-play').forEach(button => {
+  const video = button.previousElementSibling;
+  button.addEventListener('click', () => playInline(video, true));
+  video.addEventListener('playing', () => { button.hidden = true; });
+});
 const demos = [...document.querySelectorAll('.demo-feature')].map(card => {
   const video = card.querySelector('video');
   const steps = [...card.querySelectorAll('.chapter-button')];
@@ -167,7 +201,7 @@ const demos = [...document.querySelectorAll('.demo-feature')].map(card => {
     still.src = step.dataset.frame;
     still.hidden = false;
     if (video.readyState === 0) video.preload = 'auto';
-    video.currentTime = Number(step.dataset.time);
+    seekInline(video, Number(step.dataset.time));
   }));
   video.addEventListener('seeked', () => { still.hidden = true; });
   video.addEventListener('timeupdate', syncHighlight);
@@ -180,9 +214,9 @@ const demos = [...document.querySelectorAll('.demo-feature')].map(card => {
   replay.addEventListener('click', () => {
     demo.pinned = false;
     still.hidden = true;
-    video.currentTime = 0;
+    seekInline(video, 0);
     video.playbackRate = 1.75;
-    video.play().catch(() => {});
+    playInline(video, true);
   });
   highlight(0);
   return demo;
@@ -239,7 +273,7 @@ document.querySelectorAll('.instrument-card').forEach(card => {
       demo.pinned = true;
       video.pause();
       if (video.readyState === 0) video.preload = 'auto';
-      video.currentTime = button.dataset.time === undefined ? (index === 2 ? 3.15 : 0.15) : Number(button.dataset.time);
+      seekInline(video, button.dataset.time === undefined ? (index === 2 ? 3.15 : 0.15) : Number(button.dataset.time));
     }
     updateStep(index);
   }));
@@ -262,7 +296,7 @@ function updatePlayback(demo) {
     return;
   }
   demo.video.playbackRate = 1.75;
-  demo.video.play().catch(() => {});
+  playInline(demo.video);
 }
 if ('IntersectionObserver' in window) {
   const byVideo = new Map(demos.map(demo => [demo.video, demo]));
@@ -317,7 +351,7 @@ const desktopProgress = matchMedia('(min-width: 960px)');
 let progressFrame = 0;
 function redrawProgress() {
   progressFrame = 0;
-  const scroller = document.scrollingElement;
+  const scroller = document.scrollingElement || document.documentElement;
   const total = Math.max(0, scroller.scrollHeight - scroller.clientHeight);
   const percentage = total ? Math.max(0, Math.min(100, Math.round(scroller.scrollTop / total * 100))) : 0;
   let active = 0;
@@ -325,7 +359,7 @@ function redrawProgress() {
   chapterTargets.forEach((target, index) => {
     if (!target.closest('[hidden]') && target.getBoundingClientRect().top <= line) active = index;
   });
-  if (percentage === 100 && chapterTargets.at(-1).getBoundingClientRect().top < innerHeight) active = chapterTargets.length - 1;
+  if (percentage === 100 && chapterTargets[chapterTargets.length - 1].getBoundingClientRect().top < innerHeight) active = chapterTargets.length - 1;
   progressLinks.forEach((link, i) => {
     if (i === active) link.setAttribute('aria-current', 'location');
     else link.removeAttribute('aria-current');
@@ -358,7 +392,7 @@ document.addEventListener('toggle', scheduleProgress, true);
 filter.addEventListener('input', scheduleProgress);
 if ('ResizeObserver' in window) new ResizeObserver(scheduleProgress).observe(document.body);
 const feedbackMail = document.getElementById('feedback-mail');
-feedbackMail.addEventListener('click', () => {
+function updateFeedbackMail() {
   const form = feedbackMail.closest('form');
   const type = form.querySelector('#feedback-category').value;
   const message = form.querySelector('#feedback-message').value.trim();
@@ -366,7 +400,22 @@ feedbackMail.addEventListener('click', () => {
   const subject = 'MPS 網站回饋 · ' + type;
   const body = [message, reply ? '回覆信箱：' + reply : ''].filter(Boolean).join('\n\n');
   feedbackMail.href = 'mailto:trihpii11@gmail.com?subject=' + encodeURIComponent(subject) + '&body=' + encodeURIComponent(body);
-});
+}
+feedbackMail.closest('form').addEventListener('input', updateFeedbackMail);
+feedbackMail.closest('form').addEventListener('change', updateFeedbackMail);
+updateFeedbackMail();
+function syncKeyboardLayout() {
+  const field = document.activeElement;
+  const editing = field && field.matches('input:not([type="hidden"]), textarea, select, [contenteditable="true"]');
+  document.body.classList.toggle('has-editing-field', Boolean(editing && !desktopProgress.matches));
+}
+document.addEventListener('focusin', syncKeyboardLayout);
+document.addEventListener('focusout', () => requestAnimationFrame(syncKeyboardLayout));
+window.addEventListener('pageshow', scheduleProgress);
+window.addEventListener('orientationchange', scheduleProgress);
+if (window.visualViewport) {
+  window.visualViewport.addEventListener('resize', scheduleProgress);
+}
 </script>
 </body>
 </html>
