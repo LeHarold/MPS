@@ -326,3 +326,15 @@ body.has-provider-credit main,body.has-provider-credit.layout-editing main{heigh
 
 .map-wrap .map-sources-toggle{background:transparent!important;box-shadow:none;border:0;font-size:12px}
 .layout-drop-inside{outline:2px dashed var(--mint);outline-offset:-2px}
+
+.workspace-order-button{margin:0 12px 6px;font-size:11px;padding:4px 8px}
+.layout-order-dialog{width:min(560px,calc(100vw - 24px))}
+.layout-order-dialog>form{float:right}
+.layout-order-dialog h2{font-size:17px;margin:0 0 10px}
+.layout-order-dialog>label{flex-wrap:wrap}
+.layout-order-row{display:grid;grid-template-columns:minmax(0,1fr) repeat(2,34px) minmax(72px,115px) auto;gap:4px;align-items:center;padding:6px 0;border-bottom:1px solid var(--line)}
+.layout-order-row span,.layout-order-row strong{overflow-wrap:anywhere}
+.layout-order-row button{padding:5px 6px}
+.layout-order-group{margin-top:4px;color:var(--mint)}
+.layout-section-group{margin-block:8px;border:1px solid var(--line);padding-inline:6px}
+@media(max-width:440px){.layout-order-row{grid-template-columns:minmax(0,1fr) repeat(2,34px)}.layout-order-row input{grid-column:1/3}}

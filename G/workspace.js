@@ -1,11 +1,11 @@
-import {mountRegionalAirways} from './regional-airways.mjs?v=224';
-import {normalizePack,readBasemapPack,removeBasemapPack,downloadBasemapPack,makeOfflineBasemap} from './offline-basemaps.mjs?v=224';
+import {mountRegionalAirways} from './regional-airways.mjs?v=225';
+import {normalizePack,readBasemapPack,removeBasemapPack,downloadBasemapPack,makeOfflineBasemap} from './offline-basemaps.mjs?v=225';
 import {ObjectSpatialIndex,simplifyDisplay,detailBucket,diffVisible} from './spatial-objects.mjs?v=191';
 import { createNavigationRuler, navigationReadout } from './navigation-ruler.mjs?v=191';
 import { placeNearbyWaypoints, viewportPaintDue } from './compact-waypoints.mjs?v=191';
 import { coordinateRows, coordinateWorkbook } from './coordinate-excel.mjs?v=191';
 import { LINE_STYLES, lineStyleOptions, installDoubleLines } from './line-appearance.mjs?v=191';
-import {openWorkspaceStorage} from './workspace-storage.mjs?v=224';
+import {openWorkspaceStorage} from './workspace-storage.mjs?v=225';
 import {labelDisplaySize,frameTask,memoAreaOffset} from './display-performance.mjs?v=191';
 import {areaSouthwest,limitAreaOffset,areaInteriorOffset} from './area-labels.mjs?v=191';
 import {stableLabelOffset,rememberLabelOffset,validAreaPlacement} from './label-stability.mjs?v=191';
@@ -13,9 +13,9 @@ import {buildTimeline,seekTimeline,formatActionTime} from './history-timeline.mj
 import {pdfTimeName,translatePixels,pointAlongScreenPath,horizontalTurn,rotatePixels,usableMapSize} from './movement.mjs?v=191';
 import {applyLabelRotation,preserveLabelCenter,rotatedLabelEdge,labelBorderSize} from './label-rotation.mjs?v=191';
 import {nearestPoint,attachPoint,releasePoint} from './point-snap.mjs?v=191';
-import {decodeTerrainBlob,bindTouchCursor,setupIOSStorage} from './ios-pwa.mjs?v=224';
+import {decodeTerrainBlob,bindTouchCursor,setupIOSStorage} from './ios-pwa.mjs?v=225';
 import {actionDescription} from './action-history.mjs?v=191';
-import {printRaster} from './print-raster.mjs?v=224';
+import {printRaster} from './print-raster.mjs?v=225';
 import {uniqueLabelIds} from './label-visibility.mjs?v=191';
 import {outerVertices,transformPoints,nearestPathFraction} from './map-editing.mjs?v=191';
 import {createPressControls} from './press-controls.mjs?v=191';
@@ -34,7 +34,7 @@ const canPackageWebsite=()=>!offlineBundle&&featuresUnlocked;
 if(window.MPS_IMPORT_BUNDLE)await window.MPS_IMPORT_BUNDLE();
 import {intervalPlan,placeCursorBox,extensionEndpoint} from './workspace-interactions.mjs?v=191';
 import {planProjectImport,mergeProjectItems} from './project-merge.mjs?v=191';
-import {parseSearchPosition,searchCatalog,placeLabelBoxes,labelRank,calibrationDistance,readPrintTemplate,openBackupHistory} from './workspace-ux.mjs?v=224';
+import {parseSearchPosition,searchCatalog,placeLabelBoxes,labelRank,calibrationDistance,readPrintTemplate,openBackupHistory} from './workspace-ux.mjs?v=225';
 if(window.MPS_BUNDLE_READY)await window.MPS_BUNDLE_READY;
 const bundleNamespace=offlineBundle?'bundle:'+window.MPS_BUNDLE.id+':':/(?:^|\/)(?:G|google-workspace)(?:\/|$)/.test(location.pathname)?'google-workspace:':'';
 const workspaceStorage = await openWorkspaceStorage(error => {
@@ -1235,7 +1235,7 @@ opacityButton.onclick=()=>{const levels=[1,.75,.5,.25],value=levels.includes(sta
 $('settings-panel').querySelector('.section-body').append(opacityButton);const refreshBeforeMovementOpacity=refreshUI;refreshUI=function(){refreshBeforeMovementOpacity();paintMovementOpacity()};paintMovementOpacity();
 }
 
-if(typeof document!=='undefined'){const version=document.createElement('p');version.id='app-version';version.textContent='程式版本 v224（Google 分支）';$('settings-panel').querySelector('.section-body').append(version)}
+if(typeof document!=='undefined'){const version=document.createElement('p');version.id='app-version';version.textContent='程式版本 v225（Google 分支）';$('settings-panel').querySelector('.section-body').append(version)}
 
 // Quick navigation ruler and persistent graduated ruler are independent tools.
 if (typeof document !== 'undefined') {
@@ -2524,4 +2524,155 @@ if(typeof document!=='undefined'){
  });
  window.addEventListener('pointercancel',event=>{if(drag?.pointer===event.pointerId)clearDrag()});
  window.addEventListener('blur',clearDrag);
+}
+
+if(typeof document!=='undefined'){
+ const editor=document.createElement('dialog');
+ editor.className='layout-order-dialog';
+ editor.setAttribute('aria-labelledby','layout-order-title');
+ editor.innerHTML='<form method="dialog"><button aria-label="關閉排序">×</button></form><h2 id="layout-order-title">排序與群組</h2><label>編輯範圍 <select></select></label><p>用 ↑ ↓ 移動。填入相同群組名稱即可合併，清空名稱即可移出群組。</p><div class="layout-order-list"></div>';
+ document.body.append(editor);
+ const picker=editor.querySelector('select'),list=editor.querySelector('.layout-order-list');
+ const workspace=$('workspace'),toolbar=document.querySelector('.toolbar');
+ const textOf=node=>(node.getAttribute('aria-label')||node.title||node.textContent).trim().replace(/\s+/g,' ').slice(0,80);
+ const panels=()=>[...workspace.querySelectorAll(':scope > details[id], :scope > .layout-group > details[id]')];
+ function scopeItems(scope){
+  if(scope==='tool'||scope==='panel'){
+   const root=scope==='tool'?toolbar:workspace;
+   return [...root.children].flatMap(node=>node.matches('.layout-group')?
+    [...(node.querySelector(':scope > .layout-group-menu')||node).children].filter(child=>child.tagName!=='SUMMARY'):[node])
+    .filter(node=>scope==='tool'?node.id!=='edit-layout'&&node.matches('button,.tool-dropdown,label'):node.matches('details[id]'))
+    .map(node=>({id:layoutId(node),name:textOf(node.querySelector(':scope > summary')||node),nodes:[node]}));
+  }
+  const root=$(scope)?.querySelector(':scope > .section-body');
+  if(!root)return [];
+  const nodes=[...root.children].flatMap(node=>node.matches('.layout-section-group')?[...node.children].slice(1):[node]);
+  const items=[];
+  for(let i=0;i<nodes.length;i++){
+   const node=nodes[i];
+   if(node.hidden||node.matches('input[type="hidden"], input[type="file"], p, .edit-layout-copy, [role="status"]'))continue;
+   const next=nodes[i+1];
+   const paired=node.matches('label')&&next&&!next.hidden&&(node.htmlFor===next.id&&!!next.id||!node.htmlFor&&!node.querySelector('input,select,button')&&next.matches('input,select,textarea,div[id]'));
+   const controls=paired?[node,next]:[node];
+   if(paired)i++;
+   const identifier=node.id||(paired?next.id:'')||node.querySelector('[id]')?.id;
+   const content=node.querySelector(':scope > summary,:scope > legend')||node;
+   const name=textOf(content)||identifier;
+   if(!name)continue;
+   const id=identifier||node.dataset.layoutItem||'label:'+name;
+   node.dataset.layoutItem=id;
+   if(!items.some(item=>item.id===id))items.push({id,name,nodes:controls});
+  }
+  return items;
+ }
+ function settingsFor(scope){
+  state.settings.layout||={};
+  if(scope==='tool'||scope==='panel')return state.settings.layout[scope]||={};
+  state.settings.layout.sections||={};
+  return state.settings.layout.sections[scope]||={};
+ }
+ function applySection(scope){
+  const root=$(scope)?.querySelector(':scope > .section-body');
+  if(!root)return;
+  const openGroups=new Set([...root.querySelectorAll(':scope > .layout-section-group[open]')].map(group=>group.dataset.groupName));
+  const items=scopeItems(scope),preferences=state.settings.layout?.sections?.[scope];
+  for(const group of root.querySelectorAll(':scope > .layout-section-group')){
+   group.before(...[...group.children].slice(1));group.remove();
+  }
+  if(!preferences)return;
+  const positions=new Map((preferences.order||[]).map((id,index)=>[id,index]));
+  items.sort((a,b)=>(positions.get(a.id)??Infinity)-(positions.get(b.id)??Infinity));
+  const groups=new Map();
+  for(const item of items){
+   const name=Object.hasOwn(preferences.groups||{},item.id)?preferences.groups[item.id]:'';
+   let container=root;
+   if(name){
+    if(!groups.has(name)){
+     const group=document.createElement('details'),summary=document.createElement('summary');
+     group.className='layout-section-group';
+     group.dataset.groupName=name;
+     group.open=openGroups.has(name);
+     summary.textContent=name;
+     group.append(summary);root.append(group);groups.set(name,group);
+    }
+    container=groups.get(name);
+   }
+   container.append(...item.nodes);
+  }
+ }
+ const restorePreviousLayout=restoreLayout;
+ restoreLayout=function(){
+  restorePreviousLayout();
+  for(const panel of panels())applySection(panel.id);
+ };
+ restoreLayout();
+ function renderOrder(){
+  list.replaceChildren();
+  const scope=picker.value,items=scopeItems(scope),preferences=settingsFor(scope);
+  const section=scope!=='tool'&&scope!=='panel';
+  function commit(){
+   if(section)applySection(scope);else restoreLayout();
+   save();renderOrder();
+  }
+  function move(index,delta,groupName){
+   const groupOf=item=>Object.hasOwn(preferences.groups||{},item.id)?preferences.groups[item.id]:'';
+   const moved=groupName?items.filter(item=>groupOf(item)===groupName):[items[index]];
+   const remaining=items.filter(item=>!moved.includes(item));
+   const at=Math.min(...moved.map(item=>items.indexOf(item)));
+   let destination=Math.max(0,Math.min(remaining.length,at+delta));
+   const adjacent=remaining[delta<0?destination:destination-1];
+   const neighbor=adjacent&&groupOf(adjacent);
+   if(neighbor&&neighbor!==groupOf(moved[0])){
+    const indices=remaining.map((item,i)=>groupOf(item)===neighbor?i:-1).filter(i=>i>=0);
+    destination=delta<0?indices[0]:indices.at(-1)+1;
+   }
+   remaining.splice(destination,0,...moved);
+   preferences.order=remaining.map(item=>item.id);
+   commit();
+  }
+  function button(glyph,name,action){
+   const control=document.createElement('button');control.type='button';control.textContent=glyph;control.setAttribute('aria-label',name);control.onclick=action;return control;
+  }
+  const renderedGroups=new Set();
+  items.forEach((item,index)=>{
+   const groupName=Object.hasOwn(preferences.groups||{},item.id)?preferences.groups[item.id]:'';
+   if(groupName&&!renderedGroups.has(groupName)){
+    renderedGroups.add(groupName);
+    const header=document.createElement('div'),name=document.createElement('strong');
+    header.className='layout-order-row layout-order-group';name.textContent=groupName;
+    header.append(name,button('↑','上移群組 '+groupName,()=>move(index,-1,groupName)),button('↓','下移群組 '+groupName,()=>move(index,1,groupName)));list.append(header);
+   }
+   const row=document.createElement('div'),name=document.createElement('span'),input=document.createElement('input');
+   row.className='layout-order-row';name.textContent=item.name;
+   input.value=groupName;
+   input.placeholder='群組名稱';
+   input.maxLength=40;
+   input.setAttribute('aria-label',item.name+' 的群組');
+   const applyGroup=()=>{
+    const value=input.value.trim();
+    if(value===groupName)return;
+    preferences.groups||={};
+    preferences.order=items.map(entry=>entry.id);
+    Object.defineProperty(preferences.groups,item.id,{value,enumerable:true,writable:true,configurable:true});
+    commit();
+   };
+   input.addEventListener('keydown',event=>{if(event.key==='Enter'){event.preventDefault();applyGroup()}});
+   row.append(name,button('↑','上移 '+item.name,()=>move(index,-1)),button('↓','下移 '+item.name,()=>move(index,1)),input,button('套用','套用 '+item.name+' 的群組',applyGroup));
+   list.append(row);
+  });
+  if(!items.length)list.textContent='此區塊沒有可排序的項目。';
+ }
+ picker.onchange=renderOrder;
+ function openOrder(scope){
+  picker.replaceChildren(new Option('工具列','tool'),new Option('工作空間區塊','panel'),...panels().map(panel=>new Option('區塊內 · '+textOf(panel.querySelector('summary')),panel.id)));
+  picker.value=scope;renderOrder();editor.showModal();
+ }
+ $('edit-layout').onclick=()=>openOrder('tool');
+ for(const control of document.querySelectorAll('.edit-layout-copy'))control.onclick=()=>openOrder('panel');
+ const workspaceOrder=document.createElement('button');
+ workspaceOrder.type='button';
+ workspaceOrder.className='workspace-order-button';
+ workspaceOrder.textContent='排序與群組';
+ workspaceOrder.onclick=()=>openOrder('panel');
+ workspace.querySelector('.workspace-heading').after(workspaceOrder);
 }
