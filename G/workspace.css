@@ -314,3 +314,7 @@ body:not(.bright-mode) .map-wrap.street-basemap .coordinate-axis .axis-tick{colo
 #workspace-visits{margin:8px 0 0;font-size:10px;color:var(--muted)}
 
 body:not(.bright-mode) .map-wrap.street-basemap :is(.map-sources-toggle,.source-footer .leaflet-control-attribution,.source-footer .leaflet-control-attribution a){color:#10212d!important;text-shadow:0 0 2px #fff,0 0 2px #fff}
+
+/* Keep map controls and the sidebar inside the landscape safe area. */
+body main,body.layout-editing main{padding-inline:env(safe-area-inset-left,0px) env(safe-area-inset-right,0px)}
+@media(pointer:coarse){.bottom{padding-bottom:8px}.toolbar{overscroll-behavior-x:contain}.map-sources-toggle{min-height:24px}}

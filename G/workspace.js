@@ -1,11 +1,11 @@
-import {mountRegionalAirways} from './regional-airways.mjs?v=221';
-import {normalizePack,readBasemapPack,removeBasemapPack,downloadBasemapPack,makeOfflineBasemap} from './offline-basemaps.mjs?v=221';
+import {mountRegionalAirways} from './regional-airways.mjs?v=222';
+import {normalizePack,readBasemapPack,removeBasemapPack,downloadBasemapPack,makeOfflineBasemap} from './offline-basemaps.mjs?v=222';
 import {ObjectSpatialIndex,simplifyDisplay,detailBucket,diffVisible} from './spatial-objects.mjs?v=191';
 import { createNavigationRuler, navigationReadout } from './navigation-ruler.mjs?v=191';
 import { placeNearbyWaypoints, viewportPaintDue } from './compact-waypoints.mjs?v=191';
 import { coordinateRows, coordinateWorkbook } from './coordinate-excel.mjs?v=191';
 import { LINE_STYLES, lineStyleOptions, installDoubleLines } from './line-appearance.mjs?v=191';
-import {openWorkspaceStorage} from './workspace-storage.mjs?v=221';
+import {openWorkspaceStorage} from './workspace-storage.mjs?v=222';
 import {labelDisplaySize,frameTask,memoAreaOffset} from './display-performance.mjs?v=191';
 import {areaSouthwest,limitAreaOffset,areaInteriorOffset} from './area-labels.mjs?v=191';
 import {stableLabelOffset,rememberLabelOffset,validAreaPlacement} from './label-stability.mjs?v=191';
@@ -13,9 +13,9 @@ import {buildTimeline,seekTimeline,formatActionTime} from './history-timeline.mj
 import {pdfTimeName,translatePixels,pointAlongScreenPath,horizontalTurn,rotatePixels,usableMapSize} from './movement.mjs?v=191';
 import {applyLabelRotation,preserveLabelCenter,rotatedLabelEdge,labelBorderSize} from './label-rotation.mjs?v=191';
 import {nearestPoint,attachPoint,releasePoint} from './point-snap.mjs?v=191';
-import {decodeTerrainBlob,bindTouchCursor,setupIOSStorage} from './ios-pwa.mjs?v=191';
+import {decodeTerrainBlob,bindTouchCursor,setupIOSStorage} from './ios-pwa.mjs?v=222';
 import {actionDescription} from './action-history.mjs?v=191';
-import {printRaster} from './print-raster.mjs?v=221';
+import {printRaster} from './print-raster.mjs?v=222';
 import {uniqueLabelIds} from './label-visibility.mjs?v=191';
 import {outerVertices,transformPoints,nearestPathFraction} from './map-editing.mjs?v=191';
 import {createPressControls} from './press-controls.mjs?v=191';
@@ -34,7 +34,7 @@ const canPackageWebsite=()=>!offlineBundle&&featuresUnlocked;
 if(window.MPS_IMPORT_BUNDLE)await window.MPS_IMPORT_BUNDLE();
 import {intervalPlan,placeCursorBox,extensionEndpoint} from './workspace-interactions.mjs?v=191';
 import {planProjectImport,mergeProjectItems} from './project-merge.mjs?v=191';
-import {parseSearchPosition,searchCatalog,placeLabelBoxes,labelRank,calibrationDistance,readPrintTemplate,openBackupHistory} from './workspace-ux.mjs?v=221';
+import {parseSearchPosition,searchCatalog,placeLabelBoxes,labelRank,calibrationDistance,readPrintTemplate,openBackupHistory} from './workspace-ux.mjs?v=222';
 if(window.MPS_BUNDLE_READY)await window.MPS_BUNDLE_READY;
 const bundleNamespace=offlineBundle?'bundle:'+window.MPS_BUNDLE.id+':':/(?:^|\/)(?:G|google-workspace)(?:\/|$)/.test(location.pathname)?'google-workspace:':'';
 const workspaceStorage = await openWorkspaceStorage(error => {
@@ -233,7 +233,7 @@ for(const name of ['ruler','protractor']){const el=$(name),pointers=new Map();le
 }
 
 document.addEventListener('click',e=>{if(!e.target.closest('.tool-dropdown')){$('color-menu').hidden=true;$('color-menu-button').setAttribute('aria-expanded','false');$('instrument-menu').hidden=true;$('instrument-menu-button').setAttribute('aria-expanded','false')}});
-function download(text,name,type){const url=URL.createObjectURL(new Blob([text],{type})),link=document.createElement('a');link.href=url;link.download=name;link.click();setTimeout(()=>URL.revokeObjectURL(url),2000)}
+function download(text,name,type){const url=URL.createObjectURL(new Blob([text],{type})),link=document.createElement('a');link.href=url;link.download=name;link.hidden=true;document.body.append(link);link.click();link.remove();setTimeout(()=>URL.revokeObjectURL(url),30000)}
 function downloadProject(){save();const backup={...captureCompleteProject(),savedAt:new Date().toISOString()};download(JSON.stringify(backup,null,2),'map-workspace-'+new Date().toISOString().slice(0,10)+'.json','application/json');toast('所有圖層與設定已儲存，並下載專案備份')}
 $('save-project').onclick=downloadProject;$('project-download').onclick=downloadProject;$('project-open').onclick=()=>$('project-file').click();
 function repairNamedRegions(){for(const layer of state.layers)for(const o of layer.objects){if(o.type!=='polygon'||o.boxInputMode==='ordered'||!Array.isArray(o.boxVertices)||o.boxVertices.length<3)continue;try{const points=orderedPolygon(o.boxVertices);o.points=points;o.boxVertices=o.boxVertices.slice(0,points.length).map((v,i)=>({name:v.name||'點 '+(i+1),position:[...points[i]]}));o.boxInputMode='ordered';repairedRegionCount++}catch{}}}
@@ -361,13 +361,13 @@ function positionScale(){const size=map.getSize(),w=scaleElement.offsetWidth,h=s
 scaleElement.addEventListener('pointerdown',e=>{e.preventDefault();e.stopPropagation();const rect=scaleElement.getBoundingClientRect();scaleDrag={dx:e.clientX-rect.left,dy:e.clientY-rect.top,pan:map.dragging.enabled()};map.dragging.disable();scaleElement.setPointerCapture(e.pointerId)});
 scaleElement.addEventListener('pointermove',e=>{if(!scaleDrag)return;e.preventDefault();const box=scaleHost.getBoundingClientRect(),size=map.getSize();state.settings.scalePosition={x:(e.clientX-box.left-scaleDrag.dx)/size.x,y:(e.clientY-box.top-scaleDrag.dy)/size.y};positionScale()});
 function finishScale(){if(!scaleDrag)return;const pan=scaleDrag.pan;scaleDrag=null;if(pan)map.dragging.enable();save()}
-scaleElement.addEventListener('pointerup',finishScale);scaleElement.addEventListener('pointercancel',finishScale);map.on('resize zoomend moveend',positionScale);new ResizeObserver(positionScale).observe(scaleElement);positionScale();
+scaleElement.addEventListener('pointerup',finishScale);scaleElement.addEventListener('pointercancel',finishScale);map.on('resize zoomend moveend',positionScale);if(typeof ResizeObserver==='function')new ResizeObserver(positionScale).observe(scaleElement);positionScale();
 
 function precision(key,fallback){const n=state.settings.precision?.[key];return Number.isInteger(n)&&n>=0&&n<=8?n:fallback}
 function dms(value,lat){const digits=precision('seconds',1),unit=10**digits,total=Math.round(Math.abs(value)*3600*unit),degree=Math.floor(total/(3600*unit)),minute=Math.floor(total%(3600*unit)/(60*unit)),seconds=(total%(60*unit)/unit).toFixed(digits);return degree+'°'+String(minute).padStart(2,'0')+'′'+seconds.padStart(digits?digits+3:2,'0')+'″'+(lat?(value<0?'S':'N'):(value<0?'W':'E'))}
 const precisionPanel=document.createElement('fieldset');const precisionTitle=document.createElement('legend');precisionTitle.textContent='顯示小數位數';precisionPanel.append(precisionTitle);for(const [key,title,fallback]of [['nm','海里 NM',3],['km','公里 km',3],['m','公尺 m',1],['ft','高度 feet',0],['decimal','十進位經緯度',6],['seconds','度分秒：秒',1]]){const label=document.createElement('label');label.textContent=title;const select=document.createElement('select');select.setAttribute('aria-label',title+'小數位數');for(let n=0;n<=8;n++){const option=document.createElement('option');option.value=n;option.textContent=n+' 位';select.append(option)}select.value=precision(key,fallback);select.onchange=()=>{state.settings.precision||={};state.settings.precision[key]=Number(select.value);save();refreshUI();paintCursorHeight();positionScale()};label.append(select);precisionPanel.append(label)}$('settings-panel').querySelector('.section-body').append(precisionPanel);
 
-const sourceFooter=document.createElement('div');sourceFooter.className='source-footer';document.querySelector('.map-wrap').append(sourceFooter);sourceFooter.append(map.attributionControl.getContainer());const sourceHeight=new ResizeObserver(()=>{document.querySelector('.map-wrap').style.setProperty('--source-height','0px');renderAxes();positionScale()});sourceHeight.observe(sourceFooter);
+const sourceFooter=document.createElement('div');sourceFooter.className='source-footer';document.querySelector('.map-wrap').append(sourceFooter);sourceFooter.append(map.attributionControl.getContainer());
 
 function bearing(a,b){const x=rad(a[0]),y=rad(b[0]),d=rad(b[1]-a[1]);return Math.atan2(Math.sin(d)*Math.cos(y),Math.cos(x)*Math.sin(y)-Math.sin(x)*Math.cos(y)*Math.cos(d))*180/Math.PI}
 function destination(a,heading,metres,alt=0){const d=metres/6371008.8,p=rad(a[0]),l=rad(a[1]),h=rad(heading),q=Math.asin(Math.sin(p)*Math.cos(d)+Math.cos(p)*Math.sin(d)*Math.cos(h)),r=l+Math.atan2(Math.sin(h)*Math.sin(d)*Math.cos(p),Math.cos(d)-Math.sin(p)*Math.sin(q));return[q*180/Math.PI,((r*180/Math.PI+540)%360)-180,alt]}
@@ -528,7 +528,7 @@ function updateCompassGeometry(){const c=compassState();if(!c?.visible)return;co
 function renderCompass(){compassGroup.clearLayers();const c=compassState();compassEnd.hidden=!c?.visible;if(!c?.visible)return;const color=state.settings.theme==='bright'?'#184c3d':'#93dfc7';compassCircle=L.polygon(Array.from({length:180},(_,i)=>destination(c.center,i*2,c.radiusM)),{color,weight:1,dashArray:'4 5',fillOpacity:0,interactive:true,className:'compass-gesture-ring'}).addTo(compassGroup);compassArm=L.polyline([c.center,compassTip()],{color,weight:2,interactive:true,className:'compass-gesture-arm'}).bindTooltip(formatDistance(c.radiusM),{permanent:true,direction:'center'}).addTo(compassGroup);compassCenterMarker=L.marker(c.center,{pane:'compass-handles',draggable:!c.locked,icon:L.divIcon({className:'compass-center'+(c.locked?' locked':''),html:'<span class="compass-pin"></span>',iconSize:[22,22],iconAnchor:[11,11]}),bubblingMouseEvents:false}).addTo(compassGroup);const centerElement=compassCenterMarker.getElement();if(centerElement){centerElement.setAttribute('role','button');centerElement.setAttribute('aria-label',c.locked?'圓規圓心：已鎖定，點擊解鎖':'圓規圓心：可拖曳，點擊鎖定')}compassCenterMarker.on('click',e=>{L.DomEvent.stopPropagation(e);c.locked=!c.locked;renderCompass();save();toast(c.locked?'圓心已鎖定':'圓心已解鎖，可拖曳；靠近點會自動吸附')});compassCenterMarker.on('dragstart',snapshot);compassCenterMarker.on('drag',()=>{const ll=compassCenterMarker.getLatLng();c.center=[ll.lat,ll.lng,0];updateCompassGeometry()});compassCenterMarker.on('dragend',()=>{const pixel=map.latLngToContainerPoint(c.center),near=visibleSnapPoints().map(p=>({...p,pixel:map.latLngToContainerPoint(p.position)})).filter(p=>p.pixel.distanceTo(pixel)<24).sort((a,b)=>a.pixel.distanceTo(pixel)-b.pixel.distanceTo(pixel))[0];if(near&&state.settings.rulerSnap!==false){c.center=[...near.position];c.locked=true;toast('圓心已吸附並鎖定 '+near.name)}save();renderCompass()});updateCompassGeometry()}
 function moveCompassTip(latlng){const c=compassState();if(!c?.visible)return;c.angle=bearing(c.center,[latlng.lat,latlng.lng]);updateCompassGeometry();if(compassPointer?.draw){const tip=compassTip();if(!compassArc.length||distance(compassArc.at(-1),tip)>.2)compassArc.push(tip)}}
 compassEnd.addEventListener('pointerdown',e=>{e.stopPropagation();e.preventDefault();const now=performance.now(),draw=now-compassLastDown<400;compassLastDown=now;compassPointer={id:e.pointerId,draw,pan:map.dragging.enabled()};compassFollowing=false;compassArc=draw?[compassTip()]:[];if(draw)snapshot();map.dragging.disable();compassEnd.setPointerCapture(e.pointerId)});compassEnd.addEventListener('pointermove',e=>{if(!compassPointer)return;const rect=map.getContainer().getBoundingClientRect();moveCompassTip(map.containerPointToLatLng([e.clientX-rect.left,e.clientY-rect.top]))});compassEnd.addEventListener('pointerup',e=>{if(!compassPointer)return;e.stopPropagation();const draw=compassPointer.draw,pan=compassPointer.pan;compassPointer=null;if(pan)map.dragging.enable();if(draw){const points=compassArc.length?compassArc:[compassTip()];const object=addObject(points.length>1?'line':'point',points,points.length>1?'圓規圓弧':'圓規標點');object.compassDrawing=true;if(points.length>1)object.compassArc={center:[...compassState().center],radiusM:compassState().radiusM};renderObjects();renderLayers();compassArc=[];compassFollowing=false}else compassFollowing=!compassFollowing;save()});compassEnd.addEventListener('pointercancel',()=>{if(compassPointer?.pan)map.dragging.enable();compassPointer=null;compassArc=[]});compassEnd.addEventListener('click',e=>e.stopPropagation());map.on('mousemove',e=>{if(compassFollowing)moveCompassTip(e.latlng)});map.on('click',()=>{if(compassFollowing){compassFollowing=false;save()}});map.on('move zoom resize',updateCompassGeometry);renderCompass();
-new ResizeObserver(()=>{document.documentElement.style.setProperty('--toolbar-height',document.querySelector('header').offsetHeight+'px');map.invalidateSize({pan:false})}).observe(document.querySelector('header'));
+
 
 const packageButton=document.createElement('button');packageButton.className='icon-button';packageButton.id='package-offline';packageButton.textContent='▤';packageButton.setAttribute('aria-label','打包離線網站');packageButton.title='打包目前功能、圖層與離線高度';if(!offlineBundle)document.querySelector('.toolbar').append(packageButton);const packageDialog=document.createElement('dialog');packageDialog.id='package-dialog';packageDialog.innerHTML='<h2>打包離線網站</h2><p>包含網站程式、向量圖資、目前所有圖層、儲存的專案及已下載地形高度。包含已下載的離線街道與衛星圖包。</p><p>Windows：解壓縮後執行 MPS-Offline.exe，會自動啟動本機地圖。工具只監聽 127.0.0.1，不需安裝 Python 或 Node。系統匣圖示可關閉服務。</p><div class="row"><button id="package-create">產生 ZIP 壓縮檔</button><button id="package-close">關閉</button></div><p id="package-status" role="status"></p>';document.body.append(packageDialog);packageButton.onclick=async()=>{
  const info=document.createElement('p');info.id='package-inventory';info.textContent='讀取打包內容…';
@@ -992,7 +992,7 @@ if(typeof loadDetailPoints==='function'){const _loadDetailDistance=loadDetailPoi
 loadDetailPoints=function(object){_loadDetailDistance(object);if(!object?.tapeMeasure||!distancePanel||distancePanel.querySelector('.distance-visibility'))return;const label=document.createElement('label');label.className='distance-visibility';const input=document.createElement('input');input.type='checkbox';input.checked=object.distanceLabelHidden!==true;input.setAttribute('aria-label','顯示鐵捲尺距離');input.onchange=()=>{snapshot();object.distanceLabelHidden=!input.checked;renderObjects();save()};label.append(input,document.createTextNode('顯示距離'));distancePanel.append(label)};}
 if(typeof mountPrintPreview==='function'){const _mountPrintBasemap=mountPrintPreview;
 mountPrintPreview=function(){_mountPrintBasemap();const root=livePrintRoot,pm=livePrintMap;if(!root||!pm)return;const online=[];pm.eachLayer(layer=>{if(layer._url)online.push(layer)});if(!online.length)return;root.hidden=true;let shown=false;const show=()=>{if(shown)return;shown=true;root.hidden=false;root.dataset.basemapReady='true';scheduleLabelLayout()};let pending=online.length;online.forEach(layer=>{const done=()=>{layer.off('load',done);layer.off('tileerror',done);if(--pending<=0)show()};layer.on('load',done);layer.on('tileerror',done)});setTimeout(show,12000)};}
-if(typeof document!=='undefined'){const resizeHandle=document.createElement('div');resizeHandle.className='workspace-resize-handle';resizeHandle.setAttribute('aria-label','拖曳調整工作空間寬度');document.querySelector('main')?.prepend(resizeHandle);let resizing=false;resizeHandle.addEventListener('pointerdown',e=>{if(innerWidth>720)return;resizing=true;resizeHandle.setPointerCapture(e.pointerId);document.body.classList.add('workspace-resizing');e.preventDefault()});resizeHandle.addEventListener('pointermove',e=>{if(!resizing)return;const w=Math.max(220,Math.min(420,e.clientX));document.documentElement.style.setProperty('--workspace-width',w+'px');state.settings.workspaceWidth=w;map.invalidateSize({pan:false})});resizeHandle.addEventListener('pointerup',()=>{if(!resizing)return;resizing=false;document.body.classList.remove('workspace-resizing');save()})}
+if(typeof document!=='undefined'){const resizeHandle=document.createElement('div');resizeHandle.className='workspace-resize-handle';resizeHandle.setAttribute('aria-label','拖曳調整工作空間寬度');document.querySelector('main')?.prepend(resizeHandle);let resizing=false;resizeHandle.addEventListener('pointerdown',e=>{if(innerWidth>720)return;resizing=true;resizeHandle.setPointerCapture(e.pointerId);document.body.classList.add('workspace-resizing');e.preventDefault()});resizeHandle.addEventListener('pointermove',e=>{if(!resizing)return;const w=Math.max(220,Math.min(420,e.clientX));document.documentElement.style.setProperty('--workspace-width',w+'px');state.settings.workspaceWidth=w;map.invalidateSize({pan:false})});const finishResize=()=>{if(!resizing)return;resizing=false;document.body.classList.remove('workspace-resizing');save()};for(const event of ['pointerup','pointercancel','lostpointercapture'])resizeHandle.addEventListener(event,finishResize)}
 if(typeof mountPrintPreview==='function'){const _mountPrintBasemap2=mountPrintPreview;
 mountPrintPreview=function(){_mountPrintBasemap2();const root=livePrintRoot,pm=livePrintMap;if(!root||!pm)return;const online=[];const scan=layer=>{if(layer._url)online.push(layer);else if(layer.eachLayer)layer.eachLayer(scan)};pm.eachLayer(scan);if(!online.length){root.hidden=false;return}root.hidden=true;let shown=false;const show=()=>{if(shown)return;shown=true;root.hidden=false;root.dataset.basemapReady='true';scheduleLabelLayout()};let pending=online.length;online.forEach(layer=>{const done=()=>{layer.off('load',done);layer.off('tileerror',done);if(--pending<=0)show()};layer.on('load',done);layer.on('tileerror',done)});setTimeout(show,12000)};}
 // Final print controller: a complete projected raster replaces ordinary tiles.
@@ -1013,7 +1013,26 @@ const previousWorkspacePreferences=applyWorkspacePreferences;applyWorkspacePrefe
 
 if(typeof document!=='undefined'&&!offlineBundle&&typeof canPackageWebsite==='function'){const button=$('package-offline'),handler=button.onclick;if(!canPackageWebsite()){button.disabled=true;button.title='請先在設定輸入使用者代號';button.setAttribute('aria-label','打包離線網站（尚未輸入使用者代號）')}button.onclick=function(event){if(!canPackageWebsite()){toast('請先在設定輸入使用者代號');return}return handler.call(this,event)}}
 if(typeof window!=='undefined'&&typeof document!=='undefined'){
-let viewportFrame=0;const updateViewport=()=>{if(viewportFrame)return;viewportFrame=requestAnimationFrame(()=>{viewportFrame=0;if(window.visualViewport&&Math.abs(visualViewport.scale-1)<.01)document.documentElement.style.setProperty('--mps-viewport-height',Math.round(visualViewport.height)+'px');else if(!window.visualViewport)document.documentElement.style.setProperty('--mps-viewport-height',innerHeight+'px');map.invalidateSize({pan:false})})};window.visualViewport?.addEventListener('resize',updateViewport);window.addEventListener('orientationchange',updateViewport);window.addEventListener('resize',updateViewport);updateViewport();
+const viewport=window.visualViewport,header=document.querySelector('header');
+let viewportFrame=0,lastMapWidth,lastMapHeight;
+function updateViewport(){
+ if(viewportFrame)return;
+ viewportFrame=requestAnimationFrame(()=>{
+  viewportFrame=0;
+  if(viewport&&Math.abs(viewport.scale-1)>.01)return;
+  const root=document.documentElement;
+  root.style.setProperty('--mps-viewport-height',Math.round(viewport?.height||window.innerHeight)+'px');
+  root.style.setProperty('--toolbar-height',Math.round(header.getBoundingClientRect().height)+'px');
+  const container=map.getContainer(),width=container.clientWidth,height=container.clientHeight;
+  if(width===lastMapWidth&&height===lastMapHeight)return;
+  lastMapWidth=width;lastMapHeight=height;
+  map.invalidateSize({pan:false});
+ });
+}
+viewport?.addEventListener('resize',updateViewport);
+for(const event of ['resize','orientationchange','pageshow'])window.addEventListener(event,updateViewport);
+if(typeof ResizeObserver==='function')new ResizeObserver(updateViewport).observe(header);
+updateViewport();
 }
 if(typeof document!=='undefined'&&typeof setupDeviceTransfer==='function')setupDeviceTransfer({mount:$('files-panel').querySelector('.section-body'),getBackup:captureCompleteProject,onImport:async file=>{const kml=/\.kml$/i.test(file.name),input=$(kml?'kml-file':'project-file');await input.onchange({target:{files:[file],value:''}});const result=$(kml?'notice':'backup-center-status')?.textContent||'';if(/匯入失敗|還原未完成|開啟失敗/.test(result))throw Error(result);return result}});
 function labelRotationKey(label){return label.options.mpsLabelKey||label.options.mpsStableKey||label.getContent()?.textContent||String(label.getContent())}
@@ -1076,7 +1095,7 @@ opacityButton.onclick=()=>{const levels=[1,.75,.5,.25],value=levels.includes(sta
 $('settings-panel').querySelector('.section-body').append(opacityButton);const refreshBeforeMovementOpacity=refreshUI;refreshUI=function(){refreshBeforeMovementOpacity();paintMovementOpacity()};paintMovementOpacity();
 }
 
-if(typeof document!=='undefined'){const version=document.createElement('p');version.id='app-version';version.textContent='程式版本 v221（Google 分支）';$('settings-panel').querySelector('.section-body').append(version)}
+if(typeof document!=='undefined'){const version=document.createElement('p');version.id='app-version';version.textContent='程式版本 v222（Google 分支）';$('settings-panel').querySelector('.section-body').append(version)}
 
 // Quick navigation ruler and persistent graduated ruler are independent tools.
 if (typeof document !== 'undefined') {
@@ -2289,7 +2308,7 @@ if(typeof document!=='undefined'){
    drag.timer=setTimeout(()=>{
     drag.held=true;
     item.header.classList.add('layout-held');
-    item.header.setPointerCapture(event.pointerId);
+    try{item.header.setPointerCapture(event.pointerId)}catch{clearDrag();return}
     drag.frame=requestAnimationFrame(scrollDuringDrag);
    },400);
   });
